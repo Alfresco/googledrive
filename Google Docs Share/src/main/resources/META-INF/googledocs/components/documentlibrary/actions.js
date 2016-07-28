@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2005-2015 Alfresco Software Limited.
+ * Copyright (C) 2005-2016 Alfresco Software Limited.
  *
  * This file is part of Alfresco
  *
@@ -37,11 +37,17 @@
      * Forward the browser to the editing page for the specified repository nodeRef
      *
      * @param nodeRef {String} NodeRef of the item being edited
-     * @returns null
+     * @returns {Window} the window object where the editor has been opened
      */
     var navigateToEditorPage = function GDA_navigateToEditorPage(editorUrl) {
         var editor = window.open(decodeURI(editorUrl), '_blank');
-        editor.focus();
+
+        if (editor)
+        {
+            editor.focus();
+        }
+
+        return editor;
     };
 
     /**
@@ -78,8 +84,16 @@
             },
             successCallback: {
                 fn: function (response) {
-                    navigateToEditorPage(response.json.editorUrl);
-                    location.reload();
+                    var editor = navigateToEditorPage(response.json.editorUrl);
+
+                    if (editor) {
+                        location.reload();
+                    }
+                    else
+                    {
+                        Alfresco.GoogleDocs.hideMessage.call(this);
+                        Alfresco.GoogleDocs.popupBlocker(true);
+                    }
                 },
                 scope: this
             },
@@ -201,8 +215,16 @@
                     },
                     successCallback: {
                         fn: function (response) {
-                            navigateToEditorPage(response.json.editorUrl);
-                            location.reload();
+                            var editor = navigateToEditorPage(response.json.editorUrl);
+
+                            if (editor) {
+                                location.reload();
+                            }
+                            else
+                            {
+                                Alfresco.GoogleDocs.hideMessage.call(this);
+                                Alfresco.GoogleDocs.popupBlocker(true);
+                            }
                         },
                         scope: this
                     },
@@ -669,8 +691,16 @@
                                             dataObj: {},
                                             successCallback: {
                                                 fn: function (response) {
-                                                    navigateToEditorPage(response.json.editorUrl);
-                                                    location.reload();
+                                                    var editor = navigateToEditorPage(response.json.editorUrl);
+
+                                                    if (editor) {
+                                                        location.reload();
+                                                    }
+                                                    else
+                                                    {
+                                                        Alfresco.GoogleDocs.hideMessage.call(this);
+                                                        Alfresco.GoogleDocs.popupBlocker(false);
+                                                    }
                                                 },
                                                 scope: this
                                             },

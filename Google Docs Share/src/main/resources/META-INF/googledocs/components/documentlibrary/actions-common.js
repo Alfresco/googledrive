@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2005-2015 Alfresco Software Limited.
+ * Copyright (C) 2005-2016 Alfresco Software Limited.
  * 
  * This file is part of Alfresco
  * 
@@ -221,6 +221,11 @@
                else
                {
                   var popup = window.open(authURL, "GDOAuth", "menubar=no,location=no,resizable=no,scrollbars=yes,status=no,width=" + OAUTH_WINDOW_WIDTH + ",height=" + OAUTH_WINDOW_HEIGHT + ",modal=yes"); // returns straight away
+                  if (!popup || popup.closed || typeof  popup.closed == 'undefined')
+                  {
+                     Alfresco.GoogleDocs.hideMessage.call(this);
+                     Alfresco.GoogleDocs.popupBlocker(false);
+                  }
                }
             }
          },
@@ -393,6 +398,42 @@
          successCallback: success,
          failureCallback: failure
       });
+   };
+
+   /**
+    * Show message that a window cannot be opened as part of a flow because there is a popup blocker active.
+    *
+    * @method popupBlocker
+    * @static
+    *
+    * @param response {boolean} reload the page after the user acknowledges the prompt
+    */
+   Alfresco.GoogleDocs.popupBlocker = function GDA_popupBlocker(reload)
+   {
+      Alfresco.util.PopupManager.displayPrompt(
+         {
+            title: Alfresco.util.message("title.googleDocs.popupBlock"),
+            text: Alfresco.util.message("text.googleDocs.popupBlock"),
+            noEscape: true,
+            buttons: [
+               {
+                  text: Alfresco.util.message("button.ok", this.name),
+                  handler: function GDA_doOAuth_cancelHandler()
+                  {
+                     if (reload)
+                     {
+                        location.reload();
+                     }
+                     else
+                     {
+                        this.destroy();
+                     }
+                  },
+                  isDefault: true
+               }
+            ]
+         }
+      )
    };
 
    /**
