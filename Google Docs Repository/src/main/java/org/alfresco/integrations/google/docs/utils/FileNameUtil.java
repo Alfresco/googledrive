@@ -19,9 +19,14 @@ package org.alfresco.integrations.google.docs.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.repository.MimetypeService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.security.AccessStatus;
+import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.site.SiteInfo;
+import org.alfresco.service.cmr.site.SiteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,15 +36,17 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FileNameUtil
 {
-    private static final Log    log          = LogFactory.getLog(FileNameUtil.class);
+    private static final Log log = LogFactory.getLog(FileNameUtil.class);
 
     private final static String FULL_PATTERN_WITH_EXT = "(.+?)(\\-(\\d+))?(\\.\\w+)?";
-    private final static String FULL_PATTERN = "\\-\\d++\\.";
-    private final static String FIRST_DUP    = "-1.";
-    private final static String DUP_NUMBER   = "\\d++";
+    private final static String FULL_PATTERN          = "\\-\\d++\\.";
+    private final static String FIRST_DUP             = "-1.";
+    private final static String DUP_NUMBER            = "\\d++";
 
-    private MimetypeService     mimetypeService;
-    private FileFolderService   filefolderService;
+    private MimetypeService   mimetypeService;
+    private FileFolderService filefolderService;
+    private SiteService       siteService;
+    private PermissionService permissionService;
 
 
     public void setMimetypeService(MimetypeService mimetypeService)
@@ -51,6 +58,16 @@ public class FileNameUtil
     public void setFileFolderService(FileFolderService filefolderService)
     {
         this.filefolderService = filefolderService;
+    }
+
+    public void setSiteService(SiteService siteService)
+    {
+        this.siteService = siteService;
+    }
+
+    public void setPermissionService(PermissionService permissionService)
+    {
+        this.permissionService = permissionService;
     }
 
 
@@ -167,5 +184,36 @@ public class FileNameUtil
     {
         return mimetypeService.getExtension(mimetype);
     }
+
+
+    /**
+     * This method gets the {@link SiteInfo} for the Share Site which contains the given NodeRef.
+     * If the given NodeRef is not contained within a Share Site or current user has no access to site,
+     * then <code>null</code> is returned.
+     *
+     * @param nodeRef the node whose containing site's info is to be found.
+     * @return SiteInfo site information for the containing site or <code>null</code> if node is not in a site
+     * or user has no permissions to access site information.
+     */
+    public SiteInfo resolveSiteInfo(final NodeRef nodeRef)
+    {
+        SiteInfo siteInfo = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<SiteInfo>()
+        {
+            @Override
+            public SiteInfo doWork() throws Exception
+            {
+                return siteService.getSite(nodeRef);
+            }
+        });
+
+        if (siteInfo != null && permissionService.hasReadPermission(siteInfo.getNodeRef()).equals(AccessStatus.ALLOWED))
+        {
+            return siteInfo;
+        }
+
+        // site was not found or current user has no permissions to access site
+        return null;
+    }
+
 
 }
