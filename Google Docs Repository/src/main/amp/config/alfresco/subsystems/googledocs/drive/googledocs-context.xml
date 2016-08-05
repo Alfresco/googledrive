@@ -3,16 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Load the Model -->
-    <bean id="googledocsModel.dictionaryBootstrap" parent="dictionaryModelBootstrap"
-          depends-on="dictionaryBootstrap">
-        <property name="models">
-            <list>
-                <value>alfresco/subsystems/googledocs/drive/googledocs-model.xml</value>
-            </list>
-        </property>
-    </bean>
-
     <import resource="google-customResponse-context.xml" />
 
     <!-- Googledocs Service -->
@@ -319,15 +309,6 @@
         </property>
         <property name="fileFolderService">
             <ref bean="FileFolderService"/>
-        </property>
-    </bean>
-
-    <bean id="editinginGoogleAspect" class="org.alfresco.integrations.google.docs.model.EditingInGoogleAspect" init-method="init">
-        <property name="policyComponent">
-            <ref bean="policyComponent"/>
-        </property>
-        <property name="nodeService">
-            <ref bean="nodeService"/>
         </property>
     </bean>
 
