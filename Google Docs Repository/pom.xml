@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledocs-repo</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>3.0.3-SNAPSHOT</version>
     <packaging>amp</packaging>
     <name>Alfresco / Google Docs Repo Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.0.4-SNAPSHOT</version>
+        <version>3.0.3-SNAPSHOT</version>
     </parent>
 
     <properties>
