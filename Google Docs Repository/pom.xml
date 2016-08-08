@@ -30,6 +30,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.alfresco.integrations</groupId>
+            <artifactId>alfresco-GoogleDocs-AppSecrets</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-oauth2</artifactId>
             <version>v2-rev86-1.19.1</version>
@@ -114,6 +119,31 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>get-cloud-secret</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.alfresco.integrations</groupId>
+                                            <artifactId>alfresco-GoogleDocs-AppSecrets</artifactId>
+                                            <version>${alfresco.google.app.secret.version}</version>
+                                            <type>jar</type>
+                                            <includes>client_secret-cloud.json</includes>
+                                            <outputDirectory>${project.build.sourceDirectory}/../oauth-client-resources</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
@@ -162,6 +192,31 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>get-enterprise-secret</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.alfresco.integrations</groupId>
+                                            <artifactId>alfresco-GoogleDocs-AppSecrets</artifactId>
+                                            <version>${alfresco.google.app.secret.version}</version>
+                                            <type>jar</type>
+                                            <includes>client_secret-enterprise.json</includes>
+                                            <outputDirectory>${project.build.sourceDirectory}/../oauth-client-resources</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
@@ -192,6 +247,31 @@
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>get-community-secret</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.alfresco.integrations</groupId>
+                                            <artifactId>alfresco-GoogleDocs-AppSecrets</artifactId>
+                                            <version>${alfresco.google.app.secret.version}</version>
+                                            <type>jar</type>
+                                            <includes>client_secret-community.json</includes>
+                                            <outputDirectory>${project.build.sourceDirectory}/../oauth-client-resources</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
