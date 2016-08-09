@@ -43,8 +43,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.FileContent;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -119,11 +117,6 @@ import org.springframework.core.io.Resource;
 
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
- */
-
-
-/**
- * @author jottley
  */
 public class GoogleDocsServiceImpl
         implements GoogleDocsService
@@ -2354,7 +2347,7 @@ public class GoogleDocsServiceImpl
             String roleName = p.getRoleName(), authorityType = p.getAuthorityType();
             String role;
             String type;
-            List<String> additionalRoles = new ArrayList<String>();
+
             if (roleName.equals(GooglePermission.role.reader.toString()))
             {
                 role = GooglePermission.role.reader.toString();
@@ -2369,8 +2362,7 @@ public class GoogleDocsServiceImpl
             }
             else if (roleName.equals(GooglePermission.role.commenter.toString()))
             {
-                role = GooglePermission.role.reader.toString();
-                additionalRoles.add(GooglePermission.role.commenter.toString());
+                role = GooglePermission.role.commenter.toString();
             }
             else
             {
@@ -2402,7 +2394,7 @@ public class GoogleDocsServiceImpl
                 log.debug("Adding permission " + role + " for " + type + " " + p.getAuthorityId() + "");
             }
 
-            drive.permissions().create(file.getId(), new Permission().setRole(role).setType(type).setAdditionalRoles(additionalRoles).setValue(p.getAuthorityId())).execute();
+            drive.permissions().create(file.getId(), new Permission().setRole(role).setType(type).setEmailAddress(p.getAuthorityId())).execute();
         }
     }
 
