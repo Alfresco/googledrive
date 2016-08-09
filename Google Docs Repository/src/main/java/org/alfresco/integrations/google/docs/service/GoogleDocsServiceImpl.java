@@ -52,7 +52,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 import com.google.api.services.drive.model.Revision;
@@ -819,8 +818,8 @@ public class GoogleDocsServiceImpl
             File workingDir = createWorkingDirectory(credential, nodeRef);
 
             // Create the Google Document in the working directory
-            file = new File().setParents(Arrays.asList(new ParentReference().setId(workingDir.getId()))).setTitle(name).setMimeType(mimetype);
-            file = drive.files().insert(file).execute();
+            file = new File().setParents(Collections.singletonList(workingDir.getId()));
+            file = drive.files().create(file).execute();
 
             // Add temporary Node (with Content) to repository.
             ContentWriter writer = fileFolderService.getWriter(nodeRef);
@@ -875,8 +874,8 @@ public class GoogleDocsServiceImpl
             File workingDir = createWorkingDirectory(credential, nodeRef);
 
             // Create the Google Spreadsheet in the working directory
-            file = new File().setParents(Arrays.asList(new ParentReference().setId(workingDir.getId()))).setTitle(name).setMimeType(mimetype);
-            file = drive.files().insert(file).execute();
+            file = new File().setParents(Arrays.asList(workingDir.getId()));
+            file = drive.files().create(file).execute();
 
             // Add temporary Node (with Content) to the repository
             ContentWriter writer = fileFolderService.getWriter(nodeRef);
@@ -931,8 +930,8 @@ public class GoogleDocsServiceImpl
             File workingDir = createWorkingDirectory(credential, nodeRef);
 
             // Create the Google Document in the working directory
-            file = new File().setParents(Arrays.asList(new ParentReference().setId(workingDir.getId()))).setTitle(name).setMimeType(mimetype);
-            file = drive.files().insert(file).execute();
+            file = new File().setParents(Arrays.asList(workingDir.getId()));
+            file = drive.files().create(file).execute();
 
             // Add temporary Node (with Content) to repository
             ContentWriter writer = fileFolderService.getWriter(nodeRef);
@@ -987,7 +986,7 @@ public class GoogleDocsServiceImpl
             writer.setMimetype(mimetype);
             writer.putContent(inputstream);
 
-            renameNode(nodeRef, file.getTitle());
+            renameNode(nodeRef, file.getName());
 
             saveSharedInfo(credential, nodeRef, resourceID.substring(resourceID.lastIndexOf(':') + 1));
 
@@ -1101,7 +1100,7 @@ public class GoogleDocsServiceImpl
             writer.setMimetype(mimetype);
             writer.putContent(inputStream);
 
-            renameNode(nodeRef, file.getTitle());
+            renameNode(nodeRef, file.getName());
 
             saveSharedInfo(credential, nodeRef, resourceID.substring(resourceID.lastIndexOf(':') + 1));
 
@@ -1216,7 +1215,7 @@ public class GoogleDocsServiceImpl
             writer.setMimetype(mimetype);
             writer.putContent(inputStream);
 
-            renameNode(nodeRef, file.getTitle());
+            renameNode(nodeRef, file.getName());
 
             saveSharedInfo(credential, nodeRef, resourceID.substring(resourceID.lastIndexOf(':') + 1));
 
@@ -1329,10 +1328,10 @@ public class GoogleDocsServiceImpl
             // Create the working Directory
             File workingDir = createWorkingDirectory(credential, nodeRef);
 
-            file = new File().setParents(Arrays.asList(new ParentReference().setId(workingDir.getId()))).setTitle(fileInfo.getName()).setMimeType(mimetype);
+            file = new File().setParents(Collections.singletonList(workingDir.getId()));
 
             FileContent fileContent = new FileContent(mimetype, f);
-            file = drive.files().insert(file, fileContent).setConvert(true).execute();
+            file = drive.files().create(file, fileContent).execute();
         }
         catch (IOException ioe)
         {
@@ -1396,7 +1395,7 @@ public class GoogleDocsServiceImpl
                 if (forceRemoval)
                 {
                     log.debug("There was an error (" + gdse.getMessage() + ": " + gdse.getPassedStatusCode() + ") removing "
-                              + file.getTitle() + " from " + AuthenticationUtil.getFullyAuthenticatedUser()
+                              + file.getName() + " from " + AuthenticationUtil.getFullyAuthenticatedUser()
                               + "'s Google Account. Force Removal ignores the error.");
                 }
                 else
@@ -1544,7 +1543,7 @@ public class GoogleDocsServiceImpl
         try
         {
             RevisionList revisionList = drive.revisions().list(file.getId()).execute();
-            List<Revision> fileRevisions = revisionList.getItems();
+            List<Revision> fileRevisions = revisionList.getRevisions();
 
             if (fileRevisions != null)
             {
@@ -1613,8 +1612,8 @@ public class GoogleDocsServiceImpl
             Map<QName, Serializable> aspectProperties = new HashMap<QName, Serializable>();
             aspectProperties.put(GoogleDocsModel.PROP_CURRENT_PERMISSIONS, buildPermissionsPropertyValue(permissions));
             aspectProperties.put(GoogleDocsModel.PROP_RESOURCE_ID, file.getId());
-            aspectProperties.put(GoogleDocsModel.PROP_EDITORURL, file.getAlternateLink());
-            aspectProperties.put(GoogleDocsModel.PROP_DRIVE_WORKING_FOLDER, file.getParents().get(0).getId());
+            aspectProperties.put(GoogleDocsModel.PROP_EDITORURL, file.getWebViewLink());
+            aspectProperties.put(GoogleDocsModel.PROP_DRIVE_WORKING_FOLDER, file.getParents().get(0));
             if (revision != null)
             {
                 aspectProperties.put(GoogleDocsModel.PROP_REVISION_ID, revision.getId());
@@ -1976,7 +1975,7 @@ public class GoogleDocsServiceImpl
             try
             {
                 RevisionList revisionList = drive.revisions().list(resourceID.substring(resourceID.lastIndexOf(':') + 1)).execute();
-                List<Revision> revisions = revisionList.getItems();
+                List<Revision> revisions = revisionList.getRevisions();
 
                 if (revisions.size() > 1)
                 {
@@ -1994,7 +1993,7 @@ public class GoogleDocsServiceImpl
 
                     for (Revision entry : revisions)
                     {
-                        Date d = new Date(entry.getModifiedDate().getValue());
+                        Date d = new Date(entry.getModifiedTime().getValue());
                         if (d.after(new Date(bufferTime.getTimeInMillis())))
                         {
                             workingList.add(entry);
@@ -2057,7 +2056,7 @@ public class GoogleDocsServiceImpl
                             Calendar bufferTime = Calendar.getInstance();
                             bufferTime.add(Calendar.SECOND, -idleThreshold);
 
-                            Date dt = new Date(revisions.get(0).getModifiedDate().getValue());
+                            Date dt = new Date(revisions.get(0).getModifiedTime().getValue());
                             if (dt.before(new Date(bufferTime.getTimeInMillis())))
                             {
                                 log.debug("Revisions not made by current user found.");
@@ -2300,13 +2299,12 @@ public class GoogleDocsServiceImpl
             log.debug("Fetching permissions for file with resource ID " + resourceId);
             PermissionList permissionList = drive.permissions().list(resourceId.substring(resourceId.lastIndexOf(':') + 1)).execute();
 
-            for (Permission permission : permissionList.getItems())
+            for (Permission permission : permissionList.getPermissions())
             {
                 String role = permission.getRole(), scope = permission.getEmailAddress();
                 String type = permission.getType();
 
-                if (GooglePermission.role.reader.toString().equals(role) && permission.getAdditionalRoles() != null
-                    && permission.getAdditionalRoles().size() == 1)
+                if (GooglePermission.role.reader.toString().equals(role))
                 {
                     role = GooglePermission.role.commenter.toString();
                 }
@@ -2524,7 +2522,7 @@ public class GoogleDocsServiceImpl
                 log.debug("Adding permission " + role + " for " + type + " " + p.getAuthorityId() + "");
             }
 
-            drive.permissions().insert(file.getId(), new Permission().setRole(role).setType(type).setAdditionalRoles(additionalRoles).setValue(p.getAuthorityId())).execute();
+            drive.permissions().create(file.getId(), new Permission().setRole(role).setType(type).setAdditionalRoles(additionalRoles).setValue(p.getAuthorityId())).execute();
         }
     }
 
@@ -2698,8 +2696,8 @@ public class GoogleDocsServiceImpl
 
         try
         {
-            file = new File().setMimeType(GoogleDocsConstants.FOLDER_MIMETYPE).setParents(Arrays.asList(new ParentReference().setId(parentId))).setTitle(folderName).setDescription(description);
-            file = drive.files().insert(file).execute();
+            file = new File().setMimeType(GoogleDocsConstants.FOLDER_MIMETYPE).setParents(Collections.singletonList(parentId));
+            file = drive.files().create(file).execute();
         }
         catch (GoogleJsonResponseException e)
         {
@@ -2745,7 +2743,7 @@ public class GoogleDocsServiceImpl
                         fileList = request.setPageToken(fileList.getNextPageToken()).execute();
                     }
 
-                    List<File> childfolders = fileList.getItems();
+                    List<File> childfolders = fileList.getFiles();
                     if (childfolders != null && !childfolders.isEmpty())
                     {
                         files.addAll(childfolders);
