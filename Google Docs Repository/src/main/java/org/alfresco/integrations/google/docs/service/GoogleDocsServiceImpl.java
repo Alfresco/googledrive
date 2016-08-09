@@ -969,53 +969,7 @@ public class GoogleDocsServiceImpl
         credential = credential == null ? getCredential() : credential;
         Drive drive = getDriveApi(credential);
 
-        try
-        {
-            String mimetype = null;
-
-            mimetype = validateMimeType(fileFolderService.getFileInfo(nodeRef).getContentData().getMimetype());
-            log.debug("Current mimetype: " + fileFolderService.getFileInfo(nodeRef).getContentData().getMimetype()
-                      + "; Mimetype of Google Doc: " + mimetype);
-            log.debug("Export format: " + mimetype);
-
-            File file = drive.files().get(resourceID.substring(resourceID.lastIndexOf(':') + 1)).execute();
-
-            InputStream inputstream = getFileInputStream(credential, file, mimetype);
-
-            ContentWriter writer = fileFolderService.getWriter(nodeRef);
-            writer.setMimetype(mimetype);
-            writer.putContent(inputstream);
-
-            renameNode(nodeRef, file.getName());
-
-            saveSharedInfo(credential, nodeRef, resourceID.substring(resourceID.lastIndexOf(':') + 1));
-
-            if (removeFromDrive)
-            {
-                deleteContent(credential, nodeRef, file);
-            }
-            else
-            {
-                nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_REVISION_ID, getLatestRevision(credential, file).getId());
-            }
-
-            postActivity(nodeRef);
-
-            if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_TEMPORARY))
-            {
-                nodeService.removeAspect(nodeRef, ContentModel.ASPECT_TEMPORARY);
-                log.debug("Temporary Aspect Removed");
-            }
-        }
-        catch (GoogleJsonResponseException e)
-        {
-            throw new GoogleDocsServiceException(e.getMessage(), e.getStatusCode(), e);
-        }
-        catch (JSONException jsonException)
-        {
-            throw new GoogleDocsAuthenticationException(
-                    "Unable to create activity entry: " + jsonException.getMessage(), jsonException);
-        }
+        getDriveFileContent(credential, nodeRef, resourceID, removeFromDrive, drive);
     }
 
 
@@ -1083,6 +1037,14 @@ public class GoogleDocsServiceImpl
         credential = credential == null ? getCredential() : credential;
         Drive drive = getDriveApi(credential);
 
+        getDriveFileContent(credential, nodeRef, resourceID, removeFromDrive, drive);
+    }
+
+    private void getDriveFileContent(Credential credential, NodeRef nodeRef, String resourceID,
+        boolean removeFromDrive, Drive drive)
+        throws IOException, GoogleDocsAuthenticationException, GoogleDocsRefreshTokenException,
+        GoogleDocsServiceException
+    {
         try
         {
             String mimetype = null;
@@ -1094,7 +1056,8 @@ public class GoogleDocsServiceImpl
 
             File file = drive.files().get(resourceID.substring(resourceID.lastIndexOf(':') + 1)).execute();
 
-            InputStream inputStream = getFileInputStream(credential, file, mimetype);
+            Drive.Files.Export export = drive.files().export(file.getId(), mimetype);
+            InputStream inputStream = export.executeMediaAsInputStream();
 
             ContentWriter writer = fileFolderService.getWriter(nodeRef);
             writer.setMimetype(mimetype);
@@ -1131,7 +1094,6 @@ public class GoogleDocsServiceImpl
                     "Unable to create activity entry: " + jsonException.getMessage(), jsonException);
         }
     }
-
 
     public void getSpreadSheet(Credential credential, NodeRef nodeRef, boolean removeFromDrive)
             throws GoogleDocsAuthenticationException,
@@ -1198,53 +1160,7 @@ public class GoogleDocsServiceImpl
         credential = credential == null ? getCredential() : credential;
         Drive drive = getDriveApi(credential);
 
-        try
-        {
-            String mimetype = null;
-
-            mimetype = validateMimeType(fileFolderService.getFileInfo(nodeRef).getContentData().getMimetype());
-            log.debug("Current mimetype: " + fileFolderService.getFileInfo(nodeRef).getContentData().getMimetype()
-                      + "; Mimetype of Google Doc: " + mimetype);
-            log.debug("Export format: " + mimetype);
-
-            File file = drive.files().get(resourceID.substring(resourceID.lastIndexOf(':') + 1)).execute();
-
-            InputStream inputStream = getFileInputStream(credential, file, mimetype);
-
-            ContentWriter writer = fileFolderService.getWriter(nodeRef);
-            writer.setMimetype(mimetype);
-            writer.putContent(inputStream);
-
-            renameNode(nodeRef, file.getName());
-
-            saveSharedInfo(credential, nodeRef, resourceID.substring(resourceID.lastIndexOf(':') + 1));
-
-            if (removeFromDrive)
-            {
-                deleteContent(credential, nodeRef, file);
-            }
-            else
-            {
-                nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_REVISION_ID, getLatestRevision(credential, file).getId());
-            }
-
-            postActivity(nodeRef);
-
-            if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_TEMPORARY))
-            {
-                nodeService.removeAspect(nodeRef, ContentModel.ASPECT_TEMPORARY);
-                log.debug("Temporary Aspect Removed");
-            }
-        }
-        catch (GoogleJsonResponseException e)
-        {
-            throw new GoogleDocsServiceException(e.getMessage(), e.getStatusCode(),e);
-        }
-        catch (JSONException jsonException)
-        {
-            throw new GoogleDocsAuthenticationException(
-                    "Unable to create activity entry: " + jsonException.getMessage(), jsonException);
-        }
+        getDriveFileContent(credential, nodeRef, resourceID, removeFromDrive, drive);
     }
 
 
@@ -2138,42 +2054,6 @@ public class GoogleDocsServiceImpl
 
         return getDriveFile(credential, resourceID.substring(resourceID.lastIndexOf(':') + 1));
     }
-
-
-    private String getExportLink(File file, String mimetype)
-    {
-        Map<String, String> exportLinks = file.getExportLinks();
-
-        return exportLinks.get(validateMimeType(mimetype));
-    }
-
-
-    private InputStream getFileInputStream(Credential credential, File file, String mimetype)
-            throws GoogleDocsAuthenticationException,
-            GoogleDocsRefreshTokenException,
-            GoogleDocsServiceException,
-            IOException
-    {
-        //Get the users drive credential if not provided;
-        credential = credential == null ? getCredential() : credential;
-
-        Drive drive = getDriveApi(credential);
-
-        HttpResponse response;
-
-        String url = getExportLink(file, mimetype);
-        log.debug("Google Export Format (mimetype) link: " + url);
-
-        if (url == null)
-        {
-            throw new GoogleDocsServiceException("Google Docs Export Format not found.", HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE);
-        }
-
-        response = drive.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
-
-        return response.getContent();
-    }
-
 
     public User getDriveUser(Credential credential)
             throws GoogleDocsAuthenticationException,
