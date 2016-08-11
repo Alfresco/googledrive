@@ -2598,7 +2598,7 @@ public class GoogleDocsServiceImpl
         if (drive != null)
         {
             String query =
-                    "title = '" + folderName + "' and mimeType = '" + GoogleDocsConstants.FOLDER_MIMETYPE + "' and '" + parentId
+                    "name = '" + folderName + "' and mimeType = '" + GoogleDocsConstants.FOLDER_MIMETYPE + "' and '" + parentId
                     + "' in parents";
             log.debug("Get folder query string: " + query);
             Drive.Files.List request = drive.files().list().setQ(query);
