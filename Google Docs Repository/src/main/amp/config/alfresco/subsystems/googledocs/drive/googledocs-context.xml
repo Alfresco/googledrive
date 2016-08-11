@@ -302,14 +302,4 @@
             <value>${integration.googleDocs.idleThresholdSeconds}</value>
         </property>
     </bean>
-
-    <bean id="fileNameUtil" class="org.alfresco.integrations.google.docs.utils.FileNameUtil">
-        <property name="mimetypeService">
-            <ref bean="mimetypeService"/>
-        </property>
-        <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
-        </property>
-    </bean>
-
 </beans>
