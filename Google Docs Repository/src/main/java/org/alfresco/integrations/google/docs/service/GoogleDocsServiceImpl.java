@@ -166,6 +166,152 @@ public class GoogleDocsServiceImpl
     private static final String FILE_ADDED   = "org.alfresco.documentlibrary.file-added";
     private static final String FILE_UPDATED = "org.alfresco.documentlibrary.file-updated";
 
+    public void setImportFormats(Map<String, String> importFormats)
+    {
+        this.importFormats = importFormats;
+    }
+
+
+    public void setExportFormats(Map<String, Map<String, String>> exportFormats)
+    {
+        this.exportFormats = exportFormats;
+    }
+
+
+    public void setUpgradeMappings(Map<String, String> upgradeMappings)
+    {
+        this.upgradeMappings = upgradeMappings;
+    }
+
+
+    public void setDowngradeMappings(Map<String, String> downgradeMappings)
+    {
+        this.downgradeMappings = downgradeMappings;
+    }
+
+
+    public void setOauth2CredentialsStoreService(OAuth2CredentialsStoreService oauth2CredentialsStoreService)
+    {
+        this.oauth2CredentialsStoreService = oauth2CredentialsStoreService;
+    }
+
+
+    public void setFileFolderService(FileFolderService fileFolderService)
+    {
+        this.fileFolderService = fileFolderService;
+    }
+
+
+    public void setNodeService(NodeService nodeService)
+    {
+        this.nodeService = nodeService;
+    }
+
+
+    public void setLockService(LockService lockService)
+    {
+        this.lockservice = lockService;
+    }
+
+
+    public void setMimetypeService(MimetypeService mimetypeService)
+    {
+        this.mimetypeService = mimetypeService;
+    }
+
+
+    public void setBehaviourFilter(BehaviourFilter behaviourFilter)
+    {
+        this.behaviourFilter = behaviourFilter;
+    }
+
+
+    public void setActivityService(ActivityService activityService)
+    {
+        this.activityService = activityService;
+    }
+
+
+    public void setSiteService(SiteService siteService)
+    {
+        this.siteService = siteService;
+    }
+
+
+    public void setTenantService(TenantService tenantService)
+    {
+        this.tenantService = tenantService;
+    }
+
+
+    public void setPersonService(PersonService personService)
+    {
+        this.personService = personService;
+    }
+
+
+    public void setAuthorityService(AuthorityService authorityService)
+    {
+        this.authorityService = authorityService;
+    }
+
+
+    public void setDictionaryService(DictionaryService dictionaryService)
+    {
+        this.dictionaryService = dictionaryService;
+    }
+
+
+    public void setFileNameUtil(FileNameUtil fileNameUtil)
+    {
+        this.filenameUtil = fileNameUtil;
+    }
+
+
+    public Map<String, String> getImportFormats()
+    {
+        return importFormats;
+    }
+
+
+    public void setNewDocument(Resource newDocument)
+    {
+        this.newDocument = newDocument;
+    }
+
+
+    public void setNewSpreadsheet(Resource newSpreadsheet)
+    {
+        this.newSpreadsheet = newSpreadsheet;
+    }
+
+
+    public void setNewPresentation(Resource newPresentation)
+    {
+        this.newPresentation = newPresentation;
+    }
+
+
+    public void setIdleThreshold(int idleThreshold)
+    {
+        this.idleThreshold = idleThreshold;
+    }
+
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    public void init()
+        throws IOException
+    {
+        httpTransport = new NetHttpTransport();
+        jsonFactory = new JacksonFactory();
+
+        clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(GoogleDocsServiceImpl.class.getResourceAsStream("client_secret.json")));
+    }
+
     // Required fields from the response
     private static final String ALL_PROPERTY_FIELDS = "*";
 
@@ -2421,151 +2567,5 @@ public class GoogleDocsServiceImpl
                 log.debug("Google has reported an issue deleting the folder.  This is not a fatal issue. " + e.getDetails());
             }
         }
-    }
-
-    public void init()
-        throws IOException
-    {
-        httpTransport = new NetHttpTransport();
-        jsonFactory = new JacksonFactory();
-
-        clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(GoogleDocsServiceImpl.class.getResourceAsStream("client_secret.json")));
-    }
-
-    public void setImportFormats(Map<String, String> importFormats)
-    {
-        this.importFormats = importFormats;
-    }
-
-
-    public void setExportFormats(Map<String, Map<String, String>> exportFormats)
-    {
-        this.exportFormats = exportFormats;
-    }
-
-
-    public void setUpgradeMappings(Map<String, String> upgradeMappings)
-    {
-        this.upgradeMappings = upgradeMappings;
-    }
-
-
-    public void setDowngradeMappings(Map<String, String> downgradeMappings)
-    {
-        this.downgradeMappings = downgradeMappings;
-    }
-
-
-    public void setOauth2CredentialsStoreService(OAuth2CredentialsStoreService oauth2CredentialsStoreService)
-    {
-        this.oauth2CredentialsStoreService = oauth2CredentialsStoreService;
-    }
-
-
-    public void setFileFolderService(FileFolderService fileFolderService)
-    {
-        this.fileFolderService = fileFolderService;
-    }
-
-
-    public void setNodeService(NodeService nodeService)
-    {
-        this.nodeService = nodeService;
-    }
-
-
-    public void setLockService(LockService lockService)
-    {
-        this.lockservice = lockService;
-    }
-
-
-    public void setMimetypeService(MimetypeService mimetypeService)
-    {
-        this.mimetypeService = mimetypeService;
-    }
-
-
-    public void setBehaviourFilter(BehaviourFilter behaviourFilter)
-    {
-        this.behaviourFilter = behaviourFilter;
-    }
-
-
-    public void setActivityService(ActivityService activityService)
-    {
-        this.activityService = activityService;
-    }
-
-
-    public void setSiteService(SiteService siteService)
-    {
-        this.siteService = siteService;
-    }
-
-
-    public void setTenantService(TenantService tenantService)
-    {
-        this.tenantService = tenantService;
-    }
-
-
-    public void setPersonService(PersonService personService)
-    {
-        this.personService = personService;
-    }
-
-
-    public void setAuthorityService(AuthorityService authorityService)
-    {
-        this.authorityService = authorityService;
-    }
-
-
-    public void setDictionaryService(DictionaryService dictionaryService)
-    {
-        this.dictionaryService = dictionaryService;
-    }
-
-
-    public void setFileNameUtil(FileNameUtil fileNameUtil)
-    {
-        this.filenameUtil = fileNameUtil;
-    }
-
-
-    public Map<String, String> getImportFormats()
-    {
-        return importFormats;
-    }
-
-
-    public void setNewDocument(Resource newDocument)
-    {
-        this.newDocument = newDocument;
-    }
-
-
-    public void setNewSpreadsheet(Resource newSpreadsheet)
-    {
-        this.newSpreadsheet = newSpreadsheet;
-    }
-
-
-    public void setNewPresentation(Resource newPresentation)
-    {
-        this.newPresentation = newPresentation;
-    }
-
-
-    public void setIdleThreshold(int idleThreshold)
-    {
-        this.idleThreshold = idleThreshold;
-    }
-
-
-    public void setEnabled(boolean enabled)
-    {
-        this.enabled = enabled;
     }
 }
