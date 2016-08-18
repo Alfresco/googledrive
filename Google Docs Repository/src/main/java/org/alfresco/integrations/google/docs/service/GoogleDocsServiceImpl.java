@@ -1507,7 +1507,7 @@ public class GoogleDocsServiceImpl
     public void decorateNode(NodeRef nodeRef, File file, Revision revision, List<GooglePermission> permissions, boolean newcontent)
     {
         log.debug("Add Google Docs Aspect to " + nodeRef);
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (newcontent)
@@ -1546,7 +1546,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1560,7 +1560,7 @@ public class GoogleDocsServiceImpl
     public void unDecorateNode(NodeRef nodeRef)
     {
         log.debug("Remove Google Docs aspect from " + nodeRef);
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
@@ -1570,7 +1570,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1586,7 +1586,7 @@ public class GoogleDocsServiceImpl
             new Boolean("false").equals(nodeService.getProperty(nodeRef, GoogleDocsModel.PROP_LOCKED)))
         {
             log.debug("Lock Node " + nodeRef + " for Google Docs Editing");
-            behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.disableBehaviour(nodeRef);
             try
             {
                 nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_LOCKED, true);
@@ -1594,7 +1594,7 @@ public class GoogleDocsServiceImpl
             }
             finally
             {
-                behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+                behaviourFilter.enableBehaviour(nodeRef);
             }
         }
     }
@@ -1608,7 +1608,7 @@ public class GoogleDocsServiceImpl
     public void unlockNode(NodeRef nodeRef)
     {
         log.debug("Unlock Node " + nodeRef + " from Google Docs Editing");
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             lockservice.unlock(nodeRef);
@@ -1616,7 +1616,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1640,7 +1640,9 @@ public class GoogleDocsServiceImpl
             if (lockStatus.equals(LockStatus.NO_LOCK))
             {
                 // fix broken lock
+                behaviourFilter.disableBehaviour(nodeRef);
                 nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_LOCKED, false);
+                behaviourFilter.enableBehaviour(nodeRef);
             }
             else
             {
@@ -2246,7 +2248,7 @@ public class GoogleDocsServiceImpl
         aspectProperties.put(GoogleDocsModel.PROP_PERMISSIONS, permissionsList);
         log.debug("File permissions: " + permissionsList);
 
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_SHARED_IN_GOOGLE))
@@ -2262,7 +2264,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
