@@ -1599,7 +1599,7 @@ public class GoogleDocsServiceImpl
     public void decorateNode(NodeRef nodeRef, File file, Revision revision, List<GooglePermission> permissions, boolean newcontent)
     {
         log.debug("Add Google Docs Aspect to " + nodeRef);
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (newcontent)
@@ -1638,7 +1638,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1652,7 +1652,7 @@ public class GoogleDocsServiceImpl
     public void unDecorateNode(NodeRef nodeRef)
     {
         log.debug("Remove Google Docs aspect from " + nodeRef);
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
@@ -1662,7 +1662,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1678,7 +1678,7 @@ public class GoogleDocsServiceImpl
             new Boolean("false").equals(nodeService.getProperty(nodeRef, GoogleDocsModel.PROP_LOCKED)))
         {
             log.debug("Lock Node " + nodeRef + " for Google Docs Editing");
-            behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.disableBehaviour(nodeRef);
             try
             {
                 nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_LOCKED, true);
@@ -1686,7 +1686,7 @@ public class GoogleDocsServiceImpl
             }
             finally
             {
-                behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+                behaviourFilter.enableBehaviour(nodeRef);
             }
         }
     }
@@ -1700,7 +1700,7 @@ public class GoogleDocsServiceImpl
     public void unlockNode(NodeRef nodeRef)
     {
         log.debug("Unlock Node " + nodeRef + " from Google Docs Editing");
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             lockservice.unlock(nodeRef);
@@ -1708,7 +1708,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
@@ -1732,7 +1732,9 @@ public class GoogleDocsServiceImpl
             if (lockStatus.equals(LockStatus.NO_LOCK))
             {
                 // fix broken lock
+                behaviourFilter.disableBehaviour(nodeRef);
                 nodeService.setProperty(nodeRef, GoogleDocsModel.PROP_LOCKED, false);
+                behaviourFilter.enableBehaviour(nodeRef);
             }
             else
             {
@@ -1847,7 +1849,7 @@ public class GoogleDocsServiceImpl
     private String MSofficeExtensionHandler(String name, String office2007Pattern, String office1997Pattern,
             String office2007extension)
     {
-        Pattern pattern = Pattern.compile(office1997Pattern);
+        Pattern pattern = Pattern.compile(office1997Pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(name);
 
         if (matcher.find())
@@ -1857,7 +1859,7 @@ public class GoogleDocsServiceImpl
         }
         else
         {
-            Pattern _pattern = Pattern.compile(office2007Pattern);
+            Pattern _pattern = Pattern.compile(office2007Pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
             Matcher _matcher = _pattern.matcher(name);
 
             if (!_matcher.find())
@@ -1905,12 +1907,12 @@ public class GoogleDocsServiceImpl
         }
         else if (mimetype.equals("application/vnd.oasis.opendocument.text"))
         {
-            Pattern odt_pattern = Pattern.compile("\\.odt$");
+            Pattern odt_pattern = Pattern.compile("\\.odt$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
             Matcher odt_matcher = odt_pattern.matcher(name);
 
             if (!odt_matcher.find())
             {
-                Pattern sxw_pattern = Pattern.compile("\\.sxw$");
+                Pattern sxw_pattern = Pattern.compile("\\.sxw$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
                 Matcher sxw_matcher = sxw_pattern.matcher(name);
 
                 if (sxw_matcher.find())
@@ -2375,7 +2377,7 @@ public class GoogleDocsServiceImpl
         aspectProperties.put(GoogleDocsModel.PROP_PERMISSIONS, permissionsList);
         log.debug("File permissions: " + permissionsList);
 
-        behaviourFilter.disableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+        behaviourFilter.disableBehaviour(nodeRef);
         try
         {
             if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_SHARED_IN_GOOGLE))
@@ -2391,7 +2393,7 @@ public class GoogleDocsServiceImpl
         }
         finally
         {
-            behaviourFilter.enableBehaviour(nodeRef, ContentModel.ASPECT_VERSIONABLE);
+            behaviourFilter.enableBehaviour(nodeRef);
         }
     }
 
