@@ -198,6 +198,9 @@
                 <entry key="text/csv">
                     <value>spreadsheet</value>
                 </entry>
+                <entry key="text/rtf">
+                    <value>document</value>
+                </entry>
                 <entry key="application/x-vnd.oasis.opendocument.spreadsheet">
                     <value>spreadsheet</value>
                 </entry>
