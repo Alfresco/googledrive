@@ -198,6 +198,9 @@
                 <entry key="text/csv">
                     <value>spreadsheet</value>
                 </entry>
+                <entry key="text/rtf">
+                    <value>document</value>
+                </entry>
                 <entry key="application/x-vnd.oasis.opendocument.spreadsheet">
                     <value>spreadsheet</value>
                 </entry>
@@ -302,14 +305,4 @@
             <value>${integration.googleDocs.idleThresholdSeconds}</value>
         </property>
     </bean>
-
-    <bean id="fileNameUtil" class="org.alfresco.integrations.google.docs.utils.FileNameUtil">
-        <property name="mimetypeService">
-            <ref bean="mimetypeService"/>
-        </property>
-        <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
-        </property>
-    </bean>
-
 </beans>
