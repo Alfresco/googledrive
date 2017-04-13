@@ -106,32 +106,26 @@
 
     <profiles>
         <profile>
+            <id>config</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.integrations</groupId>
+                    <artifactId>alfresco-googledocs-config</artifactId>
+                    <version>${alfresco.google.config.version}</version>
+                    <classifier>${alfresco.google.config.classifier}</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>cloud</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
+                <alfresco.google.config.classifier>cloud</alfresco.google.config.classifier>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-cloud</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-cloud.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
                 <resources>
                     <resource>
                         <targetPath>${app.amp.output.folder}</targetPath>
@@ -157,30 +151,8 @@
             <id>enterprise</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
+                <alfresco.google.config.classifier>enterprise</alfresco.google.config.classifier>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-enterprise</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-enterprise.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>community</id>
@@ -191,27 +163,6 @@
                 <alfresco.version>${alfresco-community.version}</alfresco.version>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-community</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-community.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
                 <resources>
                     <resource>
                         <targetPath>${app.amp.output.folder}</targetPath>
