@@ -85,13 +85,6 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>src/main/resources/org/alfresco/integrations/google/docs/service</directory>
-                            <includes>
-                                <include>**/client_secret.json</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
                             <directory>src/main/amp/config/alfresco/subsystems/googledocs/drive</directory>
                             <includes>
                                 <include>**/google-customResponse-context.xml</include>
@@ -107,9 +100,6 @@
     <profiles>
         <profile>
             <id>config</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.alfresco.integrations</groupId>
@@ -137,12 +127,6 @@
                         <excludes>
                             <exclude>config/alfresco/enterprise/**</exclude>
                         </excludes>
-                    </resource>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <includes>
-                            <include>org/alfresco/integrations/google/docs/service/client_secret.json</include>
-                        </includes>
                     </resource>
                 </resources>
             </build>
@@ -173,12 +157,6 @@
                         <excludes>
                             <exclude>config/alfresco/enterprise/**</exclude>
                         </excludes>
-                    </resource>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <includes>
-                            <include>org/alfresco/integrations/google/docs/service/client_secret.json</include>
-                        </includes>
                     </resource>
                 </resources>
             </build>
