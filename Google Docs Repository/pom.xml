@@ -3,18 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledocs-repo</artifactId>
-    <version>3.0.3-${buildnumber}</version>
+    <version>3.0.4-SNAPSHOT</version>
     <packaging>amp</packaging>
     <name>Alfresco / Google Docs Repo Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.0.3-${buildnumber}</version>
+        <version>3.0.4-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <project.build.finalName>${project.build.finalName}-${buildnumber}.amp</project.build.finalName>
+        <project.build.finalName>${project.build.finalName}-SNAPSHOT.amp</project.build.finalName>
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
     </properties>
 
@@ -22,6 +22,12 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
@@ -31,6 +37,14 @@
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava-jdk5</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -71,13 +85,6 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>src/main/resources/org/alfresco/integrations/google/docs/service</directory>
-                            <includes>
-                                <include>**/client_secret.json</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
                             <directory>src/main/amp/config/alfresco/subsystems/googledocs/drive</directory>
                             <includes>
                                 <include>**/google-customResponse-context.xml</include>
@@ -92,32 +99,23 @@
 
     <profiles>
         <profile>
+            <id>config</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.integrations</groupId>
+                    <artifactId>alfresco-googledocs-config</artifactId>
+                    <version>${alfresco.google.config.version}</version>
+                    <classifier>${alfresco.google.config.classifier}</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>cloud</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
+                <alfresco.google.config.classifier>cloud</alfresco.google.config.classifier>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-cloud</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-cloud.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
                 <resources>
                     <resource>
                         <targetPath>${app.amp.output.folder}</targetPath>
@@ -130,12 +128,6 @@
                             <exclude>config/alfresco/enterprise/**</exclude>
                         </excludes>
                     </resource>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <includes>
-                            <include>org/alfresco/integrations/google/docs/service/client_secret.json</include>
-                        </includes>
-                    </resource>
                 </resources>
             </build>
         </profile>
@@ -143,30 +135,8 @@
             <id>enterprise</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
+                <alfresco.google.config.classifier>enterprise</alfresco.google.config.classifier>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-enterprise</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-enterprise.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>community</id>
@@ -177,27 +147,6 @@
                 <alfresco.version>${alfresco-community.version}</alfresco.version>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>include-client-secret-community</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="src/main/oauth-client-resources/client_secret-community.json"
-                                              tofile="src/main/resources/org/alfresco/integrations/google/docs/service/client_secret.json"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
                 <resources>
                     <resource>
                         <targetPath>${app.amp.output.folder}</targetPath>
@@ -209,19 +158,13 @@
                             <exclude>config/alfresco/enterprise/**</exclude>
                         </excludes>
                     </resource>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <includes>
-                            <include>org/alfresco/integrations/google/docs/service/client_secret.json</include>
-                        </includes>
-                    </resource>
                 </resources>
             </build>
         </profile>
         <profile>
             <id>42</id>
             <properties>
-                <alfresco-community.version>4.2.e</alfresco-community.version>
+                <alfresco-community.version>4.2.f</alfresco-community.version>
                 <alfresco-enterprise.version>4.2.0</alfresco-enterprise.version>
                 <alfresco.min.version>4.2.0</alfresco.min.version>
                 <alfresco.max.version>4.2.3</alfresco.max.version>
@@ -269,7 +212,6 @@
         <profile>
             <id>424</id>
             <properties>
-                <alfresco-community.version>4.2.f</alfresco-community.version>
                 <alfresco-enterprise.version>4.2.4</alfresco-enterprise.version>
                 <alfresco.min.version>4.2.4</alfresco.min.version>
                 <alfresco.max.version>4.99.99</alfresco.max.version>
@@ -283,6 +225,27 @@
             </dependencies>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                          <execution>
+                            <id>if-community-is-passed</id>
+                            <goals>
+                              <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                              <rules>
+                                <requireActiveProfile>
+                                  <profiles>enterprise,424</profiles>
+                                  <all>true</all>
+                                </requireActiveProfile>
+                              </rules>
+                            </configuration>
+                          </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.alfresco.maven.plugin</groupId>
                         <artifactId>alfresco-maven-plugin</artifactId>

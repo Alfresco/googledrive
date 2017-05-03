@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.model.File;
 import org.alfresco.integrations.google.docs.GoogleDocsConstants;
@@ -30,6 +31,7 @@ import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthentication
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
+import org.alfresco.integrations.google.docs.utils.FileNameUtil;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
@@ -57,16 +59,17 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 public class DiscardContent
     extends GoogleDocsWebScripts
 {
-    private static final Log    log               = LogFactory.getLog(DiscardContent.class);
+    private static final Log log = LogFactory.getLog(DiscardContent.class);
 
-    private GoogleDocsService   googledocsService;
-    private TransactionService  transactionService;
-    private SiteService         siteService;
+    private GoogleDocsService  googledocsService;
+    private TransactionService transactionService;
+    private SiteService        siteService;
+    private FileNameUtil       fileNameUtil;
 
     private static final String JSON_KEY_NODEREF  = "nodeRef";
     private static final String JSON_KEY_OVERRIDE = "override";
 
-    private static final String MODEL_SUCCESS     = "success";
+    private static final String MODEL_SUCCESS = "success";
 
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
@@ -91,6 +94,13 @@ public class DiscardContent
     {
         this.siteService = siteService;
     }
+
+
+    public void setFileNameUtil(FileNameUtil fileNameUtil)
+    {
+        this.fileNameUtil = fileNameUtil;
+    }
+
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -123,18 +133,7 @@ public class DiscardContent
                         //Is the node in a site?
                         if (pathElement.equals(GoogleDocsConstants.ALF_SITES_PATH_FQNS_ELEMENT))
                         {
-                            try
-                            {
-                                siteInfo = siteService.getSite(nodeRef);
-                            }
-                            catch (org.alfresco.repo.security.permissions.AccessDeniedException e)
-                            {
-                                // When the user does not have permission to access the site node
-                                // We can't get the name of the site that the node is located in
-                                // So we can't place it in a site specific folder.
-                                // It will be placed in the root of the Working Directory
-                                log.debug("User does not have access to the containing sites info.  The document will be deleted from the root of the working directory. {" + nodeRef.toString() + "}");
-                            }
+                            siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
                         }
                         //The second part of this test maybe too exclusive.  What if the user has write permissions to the node
                         // but not membership in the containing site? Should the test just ask if the user has write permission
@@ -172,13 +171,26 @@ public class DiscardContent
                                 {
                                     deletedAsUser = delete(null, nodeRef);
                                 }
-                                catch (GoogleDocsServiceException e)
+                                // If we are unable to delete the document from Drive (because we no longer have permission) we still need to unlock the document
+                                // and clean up (undecorate) the node.
+                                catch (GoogleDocsServiceException | GoogleDocsAuthenticationException e)
                                 {
                                     Throwable thrown = e.getCause();
 
-                                    if (thrown != null && thrown instanceof GoogleJsonResponseException)
+                                    if (thrown != null && (thrown instanceof GoogleJsonResponseException || thrown instanceof TokenResponseException))
                                     {
-                                        if (((GoogleJsonResponseException)thrown).getStatusCode() == HttpStatus.SC_UNAUTHORIZED)
+                                        Integer status = 0;
+
+                                        if (thrown instanceof GoogleJsonResponseException)
+                                        {
+                                            status = ((GoogleJsonResponseException)thrown).getStatusCode();
+                                        }
+                                        else if (thrown instanceof TokenResponseException)
+                                        {
+                                            status = ((TokenResponseException)thrown).getStatusCode();
+                                        }
+
+                                        if (status == HttpStatus.SC_UNAUTHORIZED || status == HttpStatus.SC_BAD_REQUEST)
                                         {
                                             log.info("Unable to access " + nodeRef +" as " + lockOwner);
                                             googledocsService.unlockNode(nodeRef);
@@ -189,8 +201,16 @@ public class DiscardContent
                                                 nodeService.deleteNode(nodeRef);
                                             }
                                         }
+                                        else
+                                        {
+                                            throw e;
+                                        }
 
                                         deletedAsUser =  true;
+                                    }
+                                    else
+                                    {
+                                        throw e;
                                     }
                                 }
                                 catch (IllegalStateException e)

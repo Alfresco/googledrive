@@ -3,16 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Load the Model -->
-    <bean id="googledocsModel.dictionaryBootstrap" parent="dictionaryModelBootstrap"
-          depends-on="dictionaryBootstrap">
-        <property name="models">
-            <list>
-                <value>alfresco/subsystems/googledocs/drive/googledocs-model.xml</value>
-            </list>
-        </property>
-    </bean>
-
     <import resource="google-customResponse-context.xml" />
 
     <!-- Googledocs Service -->
@@ -25,8 +15,6 @@
         </property>
         <property name="interceptorNames">
             <list>
-                <idref bean="googledocsServiceReadTxnAdvisor"/>
-                <idref bean="googledocsServiceWriteTxnAdvisor"/>
                 <idref bean="AuditMethodInterceptor"/>
                 <idref bean="exceptionTranslator"/>
                 <idref bean="googledocsService_security"/>
@@ -83,52 +71,6 @@
         </property>
     </bean>
 
-    <bean id="googledocsServiceReadTxnAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
-        <property name="advice">
-            <ref bean="retryingReadTxnAdvice"/>
-        </property>
-        <property name="mappedNames">
-            <list>
-                <value>isAuthenticated</value>
-                <value>getCredential</value>
-                <value>getDriveUser</value>
-                <value>getDriveFile</value>
-                <value>getContentType</value>
-                <value>isGoogleDocsLockOwner</value>
-                <value>isLockedByGoogleDocs</value>
-                <value>getGoogleDocsLockOwner</value>
-                <value>getDocumentListEntry</value>
-                <value>getLatestRevision</value>
-                <value>getGooglePermissions</value>
-                <value>isSiteManager</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="googledocsServiceWriteTxnAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
-        <property name="advice">
-            <ref bean="retryingWriteTxnAdvice"/>
-        </property>
-        <property name="mappedNames">
-            <list>
-                <value>getCredential</value>
-                <value>completeAuthentication</value>
-                <value>createDocument</value>
-                <value>createSpreadSheet</value>
-                <value>createPresentation</value>
-                <value>decorateNode</value>
-                <value>unDecorateNode</value>
-                <value>getDocument</value>
-                <value>getSpreadSheet</value>
-                <value>getPresentation</value>
-                <value>uploadFile</value>
-                <value>lockNode</value>
-                <value>unlockNode</value>
-                <value>deleteContent</value>
-                <value>removeContent</value>
-            </list>
-        </property>
-    </bean>
 
     <bean id="googledocsService"
           class="org.alfresco.integrations.google.docs.service.GoogleDocsServiceImpl" init-method="init">
@@ -207,6 +149,9 @@
                 </entry>
                 <entry key="text/csv">
                     <value>spreadsheet</value>
+                </entry>
+                <entry key="text/rtf">
+                    <value>document</value>
                 </entry>
                 <entry key="application/x-vnd.oasis.opendocument.spreadsheet">
                     <value>spreadsheet</value>
@@ -312,23 +257,4 @@
             <value>${integration.googleDocs.idleThresholdSeconds}</value>
         </property>
     </bean>
-
-    <bean id="fileNameUtil" class="org.alfresco.integrations.google.docs.utils.FileNameUtil">
-        <property name="mimetypeService">
-            <ref bean="mimetypeService"/>
-        </property>
-        <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
-        </property>
-    </bean>
-
-    <bean id="editinginGoogleAspect" class="org.alfresco.integrations.google.docs.model.EditingInGoogleAspect" init-method="init">
-        <property name="policyComponent">
-            <ref bean="policyComponent"/>
-        </property>
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-    </bean>
-
 </beans>

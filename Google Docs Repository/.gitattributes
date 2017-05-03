@@ -1,0 +1,2 @@
+#ensure properties files use a unix line separator on checkout
+*.properties text eol=lf
