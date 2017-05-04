@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -171,6 +172,8 @@ public class GoogleDocsServiceImpl
 
     private boolean enabled = true;
 
+    private String clientSecret;
+
     // Activities
     private static final String FILE_ADDED   = "org.alfresco.documentlibrary.file-added";
     private static final String FILE_UPDATED = "org.alfresco.documentlibrary.file-updated";
@@ -311,6 +314,16 @@ public class GoogleDocsServiceImpl
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+
+    public void setClientSecret(String clientSecret)
+            throws GoogleDocsServiceException
+    {
+        if (validateClientSecret(clientSecret))
+        {
+            this.clientSecret = clientSecret;
+        }
     }
 
 
@@ -473,7 +486,14 @@ public class GoogleDocsServiceImpl
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
 
-        clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(GoogleDocsServiceImpl.class.getResourceAsStream("client_secret.json")));
+        if (StringUtils.isBlank(clientSecret))
+        {
+            clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(GoogleDocsServiceImpl.class.getResourceAsStream("client_secret.json")));
+        }
+        else
+        {
+            clientSecrets = GoogleClientSecrets.load(jsonFactory, new StringReader(clientSecret));
+        }
     }
 
 
@@ -702,7 +722,8 @@ public class GoogleDocsServiceImpl
      * @return The complete oauth authentication url
      */
     public String getAuthenticateUrl(String state)
-            throws IOException
+            throws IOException,
+            GoogleDocsServiceException
     {
         String authenticateUrl = null;
 
@@ -712,11 +733,11 @@ public class GoogleDocsServiceImpl
 
             if (StringUtils.isBlank(getGoogleUserName()))
             {
-                urlBuilder = getFlow().newAuthorizationUrl().setRedirectUri(GoogleDocsConstants.REDIRECT_URI).setState(state);
+                urlBuilder = getFlow().newAuthorizationUrl().setRedirectUri(getRedirectUri()).setState(state);
             }
             else
             {
-                urlBuilder = getFlow().newAuthorizationUrl().setRedirectUri(GoogleDocsConstants.REDIRECT_URI).setState(state).set("login_hint", getGoogleUserName());
+                urlBuilder = getFlow().newAuthorizationUrl().setRedirectUri(getRedirectUri()).setState(state).set("login_hint", getGoogleUserName());
             }
 
             authenticateUrl = urlBuilder.build();
@@ -741,7 +762,7 @@ public class GoogleDocsServiceImpl
     {
         boolean authenticationComplete = false;
 
-        GoogleTokenResponse response = getFlow().newTokenRequest(authorizationCode).setRedirectUri(GoogleDocsConstants.REDIRECT_URI).execute();
+        GoogleTokenResponse response = getFlow().newTokenRequest(authorizationCode).setRedirectUri(getRedirectUri()).execute();
 
         try
         {
@@ -2804,6 +2825,57 @@ public class GoogleDocsServiceImpl
             {
                 log.debug("Google has reported an issue deleting the folder.  This is not a fatal issue. " + e.getDetails());
             }
+        }
+    }
+
+
+    /**
+     * Validate that client secret is valid json
+     *
+     * @param clientSecret
+     * @return
+     */
+    private boolean validateClientSecret(String clientSecret)
+            throws GoogleDocsServiceException
+    {
+        try
+        {
+            if (StringUtils.isNotBlank(clientSecret))
+            {
+                //String escaped = JSONObject.quote(clientSecret);
+                new JSONObject(clientSecret.trim());
+                return true;
+            }
+        }
+        catch (JSONException e)
+        {
+           log.debug("Client Secret is not valid json. " + e.getMessage());
+            throw new GoogleDocsServiceException("Invalid Client Secret.");
+        }
+
+        return false;
+    }
+
+    private String getRedirectUri()
+            throws GoogleDocsServiceException
+    {
+        if (StringUtils.isNotBlank(clientSecret))
+        {
+            try
+            {
+                JSONObject json = new JSONObject(clientSecret);
+
+                return String.valueOf(json.getJSONObject(GoogleDocsConstants.CLIENT_SECRET_WEB).getJSONArray(GoogleDocsConstants.CLIENT_SECRET_REDIRECT_URIS).get(0));
+            }
+            catch (JSONException e)
+            {
+                log.debug("Unable to parse the Client Secret. " + e.getMessage());
+                throw new GoogleDocsServiceException(e);
+            }
+        }
+        else
+        {
+            return GoogleDocsConstants.REDIRECT_URI;
         }
     }
 }
