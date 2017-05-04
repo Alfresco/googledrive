@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.model.File;
 import org.alfresco.integrations.google.docs.GoogleDocsConstants;
@@ -170,13 +171,26 @@ public class DiscardContent
                                 {
                                     deletedAsUser = delete(null, nodeRef);
                                 }
-                                catch (GoogleDocsServiceException e)
+                                // If we are unable to delete the document from Drive (because we no longer have permission) we still need to unlock the document
+                                // and clean up (undecorate) the node.
+                                catch (GoogleDocsServiceException | GoogleDocsAuthenticationException e)
                                 {
                                     Throwable thrown = e.getCause();
 
-                                    if (thrown != null && thrown instanceof GoogleJsonResponseException)
+                                    if (thrown != null && (thrown instanceof GoogleJsonResponseException || thrown instanceof TokenResponseException))
                                     {
-                                        if (((GoogleJsonResponseException)thrown).getStatusCode() == HttpStatus.SC_UNAUTHORIZED)
+                                        Integer status = 0;
+
+                                        if (thrown instanceof GoogleJsonResponseException)
+                                        {
+                                            status = ((GoogleJsonResponseException)thrown).getStatusCode();
+                                        }
+                                        else if (thrown instanceof TokenResponseException)
+                                        {
+                                            status = ((TokenResponseException)thrown).getStatusCode();
+                                        }
+
+                                        if (status == HttpStatus.SC_UNAUTHORIZED || status == HttpStatus.SC_BAD_REQUEST)
                                         {
                                             log.info("Unable to access " + nodeRef +" as " + lockOwner);
                                             googledocsService.unlockNode(nodeRef);
@@ -187,8 +201,16 @@ public class DiscardContent
                                                 nodeService.deleteNode(nodeRef);
                                             }
                                         }
+                                        else
+                                        {
+                                            throw e;
+                                        }
 
                                         deletedAsUser =  true;
+                                    }
+                                    else
+                                    {
+                                        throw e;
                                     }
                                 }
                                 catch (IllegalStateException e)

@@ -624,11 +624,11 @@ public class GoogleDocsServiceImpl
 
                 success = credential.refreshToken();
             }
-            catch (GoogleJsonResponseException e)
+            catch (GoogleJsonResponseException | TokenResponseException e)
             {
                 if (e.getStatusCode() == HttpStatus.SC_BAD_REQUEST)
                 {
-                    throw new GoogleDocsAuthenticationException(e.getMessage());
+                    throw new GoogleDocsAuthenticationException(e.getMessage(), e);
                 }
                 else if (e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED)
                 {
