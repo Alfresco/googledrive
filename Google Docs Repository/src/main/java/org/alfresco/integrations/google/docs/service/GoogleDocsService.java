@@ -65,7 +65,8 @@ public interface GoogleDocsService
      */
     @Auditable(parameters = { "state" })
     public String getAuthenticateUrl(String state)
-        throws IOException;
+        throws IOException,
+        GoogleDocsServiceException;
 
 
     /**

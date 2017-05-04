@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.integrations.google.docs.GoogleDocsModel;
+import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.httpclient.HttpStatus;
@@ -99,9 +100,9 @@ public class AuthURL
                 model.put(MODEL_PERMISSIONS, permissions); // permissions may be null
             }
         }
-        catch(IOException ioe)
+        catch(IOException | GoogleDocsServiceException e)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         model.put(MODEL_AUTHENTICATED, authenticated);
