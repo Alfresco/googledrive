@@ -98,7 +98,7 @@
     </build>
 
     <profiles>
-        <profile>
+        <!--<profile>
             <id>config</id>
             <dependencies>
                 <dependency>
@@ -108,13 +108,20 @@
                     <classifier>${alfresco.google.config.classifier}</classifier>
                 </dependency>
             </dependencies>
-        </profile>
+        </profile>-->
         <profile>
             <id>cloud</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
                 <alfresco.google.config.classifier>cloud</alfresco.google.config.classifier>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.integrations</groupId>
+                    <artifactId>alfresco-googledocs-cloud-config</artifactId>
+                    <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
             <build>
                 <resources>
                     <resource>
@@ -137,6 +144,13 @@
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
                 <alfresco.google.config.classifier>enterprise</alfresco.google.config.classifier>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.integrations</groupId>
+                    <artifactId>alfresco-googledocs-enterprise-config</artifactId>
+                    <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>community</id>
@@ -146,6 +160,13 @@
             <properties>
                 <alfresco.version>${alfresco-community.version}</alfresco.version>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.integrations</groupId>
+                    <artifactId>alfresco-googledocs-community-config</artifactId>
+                    <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
             <build>
                 <resources>
                     <resource>
