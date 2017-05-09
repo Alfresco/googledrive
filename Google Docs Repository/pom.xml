@@ -3,18 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledocs-repo</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>3.0.4</version>
     <packaging>amp</packaging>
     <name>Alfresco / Google Docs Repo Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.0.4-SNAPSHOT</version>
+        <version>3.0.4</version>
     </parent>
 
     <properties>
-        <project.build.finalName>${project.build.finalName}-SNAPSHOT.amp</project.build.finalName>
+        <project.build.finalName>${project.build.finalName}-${buildnumber}.amp</project.build.finalName>
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
     </properties>
 
