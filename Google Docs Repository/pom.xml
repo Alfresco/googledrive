@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.0.4</version>
+        <version>3.0.4.1</version>
     </parent>
 
     <properties>
