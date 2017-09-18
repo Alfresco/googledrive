@@ -19,7 +19,7 @@
       <alfresco-community.version>5.0.c</alfresco-community.version>
       <alfresco-enterprise.version>5.0</alfresco-enterprise.version>
       <alfresco.min.version>5.0.0</alfresco.min.version>
-      <alfresco.max.version>5.99.99</alfresco.max.version>
+      <alfresco.max.version>6.99.99</alfresco.max.version>
       <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId>
       <alfresco.client.war.version>${alfresco-community.version}</alfresco.client.war.version>
       <alfresco.google.config.version>1.0.0-SNAPSHOT</alfresco.google.config.version>
