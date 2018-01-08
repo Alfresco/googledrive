@@ -6,7 +6,7 @@ Description
 
 This extension adds the ability to edit supported content items in Google Docs&trade; to the Alfresco repository and Share interface.
 
-When building from source you must include your own google OAuth client secret json file. Instructions for creating it can be found at [https://developers.google.com/drive/web/auth/web-server#create_a_client_id_and_client_secret]()
+When building from source you must include your own Google OAuth client secret json file. Instructions for creating it can be found at [Google Drive REST API - Authorizing requests with OAuth 2.0](https://developers.google.com/drive/v3/web/about-auth).
 
 The content of the generated file should be added to the appropriate `client_secret-{community,enterprise}.json` file found in `Google Docs Repository/src/main/oauth-client-resources/`.
 
