@@ -164,7 +164,7 @@ public class CreateContent
             googledocsService.lockNode(newNode);
 
             model.put(MODEL_NODEREF, newNode.toString());
-            model.put(MODEL_EDITOR_URL, file.getAlternateLink());
+            model.put(MODEL_EDITOR_URL, file.getWebViewLink());
 
         }
         else
