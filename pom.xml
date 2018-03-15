@@ -28,6 +28,13 @@
       <java.version>1.7</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
+
+      <maven.distributionManagement.snapshot.url>
+         https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots
+      </maven.distributionManagement.snapshot.url>
+      <maven.distributionManagement.release.url>
+         https://artifacts.alfresco.com/nexus/content/repositories/internal-releases
+      </maven.distributionManagement.release.url>
    </properties>
 
    <dependencyManagement>
@@ -46,5 +53,17 @@
       <module>Google Docs Repository</module>
       <module>Google Docs Share</module>
    </modules>
+
+   <distributionManagement>
+      <!-- For now internal repositories -->
+      <repository>
+         <id>alfresco-internal</id>
+         <url>${maven.distributionManagement.release.url}</url>
+      </repository>
+      <snapshotRepository>
+         <id>alfresco-internal-snapshots</id>
+         <url>${maven.distributionManagement.snapshot.url}</url>
+      </snapshotRepository>
+   </distributionManagement>
 
 </project>
