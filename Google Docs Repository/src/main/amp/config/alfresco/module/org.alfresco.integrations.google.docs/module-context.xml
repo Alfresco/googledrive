@@ -16,44 +16,24 @@
     <!-- Google Docs default subsystem -->
     <bean id="googledocs_drive" class="org.alfresco.repo.management.subsystems.ChildApplicationContextFactory"
           parent="abstractPropertyBackedBean">
-        <property name="category">
-            <value>googledocs</value>
-        </property>
-        <property name="typeName">
-            <value>drive</value>
-        </property>
-        <property name="instancePath">
-            <value>drive</value>
-        </property>
-        <property name="autoStart">
-            <value>true</value>
-        </property>
+        <property name="category" value="googledocs"/>
+        <property name="typeName" value="drive"/>
+        <property name="instancePath" value="drive"/>
+        <property name="autoStart" value="true"/>
     </bean>
 
     <!-- Policy/Behaviors -->
     <bean id="editinginGoogleAspect" class="org.alfresco.integrations.google.docs.model.EditingInGoogleAspect" init-method="init">
-        <property name="policyComponent">
-            <ref bean="policyComponent"/>
-        </property>
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
     </bean>
 
     <!-- Utility Beans -->
     <bean id="fileNameUtil" class="org.alfresco.integrations.google.docs.utils.FileNameUtil">
-        <property name="mimetypeService">
-            <ref bean="mimetypeService"/>
-        </property>
-        <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
-        </property>
-        <property name="siteService">
-            <ref bean="SiteService"/>
-        </property>
-        <property name="permissionService">
-            <ref bean="permissionService"/>
-        </property>
+        <property name="mimetypeService" ref="mimetypeService"/>
+        <property name="fileFolderService" ref="FileFolderService"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="permissionService" ref="permissionService"/>
     </bean>
 
     <!-- Custom WebScripts -->
@@ -73,38 +53,22 @@
 
     <bean id="webscript.org.alfresco.integrations.google.docs.CreateContent.get"
           class="org.alfresco.integrations.google.docs.webscripts.CreateContent" parent="webscript">
-        <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
-        </property>
+        <property name="fileFolderService" ref="FileFolderService"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.UploadContent.post"
           class="org.alfresco.integrations.google.docs.webscripts.UploadContent" parent="webscript">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-        <property name="versionService">
-            <ref bean="VersionService"/>
-        </property>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="versionService" ref="VersionService"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.SaveContent.post"
           class="org.alfresco.integrations.google.docs.webscripts.SaveContent" parent="webscript">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-        <property name="versionService">
-            <ref bean="VersionService"/>
-        </property>
-        <property name="transactionService">
-            <ref bean="transactionService"/>
-        </property>
-        <property name="siteService">
-            <ref bean="SiteService"/>
-        </property>
-        <property name="fileNameUtil">
-            <ref bean="fileNameUtil"/>
-        </property>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="versionService" ref="VersionService"/>
+        <property name="transactionService" ref="transactionService"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="fileNameUtil" ref="fileNameUtil"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.HasConcurrentEditors.get"
@@ -112,35 +76,21 @@
 
     <bean id="webscript.org.alfresco.integrations.google.docs.IsLatestRevision.get"
           class="org.alfresco.integrations.google.docs.webscripts.IsLatestRevision">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
+        <property name="nodeService" ref="nodeService"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.RemoveContent.post"
           class="org.alfresco.integrations.google.docs.webscripts.RemoveContent">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-        <property name="transactionService">
-            <ref bean="transactionService"/>
-        </property>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="transactionService" ref="transactionService"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.DiscardContent.post"
           class="org.alfresco.integrations.google.docs.webscripts.DiscardContent">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-        <property name="transactionService">
-            <ref bean="transactionService"/>
-        </property>
-        <property name="siteService">
-            <ref bean="SiteService"/>
-        </property>
-        <property name="fileNameUtil">
-            <ref bean="fileNameUtil"/>
-        </property>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="transactionService" ref="transactionService"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="fileNameUtil" ref="fileNameUtil"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.UserProfile.get"
