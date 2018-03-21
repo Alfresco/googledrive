@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2005-2015 Alfresco Software Limited.
+ * Copyright (C) 2005-2018 Alfresco Software Limited.
  * 
  * This file is part of Alfresco
  * 
@@ -31,7 +31,7 @@ public interface GoogleDocsConstants
     public static final String REMOTE_SYSTEM = "googledocs";
 
     // Google OAuth2 redirect URI
-    public static final String REDIRECT_URI = "http://www.alfresco.com/google-auth-return.html";
+    public static final String REDIRECT_URI = "https://www.alfresco.com/google-auth-return.html";
     public static final String CLIENT_SECRET_WEB = "web";
     public static final String CLIENT_SECRET_REDIRECT_URIS = "redirect_uris";
 
