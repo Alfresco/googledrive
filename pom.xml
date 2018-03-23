@@ -16,9 +16,7 @@
    <properties>
       <buildnumber>SNAPSHOT</buildnumber>
       <alfresco.groupId>org.alfresco</alfresco.groupId>
-      <alfresco-community.version>5.0.c</alfresco-community.version>
-      <alfresco-enterprise.version>5.0</alfresco-enterprise.version>
-      <alfresco.min.version>5.0.0</alfresco.min.version>
+      <alfresco.min.version>6.0.0</alfresco.min.version>
       <alfresco.max.version>6.99.99</alfresco.max.version>
       <alfresco.google.config.version>1.0.0-SNAPSHOT</alfresco.google.config.version>
       <alfresco.google.config.classifier>community</alfresco.google.config.classifier>

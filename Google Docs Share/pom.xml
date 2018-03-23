@@ -8,6 +8,8 @@
 
     <properties>
         <project.build.finalName>${project.build.finalName}-${buildnumber}.amp</project.build.finalName>
+        <alfresco-community.version>6.0.0-SNAPSHOT</alfresco-community.version>
+        <alfresco-enterprise.version>6.0.0-SNAPSHOT</alfresco-enterprise.version>
     </properties>
 
     <parent>
@@ -110,6 +112,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.alfresco.maven.plugin</groupId>
+                <artifactId>alfresco-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <classifier>6.0</classifier>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -129,45 +140,5 @@
                 <alfresco.version>${alfresco-community.version}</alfresco.version>
             </properties>
         </profile>
-        <profile>
-            <id>5</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.alfresco.maven.plugin</groupId>
-                        <artifactId>alfresco-maven-plugin</artifactId>
-                        <version>2.0.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <classifier>5.0</classifier>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>6</id>
-            <properties>
-                <alfresco-community.version>6.0.0-SNAPSHOT</alfresco-community.version>
-                <alfresco-enterprise.version>6.0.0-SNAPSHOT</alfresco-enterprise.version>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.alfresco.maven.plugin</groupId>
-                        <artifactId>alfresco-maven-plugin</artifactId>
-                        <version>2.0.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <classifier>6.0</classifier>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
-
 </project>
