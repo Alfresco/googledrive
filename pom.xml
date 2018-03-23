@@ -18,10 +18,10 @@
       <alfresco.groupId>org.alfresco</alfresco.groupId>
       <alfresco.min.version>6.0.0</alfresco.min.version>
       <alfresco.max.version>6.99.99</alfresco.max.version>
-      <alfresco.google.config.version>1.0.0-SNAPSHOT</alfresco.google.config.version>
+      <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
       <alfresco.google.config.classifier>community</alfresco.google.config.classifier>
       <compiler-plugin.version>3.1</compiler-plugin.version>
-      <java.version>1.7</java.version>
+      <java.version>1.8</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
    </properties>

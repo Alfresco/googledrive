@@ -7,6 +7,7 @@
     <name>Alfresco / Google Docs Share Module</name>
 
     <properties>
+        <!--TODO: replace 6.0.0-SNAPSHOT with RC when available-->
         <alfresco-community.version>6.0.0-SNAPSHOT</alfresco-community.version>
         <alfresco-enterprise.version>6.0.0-SNAPSHOT</alfresco-enterprise.version>
     </properties>
