@@ -23,11 +23,9 @@ When building the amps (`mvn clean package`) you should also include a combinati
 
 **Version**
 
-`4` Build amps for version 4.2.x of Alfresco
+`6` Build amps for version 6.x of Alfresco
 
-`5` Build amps for version 5.x of Alfresco (default)
-
-Example: `mvn clean package -Penterprise,5`
+Example: `mvn clean package -Penterprise`
 	
 ***Note:** Amps built from this source are not supported by Alfresco. They are built and used at your own risk. Supported releases of the enterprise amps can be found at the Alfresco Customer Portal.*
 

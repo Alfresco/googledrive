@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
    <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.0</version>
+   <version>3.1.0-SNAPSHOT</version>
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
@@ -14,56 +14,20 @@
    </parent>
 
    <properties>
-      <buildnumber>SNAPSHOT</buildnumber>
+      <buildnumber>local</buildnumber>
       <alfresco.groupId>org.alfresco</alfresco.groupId>
-      <alfresco-community.version>5.0.c</alfresco-community.version>
-      <alfresco-enterprise.version>5.0</alfresco-enterprise.version>
-      <alfresco.min.version>5.0.0</alfresco.min.version>
+      <alfresco.min.version>6.0.0</alfresco.min.version>
       <alfresco.max.version>6.99.99</alfresco.max.version>
-      <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId>
-      <alfresco.client.war.version>${alfresco-community.version}</alfresco.client.war.version>
-      <alfresco.google.config.version>1.0.0-SNAPSHOT</alfresco.google.config.version>
+      <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
       <alfresco.google.config.classifier>community</alfresco.google.config.classifier>
       <compiler-plugin.version>3.1</compiler-plugin.version>
-      <java.version>1.7</java.version>
+      <java.version>1.8</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
-
-      <maven.distributionManagement.snapshot.url>
-         https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots
-      </maven.distributionManagement.snapshot.url>
-      <maven.distributionManagement.release.url>
-         https://artifacts.alfresco.com/nexus/content/repositories/internal-releases
-      </maven.distributionManagement.release.url>
    </properties>
-
-   <dependencyManagement>
-      <dependencies>
-         <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-platform-distribution</artifactId>
-            <version>${alfresco-community.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
-   </dependencyManagement>
 
    <modules>
       <module>Google Docs Repository</module>
       <module>Google Docs Share</module>
    </modules>
-
-   <distributionManagement>
-      <!-- For now internal repositories -->
-      <repository>
-         <id>alfresco-internal</id>
-         <url>${maven.distributionManagement.release.url}</url>
-      </repository>
-      <snapshotRepository>
-         <id>alfresco-internal-snapshots</id>
-         <url>${maven.distributionManagement.snapshot.url}</url>
-      </snapshotRepository>
-   </distributionManagement>
-
 </project>
