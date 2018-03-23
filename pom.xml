@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
    <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.0</version>
+   <version>3.1.0-SNAPSHOT</version>
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
@@ -14,7 +14,7 @@
    </parent>
 
    <properties>
-      <buildnumber>SNAPSHOT</buildnumber>
+      <buildnumber>local</buildnumber>
       <alfresco.groupId>org.alfresco</alfresco.groupId>
       <alfresco.min.version>6.0.0</alfresco.min.version>
       <alfresco.max.version>6.99.99</alfresco.max.version>
