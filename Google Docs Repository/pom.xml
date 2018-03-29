@@ -9,13 +9,13 @@
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.1.0-RC2</version>
+        <version>3.1.0-RC2-SNAPSHOT</version>
     </parent>
 
     <properties>
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
-        <alfresco-community.version>6.37</alfresco-community.version>
-        <alfresco-enterprise.version>6.37</alfresco-enterprise.version>
+        <alfresco-community.version>6.38</alfresco-community.version>
+        <alfresco-enterprise.version>6.38</alfresco-enterprise.version>
     </properties>
 
     <dependencies>
