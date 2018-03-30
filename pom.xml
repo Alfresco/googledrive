@@ -50,8 +50,8 @@
    </dependencyManagement>
 
    <modules>
-      <module>Google Docs Repository</module>
-      <module>Google Docs Share</module>
+      <module>googledrive-repository</module>
+      <module>googledrive-share</module>
    </modules>
 
    <distributionManagement>
