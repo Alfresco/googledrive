@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
    <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.0-RC2-SNAPSHOT</version>
+   <version>3.1.0-SNAPSHOT</version>
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
@@ -51,4 +51,17 @@
       <module>googledrive-repository</module>
       <module>googledrive-share</module>
    </modules>
+
+   <distributionManagement>
+      <!-- For now internal repositories -->
+      <repository>
+         <id>alfresco-internal</id>
+         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-releases</url>
+      </repository>
+      <snapshotRepository>
+         <id>alfresco-internal-snapshots</id>
+         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots</url>
+      </snapshotRepository>
+   </distributionManagement>
+
 </project>

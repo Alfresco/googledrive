@@ -36,8 +36,8 @@ public class FileRevisionComparator
     @Override
     public int compare(Revision entry1, Revision entry2)
     {
-        DateTime entry1Revision = entry1.getModifiedDate();
-        DateTime entry2Revision = entry2.getModifiedDate();
+        DateTime entry1Revision = entry1.getModifiedTime();
+        DateTime entry2Revision = entry2.getModifiedTime();
 
         //Google DateTime has no compare method. Convert to Java Date to compare.
         Date dt1 = new Date(entry1Revision.getValue());
