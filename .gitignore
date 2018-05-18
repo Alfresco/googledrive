@@ -10,5 +10,5 @@
 atlassian-ide-plugin.xml
 *.iml
 
-Google Docs Share/src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml
-Google Docs Repository/src/main/oauth-client-resources/**
+googledrive-share/src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml
+googledrive-repository/src/main/oauth-client-resources/**
