@@ -7,7 +7,7 @@
 
     <properties>
         <alfresco-community.version>6.0.a</alfresco-community.version>
-        <alfresco-enterprise.version>6.0.a</alfresco-enterprise.version>
+        <alfresco-enterprise.version>6.0.0-rc1</alfresco-enterprise.version>
     </properties>
 
     <parent>
