@@ -40,7 +40,7 @@ public interface GoogleDocsConstants
     public static final List<String> SCOPES = Collections.unmodifiableList(Arrays.asList("https://docs.google.com/feeds/", "https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/userinfo.profile","https://www.googleapis.com/auth/userinfo.email"));
 
     // Google docsService Client Name
-    public static final String APPLICATION_NAME = "Alfresco-GoogleDocs/3.0";
+    public static final String APPLICATION_NAME = "Alfresco-GoogleDocs/3.1";
 
     // Google contentTypes
     public static final String DOCUMENT_TYPE     = "document";
