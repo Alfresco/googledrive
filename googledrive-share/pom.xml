@@ -7,7 +7,7 @@
 
     <properties>
         <alfresco-community.version>6.0.a</alfresco-community.version>
-        <alfresco-enterprise.version>6.0.a</alfresco-enterprise.version>
+        <alfresco-enterprise.version>6.0.0-rc1</alfresco-enterprise.version>
     </properties>
 
     <parent>
@@ -45,7 +45,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}-${buildnumber}</finalName>
+        <finalName>${project.artifactId}${alfresco.google.config.classifier}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -109,15 +109,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-                <version>2.0.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <classifier>6.0</classifier>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -126,6 +117,7 @@
             <id>enterprise</id>
             <properties>
                 <alfresco.version>${alfresco-enterprise.version}</alfresco.version>
+                <alfresco.google.config.classifier />
             </properties>
         </profile>
         <profile>
