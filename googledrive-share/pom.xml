@@ -2,18 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>alfresco-googledocs-share</artifactId>
-    <version>${project.parent.version}-${buildnumber}</version>
+    <version>3.0.4.3-SNAPSHOT</version>
     <packaging>amp</packaging>
     <name>Alfresco / Google Docs Share Module</name>
-
-    <properties>
-        <project.build.finalName>${project.build.finalName}-${buildnumber}.amp</project.build.finalName>
-    </properties>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-GoogleDocs</artifactId>
-        <version>3.0.4.3</version>
+        <version>3.0.4.3-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -45,7 +41,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}-${buildnumber}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -147,8 +143,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <copy file="src/main/documentLibrary-config/withoutManagerCancel/custom-slingshot-googledocs-context.xml"
-                                              tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml"/>
+                                        <copy file="src/main/documentLibrary-config/withoutManagerCancel/custom-slingshot-googledocs-context.xml" tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml" />
                                     </tasks>
                                 </configuration>
                             </execution>
@@ -208,8 +203,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml"
-                                              tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml"/>
+                                        <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml" tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml" />
                                     </tasks>
                                 </configuration>
                             </execution>
@@ -243,8 +237,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml"
-                                              tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml"/>
+                                        <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml" tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml" />
                                     </tasks>
                                 </configuration>
                             </execution>
