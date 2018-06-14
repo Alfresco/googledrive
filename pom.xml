@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
    <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.0.4.3</version>
+   <version>3.0.4.3-SNAPSHOT</version>
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
@@ -12,6 +12,13 @@
       <artifactId>alfresco-sdk-parent</artifactId>
       <version>2.0.0</version>
    </parent>
+
+   <scm>
+      <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
+      <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git</developerConnection>
+      <url>https://github.com/Alfresco/googledrive</url>
+      <tag>HEAD</tag>
+   </scm>
 
    <properties>
       <buildnumber>SNAPSHOT</buildnumber>
@@ -42,9 +49,23 @@
       </dependencies>
    </dependencyManagement>
 
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <artifactId>maven-release-plugin</artifactId>
+               <version>2.5.1</version>
+               <configuration>
+                  <tagNameFormat>@{project.version}</tagNameFormat>
+                  <useReleaseProfile>false</useReleaseProfile>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+
    <modules>
       <module>googledrive-repository</module>
       <module>googledrive-share</module>
    </modules>
-
 </project>
