@@ -48,6 +48,10 @@
         <finalName>${project.artifactId}${alfresco.google.config.classifier}-${project.version}</finalName>
         <plugins>
             <plugin>
+                <groupId>org.alfresco.maven.plugin</groupId>
+                <artifactId>alfresco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
