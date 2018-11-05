@@ -216,6 +216,9 @@
         </profile>
         <profile>
             <id>5</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
