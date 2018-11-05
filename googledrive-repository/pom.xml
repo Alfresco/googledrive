@@ -13,8 +13,8 @@
 
     <properties>
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
-        <alfresco-community.version>7.22</alfresco-community.version>
-        <alfresco-enterprise.version>7.23</alfresco-enterprise.version>
+        <alfresco-community.version>7.25</alfresco-community.version>
+        <alfresco-enterprise.version>7.26</alfresco-enterprise.version>
     </properties>
 
     <dependencies>
