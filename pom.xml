@@ -7,12 +7,6 @@
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
-   <parent>
-      <groupId>org.alfresco.maven</groupId>
-      <artifactId>alfresco-sdk-parent</artifactId>
-      <version>2.0.0</version>
-   </parent>
-
    <scm>
       <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
       <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git</developerConnection>
@@ -60,8 +54,22 @@
                   <useReleaseProfile>false</useReleaseProfile>
                </configuration>
             </plugin>
+            <plugin>
+               <artifactId>maven-install-plugin</artifactId>
+               <version>2.5.2</version>
+            </plugin>
          </plugins>
       </pluginManagement>
+
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+         </resource>
+         <resource>
+            <directory>${app.amp.folder}</directory>
+            <targetPath>${app.amp.output.folder}</targetPath>
+         </resource>
+      </resources>
    </build>
 
    <modules>

@@ -129,6 +129,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>4.2</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -189,6 +190,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>4.2.4</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -223,6 +225,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>5.0</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
