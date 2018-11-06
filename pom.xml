@@ -64,12 +64,6 @@
                <filtering>${app.filtering.enabled}</filtering>
            </resource>
        </resources>
-       <testResources>
-           <testResource>
-               <directory>src/test/resources</directory>
-               <filtering>${app.filtering.enabled}</filtering>
-           </testResource>
-       </testResources>
    </build>
 
    <modules>
