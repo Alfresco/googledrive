@@ -25,6 +25,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
 
+       <app.filtering.enabled>true</app.filtering.enabled>
       <app.amp.folder>src/main/amp</app.amp.folder>
       <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
    </properties>
@@ -55,10 +56,12 @@
        <resources>
            <resource>
                <directory>src/main/resources</directory>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
            <resource>
                <directory>${app.amp.folder}</directory>
                <targetPath>${app.amp.output.folder}</targetPath>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
        </resources>
    </build>
