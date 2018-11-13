@@ -129,6 +129,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>4.2</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -189,6 +190,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>4.2.4</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -214,6 +216,9 @@
         </profile>
         <profile>
             <id>5</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -223,6 +228,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <classifier>5.0</classifier>
+                            <snapshotToTimestamp>true</snapshotToTimestamp>
                         </configuration>
                     </plugin>
                     <plugin>
