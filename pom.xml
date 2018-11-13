@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
    <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.1-SNAPSHOT</version>
+   <version>3.1.1-TEST1</version>
    <name>alfresco-GoogleDocs</name>
    <packaging>pom</packaging>
 
@@ -10,7 +10,7 @@
       <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
       <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git</developerConnection>
       <url>https://github.com/Alfresco/googledrive</url>
-      <tag>HEAD</tag>
+      <tag>3.1.1-TEST1</tag>
    </scm>
 
    <properties>
