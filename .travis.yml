@@ -45,7 +45,7 @@ jobs:
       script: bash _ci/release_community.sh
 
     - name: "Release"
-        stage: release
-        if: branch = release
-        before_install: bash _ci/init.sh
-        script: bash _ci/release_enterprise.sh
+      stage: release
+      if: branch = release
+      before_install: bash _ci/init.sh
+      script: bash _ci/release_enterprise.sh
