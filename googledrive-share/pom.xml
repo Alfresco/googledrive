@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>alfresco-googledocs-share</artifactId>
+    <artifactId>alfresco-googledrive-share</artifactId>
     <version>3.1.1-SNAPSHOT</version>
     <packaging>amp</packaging>
-    <name>Alfresco / Google Docs Share Module</name>
+    <name>Alfresco / Google Drive Share Module</name>
 
     <properties>
         <alfresco-community.version>6.0.c</alfresco-community.version>
@@ -12,7 +12,7 @@
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
-        <artifactId>alfresco-GoogleDocs</artifactId>
+        <artifactId>alfresco-googledrive</artifactId>
         <version>3.1.1-SNAPSHOT</version>
     </parent>
 

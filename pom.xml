@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
-   <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.1-SNAPSHOT</version>
-   <name>alfresco-GoogleDocs</name>
-   <packaging>pom</packaging>
+    <artifactId>alfresco-googledrive</artifactId>
+    <name>Alfresco / Google Drive Parent</name>
+    <version>3.1.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
    <scm>
       <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
@@ -64,8 +64,10 @@
    </build>
 
    <modules>
-      <module>googledrive-repository</module>
       <module>googledrive-share</module>
+      <module>googledrive-repo-base</module>
+      <module>googledrive-repo-enterprise</module>
+      <module>googledrive-repo-community</module>
    </modules>
 
    <distributionManagement>
