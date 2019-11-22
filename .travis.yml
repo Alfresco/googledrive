@@ -26,12 +26,7 @@ jobs:
     - name: "Build + Tests (Community)"
       stage: build
       before_install: bash _ci/init.sh
-      script: bash _ci/build_community.sh
-
-    - name: "Build + Tests (Enterprise)"
-      stage: build
-      before_install: bash _ci/init.sh
-      script: bash _ci/build_enterprise.sh
+      script: bash _ci/build.sh
 
     - name: "WhiteSource"
       stage: build
@@ -42,10 +37,4 @@ jobs:
       stage: release
       if: branch = release
       before_install: bash _ci/init.sh
-      script: bash _ci/release_community.sh
-
-    - name: "Release"
-      stage: release
-      if: branch = release
-      before_install: bash _ci/init.sh
-      script: bash _ci/release_enterprise.sh
+      script: bash _ci/release.sh
