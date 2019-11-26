@@ -556,6 +556,7 @@ public class GoogleDocsServiceImpl
             userInfo = userInfoService
                 .userinfo()
                 .get()
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
         catch (TokenResponseException e)
@@ -1003,6 +1004,7 @@ public class GoogleDocsServiceImpl
 
             File file = drive.files()
                 .get(resourceID.substring(resourceID.lastIndexOf(':') + 1))
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
 
             // Non GD files need use are exported differently
@@ -1192,6 +1194,7 @@ public class GoogleDocsServiceImpl
             FileContent fileContent = new FileContent(mimetype, f);
             file = drive.files()
                 .create(file, fileContent)
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
         catch (IOException ioe)
@@ -1314,6 +1317,7 @@ public class GoogleDocsServiceImpl
             {
                 drive.files()
                     .delete(file.getId())
+                    .setFields(ALL_PROPERTY_FIELDS)
                     .execute();
 
                 // Delete the Working directory in Google Drive (if it exists....this should handle any migration issues)
@@ -1388,6 +1392,7 @@ public class GoogleDocsServiceImpl
         {
             RevisionList revisionList = drive.revisions()
                 .list(file.getId())
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
             List<Revision> fileRevisions = revisionList.getRevisions();
 
@@ -1821,6 +1826,7 @@ public class GoogleDocsServiceImpl
             {
                 RevisionList revisionList = drive.revisions()
                     .list(resourceID.substring(resourceID.lastIndexOf(':') + 1))
+                    .setFields(ALL_PROPERTY_FIELDS)
                     .execute();
                 List<Revision> revisions = revisionList.getRevisions();
 
@@ -1954,6 +1960,7 @@ public class GoogleDocsServiceImpl
         {
             file = drive.files()
                 .get(resourceID.substring(resourceID.lastIndexOf(':') + 1))
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
         catch (GoogleJsonResponseException e)
@@ -2035,6 +2042,7 @@ public class GoogleDocsServiceImpl
         {
             About about = drive.about()
                 .get()
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
             user = about.getUser();
         }
@@ -2141,6 +2149,7 @@ public class GoogleDocsServiceImpl
             log.debug("Fetching permissions for file with resource ID " + resourceId);
             PermissionList permissionList = drive.permissions()
                 .list(resourceId.substring(resourceId.lastIndexOf(':') + 1))
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
 
             for (Permission permission : permissionList.getPermissions())
@@ -2362,6 +2371,7 @@ public class GoogleDocsServiceImpl
 
             drive.permissions()
                 .create(file.getId(), new Permission().setRole(role).setType(type).setEmailAddress(p.getAuthorityId()))
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
     }
@@ -2526,6 +2536,7 @@ public class GoogleDocsServiceImpl
 
             file = drive.files()
                 .create(file)
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
         catch (GoogleJsonResponseException e)
@@ -2602,6 +2613,7 @@ public class GoogleDocsServiceImpl
         {
             drive.files()
                 .delete(folderId)
+                .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
         }
         catch (GoogleJsonResponseException e)
