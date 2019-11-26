@@ -25,7 +25,6 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
 
-       <app.filtering.enabled>true</app.filtering.enabled>
       <app.amp.folder>src/main/amp</app.amp.folder>
       <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
    </properties>
@@ -56,12 +55,10 @@
        <resources>
            <resource>
                <directory>src/main/resources</directory>
-               <filtering>${app.filtering.enabled}</filtering>
            </resource>
            <resource>
                <directory>${app.amp.folder}</directory>
                <targetPath>${app.amp.output.folder}</targetPath>
-               <filtering>${app.filtering.enabled}</filtering>
            </resource>
        </resources>
    </build>
@@ -70,4 +67,17 @@
       <module>googledrive-repository</module>
       <module>googledrive-share</module>
    </modules>
+
+   <distributionManagement>
+      <!-- For now internal repositories -->
+      <repository>
+         <id>alfresco-internal</id>
+         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-releases</url>
+      </repository>
+      <snapshotRepository>
+         <id>alfresco-internal-snapshots</id>
+         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots</url>
+      </snapshotRepository>
+   </distributionManagement>
+
 </project>
