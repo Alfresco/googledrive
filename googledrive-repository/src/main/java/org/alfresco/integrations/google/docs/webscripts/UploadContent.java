@@ -220,7 +220,7 @@ public class UploadContent
         }
 
         model.put(MODEL_NODEREF, nodeRef.toString());
-        model.put(MODEL_EDITOR_URL, file.getAlternateLink());
+        model.put(MODEL_EDITOR_URL, file.getWebViewLink());
         
         }
         else
