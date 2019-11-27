@@ -11,16 +11,9 @@
         <version>3.1.1-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <alfresco.version>7.25</alfresco.version>
-        <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>${alfresco.groupId}</groupId>
+            <groupId>org.alfresco</groupId>
             <artifactId>alfresco-repository</artifactId>
             <version>${alfresco.version}</version>
             <exclusions>

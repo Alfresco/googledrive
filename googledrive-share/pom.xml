@@ -8,6 +8,9 @@
     <properties>
         <alfresco-community.version>6.0.c</alfresco-community.version>
         <alfresco-enterprise.version>6.0.c</alfresco-enterprise.version>
+
+        <image.name>share-gd</image.name>
+        <image.tag>latest</image.tag>
     </properties>
 
     <parent>
@@ -20,7 +23,7 @@
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>share</artifactId>
-            <version>${alfresco.version}</version>
+            <version>${share.version}</version>
             <classifier>classes</classifier>
             <scope>provided</scope>
             <exclusions>
@@ -50,16 +53,6 @@
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>
                 <artifactId>alfresco-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler-plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -114,9 +107,55 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>fabric8-maven-plugin</artifactId>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>${image.name}:${image.tag}</name>
+                                <build>
+                                    <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <assembly>
+                                        <descriptor>target-assembly.xml</descriptor>
+                                    </assembly>
+                                    <buildOptions>
+                                        <squash>true</squash>
+                                    </buildOptions>
+                                </build>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
+        <profile>
+            <!-- Builds local image for development & testing only -->
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>fabric8-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>enterprise</id>
             <properties>
