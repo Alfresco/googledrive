@@ -29,7 +29,6 @@
       <alfresco.max.version>6.99.99</alfresco.max.version>
 
       <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
-      <alfresco.google.config.classifier>-community</alfresco.google.config.classifier>
 
       <app.filtering.enabled>true</app.filtering.enabled>
       <app.amp.folder>src/main/amp</app.amp.folder>
@@ -97,16 +96,14 @@
       <module>googledrive-share</module>
    </modules>
 
-   <distributionManagement>
-      <!-- For now internal repositories -->
-      <repository>
-         <id>alfresco-internal</id>
-         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-releases</url>
-      </repository>
-      <snapshotRepository>
-         <id>alfresco-internal-snapshots</id>
-         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots</url>
-      </snapshotRepository>
-   </distributionManagement>
-
+    <distributionManagement>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

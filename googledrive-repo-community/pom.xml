@@ -13,21 +13,8 @@
     <artifactId>googledrive-repo-community</artifactId>
     <packaging>amp</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.alfresco.integrations</groupId>
-            <artifactId>googledrive-repo-base</artifactId>
-            <version>3.1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.alfresco.integrations</groupId>
-            <artifactId>alfresco-googledocs-community-config</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
-
     <build>
-        <finalName>${project.artifactId}${alfresco.google.config.classifier}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>

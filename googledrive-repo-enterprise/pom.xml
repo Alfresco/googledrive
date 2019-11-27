@@ -18,6 +18,17 @@
         <image.tag>latest</image.tag>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>alfresco-enterprise-releases</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-enterprise-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
@@ -32,7 +43,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}${alfresco.google.config.classifier}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>
