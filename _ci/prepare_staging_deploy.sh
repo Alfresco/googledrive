@@ -5,11 +5,11 @@ PS4="\[\e[35m\]+ \[\e[m\]"
 set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
-ARTIFACT_GD_REPO_COMMUNITY=$(find . -name "googledrive-repo-community-*.amp" -printf "%f\n" | head -1)
-ARTIFACT_GD_REPO_ENTERPRISE=$(find . -name "googledrive-repo-enterprise-*.amp" -printf "%f\n" | head -1)
-ARTIFACT_GD_SHARE=$(find . -name "googledrive-share-*.amp" -printf "%f\n" | head -1)
+ARTIFACT_GD_REPO_COMMUNITY=$(find . -name "alfresco-googledrive-repo-community-*.amp" -printf "%f\n" | head -1)
+ARTIFACT_GD_REPO_ENTERPRISE=$(find . -name "alfresco-googledrive-repo-enterprise-*.amp" -printf "%f\n" | head -1)
+ARTIFACT_GD_SHARE=$(find . -name "alfresco-googledrive-share-*.amp" -printf "%f\n" | head -1)
 
-export VERSION=$(echo "${ARTIFACT_GD_SHARE}" | sed -e "s/^googledrive-share-//" -e "s/\.amp$//")
+export VERSION=$(echo "${ARTIFACT_GD_SHARE}" | sed -e "s/^alfresco-googledrive-share-//" -e "s/\.amp$//")
 
 mkdir -p deploy_dir_community deploy_dir_enterprise
 
@@ -21,10 +21,10 @@ mvn org.alfresco:whitesource-downloader-plugin:inventoryReport \
 
 # Hard-link the artifacts into deploy directories
 ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
-ln "googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
-ln "googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
-ln "googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
-ln "googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_enterprise/${ARTIFACT_GD_SHARE}"
+ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
+ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
+ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
+ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_enterprise/${ARTIFACT_GD_SHARE}"
 
 echo "Local deploy_dir_community content:"
 ls -lA deploy_dir_community
