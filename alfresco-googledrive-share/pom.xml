@@ -133,7 +133,7 @@
 
     <profiles>
         <profile>
-            <!-- Builds local image for development & testing only -->
+            <!-- Builds local image for development & testing only.  -->
             <id>local</id>
             <build>
                 <plugins>
