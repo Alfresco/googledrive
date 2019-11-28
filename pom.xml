@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.alfresco.integrations</groupId>
-   <artifactId>alfresco-GoogleDocs</artifactId>
-   <version>3.1.1-SNAPSHOT</version>
-   <name>alfresco-GoogleDocs</name>
-   <packaging>pom</packaging>
+    <artifactId>alfresco-googledrive</artifactId>
+    <name>Alfresco / Google Drive Parent</name>
+    <version>3.1.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
    <scm>
       <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
@@ -14,17 +14,23 @@
    </scm>
 
    <properties>
+      <java.version>1.8</java.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       
       <buildnumber>local</buildnumber>
-      <alfresco.groupId>org.alfresco</alfresco.groupId>
+
+      <alfresco.version>7.25</alfresco.version>
+      <share.version>5.2.1.4</share.version>
+
+      <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
       <alfresco.min.version>6.0.0</alfresco.min.version>
       <alfresco.max.version>6.99.99</alfresco.max.version>
-      <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
-      <alfresco.google.config.classifier>-community</alfresco.google.config.classifier>
-      <compiler-plugin.version>3.8.0</compiler-plugin.version>
-      <java.version>1.8</java.version>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <env>local</env>
 
+      <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
+
+      <app.filtering.enabled>true</app.filtering.enabled>
       <app.amp.folder>src/main/amp</app.amp.folder>
       <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
    </properties>
@@ -32,14 +38,24 @@
    <build>
       <pluginManagement>
          <plugins>
-            <plugin>
-               <artifactId>maven-release-plugin</artifactId>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <version>3.8.0</version>
+                 <configuration>
+                     <source>${maven.compiler.source}</source>
+                     <target>${maven.compiler.target}</target>
+                     <encoding>${project.build.sourceEncoding}</encoding>
+                 </configuration>
+             </plugin>
+             <plugin>
+                 <artifactId>maven-release-plugin</artifactId>
                <version>2.5.1</version>
                <configuration>
                   <tagNameFormat>@{project.version}</tagNameFormat>
                   <useReleaseProfile>false</useReleaseProfile>
                </configuration>
-            </plugin>
+             </plugin>
              <plugin>
                  <groupId>org.alfresco.maven.plugin</groupId>
                  <artifactId>alfresco-maven-plugin</artifactId>
@@ -49,35 +65,45 @@
                      <snapshotToTimestamp>true</snapshotToTimestamp>
                  </configuration>
              </plugin>
+             <plugin>
+                 <groupId>io.fabric8</groupId>
+                 <artifactId>fabric8-maven-plugin</artifactId>
+                 <version>4.3.1</version>
+                 <configuration>
+                     <!--<verbose>true</verbose>-->
+                 </configuration>
+             </plugin>
          </plugins>
       </pluginManagement>
 
        <resources>
            <resource>
                <directory>src/main/resources</directory>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
            <resource>
                <directory>${app.amp.folder}</directory>
                <targetPath>${app.amp.output.folder}</targetPath>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
        </resources>
    </build>
 
    <modules>
-      <module>googledrive-repository</module>
+      <module>googledrive-repo-base</module>
+      <module>googledrive-repo-enterprise</module>
+      <module>googledrive-repo-community</module>
       <module>googledrive-share</module>
    </modules>
 
-   <distributionManagement>
-      <!-- For now internal repositories -->
-      <repository>
-         <id>alfresco-internal</id>
-         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-releases</url>
-      </repository>
-      <snapshotRepository>
-         <id>alfresco-internal-snapshots</id>
-         <url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots</url>
-      </snapshotRepository>
-   </distributionManagement>
-
+    <distributionManagement>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
