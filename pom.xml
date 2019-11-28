@@ -3,14 +3,14 @@
    <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>3.2.0-TEST3-SNAPSHOT</version>
+    <version>3.2.0-TEST3</version>
     <packaging>pom</packaging>
 
    <scm>
       <connection>scm:git:https://github.com/Alfresco/googledrive.git</connection>
       <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git</developerConnection>
       <url>https://github.com/Alfresco/googledrive</url>
-      <tag>HEAD</tag>
+      <tag>3.2.0-TEST3</tag>
    </scm>
 
 
