@@ -5,7 +5,7 @@
     <parent>
         <artifactId>alfresco-googledrive</artifactId>
         <groupId>org.alfresco.integrations</groupId>
-        <version>3.2.0-TEST1-SNAPSHOT</version>
+        <version>3.2.0-TEST2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
