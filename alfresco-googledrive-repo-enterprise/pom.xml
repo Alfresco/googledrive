@@ -1,46 +1,44 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>googledrive-share</artifactId>
-    <version>3.2.0-TEST2-SNAPSHOT</version>
-    <packaging>amp</packaging>
-    <name>Alfresco / Google Drive Share Module</name>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-googledrive</artifactId>
+        <groupId>org.alfresco.integrations</groupId>
         <version>3.2.0-TEST2-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
+    <name>Alfresco / Google Drive Enterprise AMP packaging</name>
+    <artifactId>alfresco-googledrive-repo-enterprise</artifactId>
+    <packaging>amp</packaging>
+    
     <properties>
-        <image.name>share-gd</image.name>
+        <image.name>acs-gd</image.name>
         <image.tag>latest</image.tag>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>alfresco-enterprise-releases</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-enterprise-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
-            <groupId>org.alfresco</groupId>
-            <artifactId>share</artifactId>
-            <version>${share.version}</version>
-            <classifier>classes</classifier>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.alfresco</groupId>
-                    <artifactId>alfresco-web-framework-commons</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.alfresco.integrations</groupId>
+            <artifactId>alfresco-googledrive-repo-base</artifactId>
+            <version>3.2.0-TEST2-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
+            <groupId>org.alfresco.integrations</groupId>
+            <artifactId>alfresco-googledocs-enterprise-config</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
@@ -52,23 +50,14 @@
                 <artifactId>alfresco-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.2</version>
-                <executions>
-                    <execution>
-                        <id>compressyui</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>**/*.css</exclude>
-                        <exclude>**/*.get.js</exclude>
-                    </excludes>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>pptx</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>docx</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
             <plugin>
@@ -77,10 +66,11 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>src/main/amp/config/alfresco/web-extension</directory>
+                            <directory>src/main/amp/config/alfresco/subsystems/googledocs/drive</directory>
                             <includes>
-                                <include>**/custom-slingshot-googledocs-context.xml</include>
+                                <include>**/google-customResponse-context.xml</include>
                             </includes>
+                            <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>
                 </configuration>
@@ -90,14 +80,14 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>include-documentLibraryConfig</id>
+                        <id>include-google-customResponse-context</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml" tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml" />
+                                <copy file="src/main/customResponseContextFiles/registerSlingshotCustomResponse/google-customResponse-context.xml" tofile="src/main/amp/config/alfresco/subsystems/googledocs/drive/google-customResponse-context.xml" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -130,7 +120,7 @@
             </plugins>
         </pluginManagement>
     </build>
-
+    
     <profiles>
         <profile>
             <!-- Builds local image for development & testing only -->

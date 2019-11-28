@@ -90,10 +90,10 @@
    </build>
 
    <modules>
-      <module>googledrive-repo-base</module>
-      <module>googledrive-repo-enterprise</module>
-      <module>googledrive-repo-community</module>
-      <module>googledrive-share</module>
+      <module>alfresco-googledrive-repo-base</module>
+      <module>alfresco-googledrive-repo-enterprise</module>
+      <module>alfresco-googledrive-repo-community</module>
+      <module>alfresco-googledrive-share</module>
    </modules>
 
     <distributionManagement>

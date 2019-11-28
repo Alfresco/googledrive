@@ -10,8 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Alfresco / Google Drive Community AMP packaging</name>
-    <artifactId>googledrive-repo-community</artifactId>
+    <artifactId>alfresco-googledrive-repo-community</artifactId>
     <packaging>amp</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.alfresco.integrations</groupId>
+            <artifactId>alfresco-googledrive-repo-base</artifactId>
+            <version>3.2.0-TEST2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
