@@ -19,15 +19,15 @@ ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
 
 # Download the AMP artifacts
 mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
-    -Dartifact=org.alfresco.integrations:googledrive-repo-community:${VERSION}:amp \
+    -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-community:${VERSION}:amp \
     -DoutputDirectory=deploy_dir_community
 mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
-    -Dartifact=org.alfresco.integrations:googledrive-repo-enterprise:${VERSION}:amp \
+    -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}:amp \
     -DoutputDirectory=deploy_dir_enterprise
 mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
-    -Dartifact=org.alfresco.integrations:googledrive-share:${VERSION}:amp \
+    -Dartifact=org.alfresco.integrations:alfresco-googledrive-share:${VERSION}:amp \
     -DoutputDirectory=deploy_dir_community
-ln "deploy_dir_community/googledrive-share-${VERSION}.amp" "deploy_dir_enterprise/googledrive-share-${VERSION}.amp"
+ln "deploy_dir_community/alfresco-googledrive-share-${VERSION}.amp" "deploy_dir_enterprise/alfresco-googledrive-share-${VERSION}.amp"
 
 echo "Local deploy_dir_community content:"
 ls -lA deploy_dir_community
