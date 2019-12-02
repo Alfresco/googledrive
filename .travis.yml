@@ -45,7 +45,6 @@ jobs:
       stage: tests
       if: branch NOT IN (release, company_release) AND NOT branch =~ /^release\/.+$/
       before_install: bash _ci/init.sh
-      install: travis_wait 90 bash _ci/install.sh
       script: travis_wait 60 bash _ci/e2e_tests.sh
 
     - name: "Release"
