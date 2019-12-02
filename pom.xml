@@ -95,6 +95,7 @@
       <module>alfresco-googledrive-repo-enterprise</module>
       <module>alfresco-googledrive-repo-community</module>
       <module>alfresco-googledrive-share</module>
+       <module>alfresco-googledrive-end-to-end-tests</module>
    </modules>
 
     <distributionManagement>
