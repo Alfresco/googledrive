@@ -35,7 +35,7 @@ public class GoogleDocsIT
     }
 
     @Test
-    public void googleDOcsTest()
+    public void testShareLogin()
     {
         try {
             driver.get("http://share:8080/share/page");
