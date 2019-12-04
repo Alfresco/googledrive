@@ -77,7 +77,6 @@
                             <imagePullPolicy>IfNotPresent</imagePullPolicy>
                             <removeMode>all</removeMode>
                             <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
-
                             <images>
                                 <image>
                                     <alias>selenium</alias>
