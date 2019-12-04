@@ -3,7 +3,7 @@
    <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>3.2.0-RC1-SNAPSHOT</version>
+    <version>3.2.0-EA1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
    <scm>
@@ -95,6 +95,7 @@
       <module>alfresco-googledrive-repo-enterprise</module>
       <module>alfresco-googledrive-repo-community</module>
       <module>alfresco-googledrive-share</module>
+       <module>alfresco-googledrive-end-to-end-tests</module>
    </modules>
 
     <distributionManagement>

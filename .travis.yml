@@ -7,6 +7,9 @@ git:
   depth: false
   quiet: true
 
+services:
+  - docker
+
 cache:
   directories:
     - ${HOME}/.m2/repository
@@ -23,6 +26,7 @@ branches:
 
 stages:
   - build
+  - tests
   - release
   - company_release
 
@@ -39,6 +43,12 @@ jobs:
       if: branch != company_release
       before_install: bash _ci/init.sh
       script: bash _ci/whitesource.sh
+
+    - name: "End-to-End Tests"
+      stage: tests
+      if: branch NOT IN (release, company_release) AND NOT branch =~ /^release\/.+$/
+      before_install: bash _ci/init.sh
+      script: travis_wait 60 bash _ci/e2e_tests.sh
 
     - name: "Release"
       stage: release
