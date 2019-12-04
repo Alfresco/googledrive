@@ -19,9 +19,7 @@ branches:
     - master
     - /^SP\/.+$/
     - /^HF\/.+$/
-    - release
-    - /^release\/SP\/.+$/
-    - /^release\/HF\/.+$/
+    - company_release
     - /^GOOGLEDOCS-.*$/
 
 stages:
@@ -46,13 +44,13 @@ jobs:
 
     - name: "End-to-End Tests"
       stage: tests
-      if: branch NOT IN (release, company_release) AND NOT branch =~ /^release\/.+$/
+      if: branch != company_release
       before_install: bash _ci/init.sh
       script: travis_wait 60 bash _ci/e2e_tests.sh
 
     - name: "Release"
       stage: release
-      if: branch = release OR branch =~ /^release\/.+$/
+      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+)$/
       before_install: bash _ci/init.sh
       script: bash _ci/release.sh
       before_deploy: source _ci/prepare_staging_deploy.sh
