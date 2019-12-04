@@ -9,7 +9,7 @@ USER root
 
 # Remove old GoogleDocs AMP
 RUN rm -f $TOMCAT_DIR/amps/alfresco-google*-repo*.amp
-RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-6.0.jar uninstall \
+RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
               org.alfresco.integrations.google.docs \
               $TOMCAT_DIR/webapps/alfresco/
 
