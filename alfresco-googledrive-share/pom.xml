@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>share</artifactId>
-            <version>${share.version}</version>
+            <version>${dependency.share.version}</version>
             <classifier>classes</classifier>
             <scope>provided</scope>
             <exclusions>

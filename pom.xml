@@ -23,8 +23,9 @@
 
         <buildnumber>local</buildnumber>
 
-        <alfresco.version>7.25</alfresco.version>
-        <share.version>5.2.1.4</share.version>
+        <dependency.alfresco-repository.version>8.35</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>8.59</dependency.alfresco-data-model.version>
+        <dependency.share.version>6.2.0</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
