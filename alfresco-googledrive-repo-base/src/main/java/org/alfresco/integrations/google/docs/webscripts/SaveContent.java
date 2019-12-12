@@ -253,26 +253,26 @@ public class SaveContent extends GoogleDocsWebScripts
                     "Access Denied.  You do not have the appropriate permissions to perform this operation.");
             }
         }
-        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
-            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage(), gdae);
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage(), e);
         }
-        catch (GoogleDocsServiceException gdse)
+        catch (GoogleDocsServiceException e)
         {
-            if (gdse.getPassedStatusCode() > -1)
+            if (e.getPassedStatusCode() > -1)
             {
-                throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage(), gdse);
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage(), e);
             }
             else
             {
-                throw new WebScriptException(gdse.getMessage(), gdse);
+                throw new WebScriptException(e.getMessage(), e);
             }
         }
-        catch (ConstraintException ce)
+        catch (ConstraintException e)
         {
-            throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
+            throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, e.getMessage(), e);
         }
-        catch (AccessDeniedException ade)
+        catch (AccessDeniedException e)
         {
             // This code will make changes after the rollback has occurred to clean up the node (remove the lock and the Google Docs
             // aspect
@@ -298,7 +298,7 @@ public class SaveContent extends GoogleDocsWebScripts
                 }
             });
 
-            throw new WebScriptException(SC_FORBIDDEN, ade.getMessage(), ade);
+            throw new WebScriptException(SC_FORBIDDEN, e.getMessage(), e);
         }
         catch (ConcurrentEditorException e)
         {
@@ -372,17 +372,17 @@ public class SaveContent extends GoogleDocsWebScripts
                 }
             }
         }
-        catch (final IOException ioe)
+        catch (final IOException e)
         {
-            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
-        catch (final JSONException je)
+        catch (final JSONException e)
         {
-            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr, je);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr, e);
         }
-        catch (final WebScriptException wse)
+        catch (final WebScriptException e)
         {
-            throw wse; // Ensure WebScriptExceptions get rethrown verbatim
+            throw e; // Ensure WebScriptExceptions get rethrown verbatim
         }
         catch (final Exception e)
         {

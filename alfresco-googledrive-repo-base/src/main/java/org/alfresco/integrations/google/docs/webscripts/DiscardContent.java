@@ -234,21 +234,21 @@ public class DiscardContent extends GoogleDocsWebScripts
 
                 model.put(MODEL_SUCCESS, deleted);
             }
-            catch (InvalidNodeRefException ine)
+            catch (InvalidNodeRefException e)
             {
-                throw new WebScriptException(SC_NOT_FOUND, ine.getMessage());
+                throw new WebScriptException(SC_NOT_FOUND, e.getMessage());
             }
-            catch (IOException ioe)
+            catch (IOException e)
             {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
             {
-                throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
+                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
             }
-            catch (GoogleDocsServiceException gdse)
+            catch (GoogleDocsServiceException e)
             {
-                if (gdse.getPassedStatusCode() == SC_NOT_FOUND)
+                if (e.getPassedStatusCode() == SC_NOT_FOUND)
                 {
                     // This code will make changes after the rollback has occurred to clean up the node: remove the lock and the Google
                     // Docs aspect. If it has the temporary aspect it will also remove the node from Alfresco
@@ -276,16 +276,16 @@ public class DiscardContent extends GoogleDocsWebScripts
                     });
                     model.put(MODEL_SUCCESS, true);
                 }
-                else if (gdse.getPassedStatusCode() > -1)
+                else if (e.getPassedStatusCode() > -1)
                 {
-                    throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
+                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
                 }
                 else
                 {
-                    throw new WebScriptException(gdse.getMessage());
+                    throw new WebScriptException(e.getMessage());
                 }
             }
-            catch (AccessDeniedException ade)
+            catch (AccessDeniedException e)
             {
                 // This code will make changes after the rollback has occurred to clean up the node: remove the lock and the Google
                 // Docs aspect. If it has the temporary aspect it will also remove the node from Alfresco
@@ -318,7 +318,7 @@ public class DiscardContent extends GoogleDocsWebScripts
                     }
                 });
 
-                throw new WebScriptException(SC_FORBIDDEN, ade.getMessage(), ade);
+                throw new WebScriptException(SC_FORBIDDEN, e.getMessage(), e);
             }
         }
         else
@@ -408,17 +408,17 @@ public class DiscardContent extends GoogleDocsWebScripts
                 }
             }
         }
-        catch (final IOException ioe)
+        catch (final IOException e)
         {
-            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
-        catch (final JSONException je)
+        catch (final JSONException e)
         {
             throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
         }
-        catch (final WebScriptException wse)
+        catch (final WebScriptException e)
         {
-            throw wse; // Ensure WebScriptExceptions get rethrown verbatim
+            throw e; // Ensure WebScriptExceptions get rethrown verbatim
         }
         catch (final Exception e)
         {

@@ -136,24 +136,24 @@ public class CreateContent extends GoogleDocsWebScripts
                 googledocsService.decorateNode(newNode, file,
                     googledocsService.getLatestRevision(credential, file), true);
             }
-            catch (GoogleDocsServiceException gdse)
+            catch (GoogleDocsServiceException e)
             {
-                if (gdse.getPassedStatusCode() > -1)
+                if (e.getPassedStatusCode() > -1)
                 {
-                    throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
+                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
                 }
                 else
                 {
-                    throw new WebScriptException(gdse.getMessage());
+                    throw new WebScriptException(e.getMessage());
                 }
             }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
             {
-                throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
+                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
             }
-            catch (Exception ioe)
+            catch (Exception e)
             {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
             }
 
             googledocsService.lockNode(newNode);

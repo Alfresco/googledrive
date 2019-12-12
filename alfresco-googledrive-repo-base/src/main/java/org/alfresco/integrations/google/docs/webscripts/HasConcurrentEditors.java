@@ -65,19 +65,19 @@ public class HasConcurrentEditors extends GoogleDocsWebScripts
             model.put(MODEL_CONCURRENT_EDITORS,
                 googledocsService.hasConcurrentEditors(credential, nodeRef));
         }
-        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
-            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
         }
-        catch (GoogleDocsServiceException gdse)
+        catch (GoogleDocsServiceException e)
         {
-            if (gdse.getPassedStatusCode() > -1)
+            if (e.getPassedStatusCode() > -1)
             {
-                throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
             }
             else
             {
-                throw new WebScriptException(gdse.getMessage());
+                throw new WebScriptException(e.getMessage());
             }
         }
         catch (Exception e)

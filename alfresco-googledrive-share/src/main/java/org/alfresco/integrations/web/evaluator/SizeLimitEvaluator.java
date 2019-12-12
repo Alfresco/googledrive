@@ -82,10 +82,10 @@ public class SizeLimitEvaluator
                 }
             }
         }
-        catch (Exception err)
+        catch (Exception e)
         {
             throw new AlfrescoRuntimeException(
-                "Failed to run action evaluator: " + err.getMessage());
+                "Failed to run action evaluator: " + e.getMessage());
         }
 
         return true;

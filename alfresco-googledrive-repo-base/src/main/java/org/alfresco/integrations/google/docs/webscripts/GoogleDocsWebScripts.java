@@ -52,7 +52,7 @@ public abstract class GoogleDocsWebScripts extends DeclarativeWebScript implemen
             ConfigurableApplicationContext childContext = (ConfigurableApplicationContext) subsystem.getApplicationContext();
             setGoogledocsService((GoogleDocsService) childContext.getBean(GOOGLEDOCSSERVICE));
         }
-        catch (NoSuchBeanDefinitionException nsbde)
+        catch (NoSuchBeanDefinitionException e)
         {
             // googledocs_v2 bean is not present on Community
         }

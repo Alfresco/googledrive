@@ -120,24 +120,24 @@ public class IsLatestRevision extends GoogleDocsWebScripts
                                                                      + " has no revision Ids.");
             }
         }
-        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
-            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
         }
-        catch (GoogleDocsServiceException gdse)
+        catch (GoogleDocsServiceException e)
         {
-            if (gdse.getPassedStatusCode() > -1)
+            if (e.getPassedStatusCode() > -1)
             {
-                throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
             }
             else
             {
-                throw new WebScriptException(gdse.getMessage());
+                throw new WebScriptException(e.getMessage());
             }
         }
-        catch (IOException ioe)
+        catch (IOException e)
         {
-            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         return model;
