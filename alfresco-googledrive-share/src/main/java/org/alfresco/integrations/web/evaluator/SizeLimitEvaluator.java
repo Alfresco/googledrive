@@ -29,10 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
 
-public class SizeLimitEvaluator
-    extends BaseEvaluator
+public class SizeLimitEvaluator extends BaseEvaluator
 {
     private static final Log log = LogFactory.getLog(SizeLimitEvaluator.class);
+
+    private static final String DOCUMENT_TYPE     = "document";
+    private static final String PRESENTATION_TYPE = "presentation";
+    private static final String SPREADSHEET_TYPE  = "spreadsheet";
 
     private String accessor;
 
@@ -74,29 +77,33 @@ public class SizeLimitEvaluator
             {
                 return false;
             }
-            else
+            long size = ((Number) node.get("size")).longValue();
+            final String contentType = getContentType(node.get("mimetype").toString());
+            if (contentType == null)
             {
-                long size = ((Number) node.get("size")).longValue();
-                String contentType = getContentType(node.get("mimetype").toString());
-
-                log.debug("NodeRef: " + node.get(
-                    "nodeRef") + "ContentType: " + contentType + "; Max file Size: "
-                          + getMaxFileSize(contentType) + "; Actual File Size: " + size);
-
-                if (contentType == null || size > getMaxFileSize(contentType))
-                {
-                    log.debug("NodeRef: " + node.get("nodeRef") + " exceeds Max file size.");
-                    return false;
-                }
+                log.debug("NodeRef: " + node.get("nodeRef") + " - missing content type.");
+                return false;
             }
+
+            if (log.isDebugEnabled())
+            {
+                log.debug("NodeRef: " + node.get("nodeRef") + "ContentType: " + contentType +
+                          "; Max file Size: " + getMaxFileSize(contentType) +
+                          "; Actual File Size: " + size);
+            }
+
+            if (size > getMaxFileSize(contentType))
+            {
+                log.debug("NodeRef: " + node.get("nodeRef") + " exceeds Max file size.");
+                return false;
+            }
+
+            return true;
         }
         catch (Exception e)
         {
-            throw new AlfrescoRuntimeException(
-                "Failed to run action evaluator: " + e.getMessage());
+            throw new AlfrescoRuntimeException("Failed to run action evaluator: " + e.getMessage());
         }
-
-        return true;
     }
 
     private String getContentType(String mimetype)
@@ -105,7 +112,6 @@ public class SizeLimitEvaluator
         {
             return importFormats.get(mimetype).toString();
         }
-
         return null;
     }
 
@@ -113,11 +119,11 @@ public class SizeLimitEvaluator
     {
         switch (contentType)
         {
-        case "document":
+        case DOCUMENT_TYPE:
             return maxDocumentSize;
-        case "spreadsheet":
+        case SPREADSHEET_TYPE:
             return maxSpreadsheetSize;
-        case "presentation":
+        case PRESENTATION_TYPE:
             return maxPresentationSize;
         default:
             return Long.MAX_VALUE;

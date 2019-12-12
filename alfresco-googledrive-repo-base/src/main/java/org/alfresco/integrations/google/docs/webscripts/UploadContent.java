@@ -186,8 +186,11 @@ public class UploadContent extends GoogleDocsWebScripts
                     // autoVersionOnUpdateProps now set to false to follow Share upload scripts (fixes GOOGLEDOCS-111)
                     nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, false);
 
-                    log.debug(
-                        "Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Version Node:" + nodeRef +
+                                  "; Version Properties: " + versionProperties);
+                    }
                     versionService.createVersion(nodeRef, versionProperties);
                 }
 
@@ -257,7 +260,10 @@ public class UploadContent extends GoogleDocsWebScripts
             {
                 throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
-            log.debug("Parsed JSON: " + jsonStr);
+            if (log.isDebugEnabled())
+            {
+                log.debug("Parsed JSON: " + jsonStr);
+            }
 
             json = new JSONObject(jsonStr);
 

@@ -122,192 +122,153 @@ public class DiscardContent extends GoogleDocsWebScripts
         final Credential credential;
         boolean deleted = false;
 
-        if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
+        if (!nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
         {
-            try
+            throw new WebScriptException(SC_NOT_ACCEPTABLE,
+                "Missing Google Docs Aspect on " + nodeRef.toString());
+        }
+        try
+        {
+            //if the user is the lock owner run as the calling user else if the calling user is a Site Admin masquerade as the
+            // Google Docs lock owner
+            if (googledocsService.isGoogleDocsLockOwner(nodeRef))
             {
-                //if the user is the lock owner run as the calling user else if the calling user is a Site Admin masquerade as the
-                // Google Docs lock owner
-                if (googledocsService.isGoogleDocsLockOwner(nodeRef))
+                credential = googledocsService.getCredential();
+
+                if (!Boolean.valueOf(map.get(JSON_KEY_OVERRIDE).toString()))
                 {
-                    credential = googledocsService.getCredential();
+                    SiteInfo siteInfo = null;
+                    String pathElement = getPathElement(nodeRef, 2);
 
-                    if (!Boolean.valueOf(map.get(JSON_KEY_OVERRIDE).toString()))
+                    //Is the node in a site?
+                    if (pathElement.equals(ALF_SITES_PATH_FQNS_ELEMENT))
                     {
-                        SiteInfo siteInfo = null;
-                        String pathElement = getPathElement(nodeRef, 2);
-
-                        //Is the node in a site?
-                        if (pathElement.equals(ALF_SITES_PATH_FQNS_ELEMENT))
+                        siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
+                    }
+                    //The second part of this test maybe too exclusive.  What if the user has write permissions to the node
+                    // but not membership in the containing site? Should the test just ask if the user has write permission
+                    // to the node?
+                    if (siteInfo == null || siteService.isMember(siteInfo.getShortName(),
+                        AuthenticationUtil.getRunAsUser()))
+                    {
+                        if (googledocsService.hasConcurrentEditors(credential, nodeRef))
                         {
-                            siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
-                        }
-                        //The second part of this test maybe too exclusive.  What if the user has write permissions to the node
-                        // but not membership in the containing site? Should the test just ask if the user has write permission
-                        // to the node?
-                        if (siteInfo == null || siteService.isMember(siteInfo.getShortName(),
-                            AuthenticationUtil.getRunAsUser()))
-                        {
-                            if (googledocsService.hasConcurrentEditors(credential, nodeRef))
-                            {
-                                throw new WebScriptException(SC_CONFLICT,
-                                    "Node: " + nodeRef.toString() + " has concurrent editors.");
-                            }
-                        }
-                        else
-                        {
-                            throw new AccessDeniedException(
-                                "Access Denied.  You do not have the appropriate permissions to perform this operation.");
+                            throw new WebScriptException(SC_CONFLICT,
+                                "Node: " + nodeRef.toString() + " has concurrent editors.");
                         }
                     }
-
-                    deleted = delete(credential, nodeRef);
-                }
-                else if (googledocsService.isSiteManager(nodeRef,
-                    AuthenticationUtil.getFullyAuthenticatedUser()))
-                {
-                    final String lockOwner = googledocsService.getGoogleDocsLockOwner(nodeRef);
-
-                    if (lockOwner != null)
+                    else
                     {
-                        deleted = AuthenticationUtil.runAs(() -> {
-                            boolean deletedAsUser;
+                        throw new AccessDeniedException(
+                            "Access Denied.  You do not have the appropriate permissions to perform this operation.");
+                    }
+                }
 
-                            try
-                            {
-                                deletedAsUser = delete(null, nodeRef);
-                            }
-                            // If we are unable to delete the document from Drive (because we no longer have permission) we still need to unlock the document
-                            // and clean up (undecorate) the node.
-                            catch (GoogleDocsServiceException | GoogleDocsAuthenticationException e)
-                            {
-                                Throwable thrown = e.getCause();
+                deleted = delete(credential, nodeRef);
+            }
+            else if (googledocsService.isSiteManager(nodeRef,
+                AuthenticationUtil.getFullyAuthenticatedUser()))
+            {
+                final String lockOwner = googledocsService.getGoogleDocsLockOwner(nodeRef);
 
-                                if ((thrown instanceof GoogleJsonResponseException ||
-                                     thrown instanceof TokenResponseException))
+                if (lockOwner != null)
+                {
+                    deleted = AuthenticationUtil.runAs(() -> {
+                        boolean deletedAsUser;
+
+                        try
+                        {
+                            deletedAsUser = delete(null, nodeRef);
+                        }
+                        // If we are unable to delete the document from Drive (because we no longer have permission) we still need to unlock the document
+                        // and clean up (undecorate) the node.
+                        catch (GoogleDocsServiceException | GoogleDocsAuthenticationException e)
+                        {
+                            Throwable thrown = e.getCause();
+
+                            if ((thrown instanceof GoogleJsonResponseException ||
+                                 thrown instanceof TokenResponseException))
+                            {
+                                final int status1;
+
+                                if (thrown instanceof GoogleJsonResponseException)
                                 {
-                                    final int status1;
+                                    status1 = ((GoogleJsonResponseException) thrown).getStatusCode();
+                                }
+                                else
+                                {
+                                    status1 = ((TokenResponseException) thrown).getStatusCode();
+                                }
 
-                                    if (thrown instanceof GoogleJsonResponseException)
-                                    {
-                                        status1 = ((GoogleJsonResponseException) thrown).getStatusCode();
-                                    }
-                                    else
-                                    {
-                                        status1 = ((TokenResponseException) thrown).getStatusCode();
-                                    }
+                                if (status1 == SC_UNAUTHORIZED || status1 == SC_BAD_REQUEST)
+                                {
+                                    log.info(
+                                        "Unable to access " + nodeRef + " as " + lockOwner);
+                                    googledocsService.unlockNode(nodeRef);
+                                    googledocsService.unDecorateNode(nodeRef);
 
-                                    if (status1 == SC_UNAUTHORIZED || status1 == SC_BAD_REQUEST)
+                                    if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
                                     {
-                                        log.info(
-                                            "Unable to access " + nodeRef + " as " + lockOwner);
-                                        googledocsService.unlockNode(nodeRef);
-                                        googledocsService.unDecorateNode(nodeRef);
-
-                                        if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
-                                        {
-                                            nodeService.deleteNode(nodeRef);
-                                        }
+                                        nodeService.deleteNode(nodeRef);
                                     }
-                                    else
-                                    {
-                                        throw e;
-                                    }
-
-                                    deletedAsUser = true;
                                 }
                                 else
                                 {
                                     throw e;
                                 }
-                            }
-                            catch (IllegalStateException e)
-                            {
-                                log.info("Unable to access " + nodeRef + " as " + lockOwner);
-                                googledocsService.unlockNode(nodeRef);
-                                googledocsService.unDecorateNode(nodeRef);
-
-                                if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
-                                {
-                                    nodeService.deleteNode(nodeRef);
-                                }
 
                                 deletedAsUser = true;
                             }
-
-                            return deletedAsUser;
-                        }, lockOwner);
-                    }
-                }
-
-                model.put(MODEL_SUCCESS, deleted);
-            }
-            catch (InvalidNodeRefException e)
-            {
-                throw new WebScriptException(SC_NOT_FOUND, e.getMessage());
-            }
-            catch (IOException e)
-            {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
-            {
-                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
-            }
-            catch (GoogleDocsServiceException e)
-            {
-                if (e.getPassedStatusCode() == SC_NOT_FOUND)
-                {
-                    // This code will make changes after the rollback has occurred to clean up the node: remove the lock and the Google
-                    // Docs aspect. If it has the temporary aspect it will also remove the node from Alfresco
-                    AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
-                    {
-                        public void afterCommit()
-                        {
-                            transactionService.getRetryingTransactionHelper().doInTransaction(
-                                () -> {
-                                    AuthenticationUtil.runAsSystem(() -> {
-                                        googledocsService.unlockNode(nodeRef);
-                                        googledocsService.unDecorateNode(nodeRef);
-
-                                        if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
-                                        {
-                                            nodeService.deleteNode(nodeRef);
-                                        }
-
-                                        return null;
-                                    });
-
-                                    return null;
-                                }, false, true);
+                            else
+                            {
+                                throw e;
+                            }
                         }
-                    });
-                    model.put(MODEL_SUCCESS, true);
-                }
-                else if (e.getPassedStatusCode() > -1)
-                {
-                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
-                }
-                else
-                {
-                    throw new WebScriptException(e.getMessage());
+                        catch (IllegalStateException e)
+                        {
+                            log.info("Unable to access " + nodeRef + " as " + lockOwner);
+                            googledocsService.unlockNode(nodeRef);
+                            googledocsService.unDecorateNode(nodeRef);
+
+                            if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
+                            {
+                                nodeService.deleteNode(nodeRef);
+                            }
+
+                            deletedAsUser = true;
+                        }
+
+                        return deletedAsUser;
+                    }, lockOwner);
                 }
             }
-            catch (AccessDeniedException e)
+
+            model.put(MODEL_SUCCESS, deleted);
+        }
+        catch (InvalidNodeRefException e)
+        {
+            throw new WebScriptException(SC_NOT_FOUND, e.getMessage());
+        }
+        catch (IOException e)
+        {
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
+        {
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
+        }
+        catch (GoogleDocsServiceException e)
+        {
+            if (e.getPassedStatusCode() == SC_NOT_FOUND)
             {
                 // This code will make changes after the rollback has occurred to clean up the node: remove the lock and the Google
                 // Docs aspect. If it has the temporary aspect it will also remove the node from Alfresco
                 AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
                 {
-                    public void afterRollback()
+                    public void afterCommit()
                     {
-                        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-                            File file = googledocsService.getDriveFile(null, nodeRef);
-                            googledocsService.unlockNode(nodeRef);
-                            boolean deleted1 = googledocsService.deleteContent(null, nodeRef, file);
-
-                            if (deleted1)
-                            {
+                        transactionService.getRetryingTransactionHelper().doInTransaction(
+                            () -> {
                                 AuthenticationUtil.runAsSystem(() -> {
                                     googledocsService.unlockNode(nodeRef);
                                     googledocsService.unDecorateNode(nodeRef);
@@ -319,20 +280,56 @@ public class DiscardContent extends GoogleDocsWebScripts
 
                                     return null;
                                 });
-                            }
 
-                            return null;
-                        }, false, true);
+                                return null;
+                            }, false, true);
                     }
                 });
-
-                throw new WebScriptException(SC_FORBIDDEN, e.getMessage(), e);
+                model.put(MODEL_SUCCESS, true);
+            }
+            else if (e.getPassedStatusCode() > -1)
+            {
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
+            }
+            else
+            {
+                throw new WebScriptException(e.getMessage());
             }
         }
-        else
+        catch (AccessDeniedException e)
         {
-            throw new WebScriptException(SC_NOT_ACCEPTABLE,
-                "Missing Google Docs Aspect on " + nodeRef.toString());
+            // This code will make changes after the rollback has occurred to clean up the node: remove the lock and the Google
+            // Docs aspect. If it has the temporary aspect it will also remove the node from Alfresco
+            AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
+            {
+                public void afterRollback()
+                {
+                    transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+                        File file = googledocsService.getDriveFile(null, nodeRef);
+                        googledocsService.unlockNode(nodeRef);
+                        boolean deleted1 = googledocsService.deleteContent(null, nodeRef, file);
+
+                        if (deleted1)
+                        {
+                            AuthenticationUtil.runAsSystem(() -> {
+                                googledocsService.unlockNode(nodeRef);
+                                googledocsService.unDecorateNode(nodeRef);
+
+                                if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
+                                {
+                                    nodeService.deleteNode(nodeRef);
+                                }
+
+                                return null;
+                            });
+                        }
+
+                        return null;
+                    }, false, true);
+                }
+            });
+
+            throw new WebScriptException(SC_FORBIDDEN, e.getMessage(), e);
         }
 
         return model;
