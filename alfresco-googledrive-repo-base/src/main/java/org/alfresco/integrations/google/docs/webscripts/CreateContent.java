@@ -15,30 +15,39 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.DOCUMENT_TYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_DOCUMENT;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_PRESENTATION;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_SPREADSHEET;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_DOCUMENT_NAME;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_PRESENTATION_NAME;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_SPREADSHEET_NAME;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.PRESENTATION_TYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.SPREADSHEET_TYPE;
+import static org.alfresco.model.ContentModel.TYPE_CONTENT;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_CONFLICT;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.commons.httpclient.HttpStatus.SC_SERVICE_UNAVAILABLE;
+import static org.apache.commons.httpclient.HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.drive.model.File;
-import org.alfresco.integrations.google.docs.GoogleDocsConstants;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsTypeException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.integrations.google.docs.utils.FileNameUtil;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.management.subsystems.ApplicationContextFactory;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileNotFoundException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -46,6 +55,9 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.drive.model.File;
 
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
@@ -91,7 +103,7 @@ public class CreateContent
         // Set Service Beans
         this.getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         if (googledocsService.isEnabled())
         {
@@ -101,29 +113,28 @@ public class CreateContent
 
             log.debug("ContentType: " + contentType + "; Parent: " + parentNodeRef);
 
-            NodeRef newNode = null;
-            File file = null;
+            NodeRef newNode;
+            File file;
             try
             {
                 Credential credential = googledocsService.getCredential();
-                if (contentType.equals(GoogleDocsConstants.DOCUMENT_TYPE))
+                switch (contentType)
                 {
-                    newNode = createFile(parentNodeRef, contentType, GoogleDocsConstants.MIMETYPE_DOCUMENT);
+                case DOCUMENT_TYPE:
+                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_DOCUMENT);
                     file = googledocsService.createDocument(credential, newNode);
-                }
-                else if (contentType.equals(GoogleDocsConstants.SPREADSHEET_TYPE))
-                {
-                    newNode = createFile(parentNodeRef, contentType, GoogleDocsConstants.MIMETYPE_SPREADSHEET);
+                    break;
+                case SPREADSHEET_TYPE:
+                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_SPREADSHEET);
                     file = googledocsService.createSpreadSheet(credential, newNode);
-                }
-                else if (contentType.equals(GoogleDocsConstants.PRESENTATION_TYPE))
-                {
-                    newNode = createFile(parentNodeRef, contentType, GoogleDocsConstants.MIMETYPE_PRESENTATION);
+                    break;
+                case PRESENTATION_TYPE:
+                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_PRESENTATION);
                     file = googledocsService.createPresentation(credential, newNode);
-                }
-                else
-                {
-                    throw new WebScriptException(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE, "Content Type Not Found.");
+                    break;
+                default:
+                    throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
+                        "Content Type Not Found.");
                 }
 
                 googledocsService.decorateNode(newNode, file, googledocsService.getLatestRevision(credential, file), true);
@@ -140,25 +151,13 @@ public class CreateContent
                     throw new WebScriptException(gdse.getMessage());
                 }
             }
-            catch (GoogleDocsTypeException gdte)
+            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
             {
-                throw new WebScriptException(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE, gdte.getMessage());
+                throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
             }
-            catch (GoogleDocsAuthenticationException gdae)
+            catch (Exception ioe)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage());
-            }
-            catch (GoogleDocsRefreshTokenException gdrte)
-            {
-                throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage());
-            }
-            catch (IOException ioe)
-            {
-                throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
-            }
-            catch (Exception e)
-            {
-                throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
             }
 
             googledocsService.lockNode(newNode);
@@ -169,7 +168,7 @@ public class CreateContent
         }
         else
         {
-            throw new WebScriptException(HttpStatus.SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
+            throw new WebScriptException(SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
         }
 
         return model;
@@ -190,7 +189,7 @@ public class CreateContent
     private NodeRef createFile(final NodeRef parentNodeRef, final String contentType, final String mimetype)
     {
         String baseName = getNewFileName(contentType), fileExt = fileNameUtil.getExtension(mimetype);
-        final StringBuffer sb = new StringBuffer(baseName);
+        final StringBuilder sb = new StringBuilder(baseName);
         if (fileExt != null && !fileExt.equals(""))
         {
             sb.append(".").append(fileExt);
@@ -199,13 +198,14 @@ public class CreateContent
 
         while (i <= maxCount)
         {
-            List<String> parts = new ArrayList<String>(1);
+            List<String> parts = new ArrayList<>(1);
             parts.add(QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, sb.toString()).toPrefixString());
             try
             {
                 if (fileFolderService.resolveNamePath(parentNodeRef, parts, false) == null)
                 {
-                    return fileFolderService.create(parentNodeRef, sb.toString(), ContentModel.TYPE_CONTENT).getNodeRef();
+                    return fileFolderService.create(parentNodeRef, sb.toString(),
+                        TYPE_CONTENT).getNodeRef();
                 }
                 else
                 {
@@ -218,11 +218,13 @@ public class CreateContent
             }
             catch (FileNotFoundException e) // We should never catch this because we set mustExist=false
             {
-                throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unexpected FileNotFoundException", e);
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR,
+                    "Unexpected FileNotFoundException", e);
             }
             i++;
         }
-        throw new WebScriptException(HttpStatus.SC_CONFLICT, "Too many untitled files. Try renaming some existing documents.");
+        throw new WebScriptException(SC_CONFLICT,
+            "Too many untitled files. Try renaming some existing documents.");
     }
 
 
@@ -235,17 +237,17 @@ public class CreateContent
     private static String getNewFileName(String type)
     {
         String name = null;
-        if (type.equals(GoogleDocsConstants.DOCUMENT_TYPE))
+        switch (type)
         {
-            name = GoogleDocsConstants.NEW_DOCUMENT_NAME;
-        }
-        else if (type.equals(GoogleDocsConstants.SPREADSHEET_TYPE))
-        {
-            name = GoogleDocsConstants.NEW_SPREADSHEET_NAME;
-        }
-        else if (type.equals(GoogleDocsConstants.PRESENTATION_TYPE))
-        {
-            name = GoogleDocsConstants.NEW_PRESENTATION_NAME;
+        case DOCUMENT_TYPE:
+            name = NEW_DOCUMENT_NAME;
+            break;
+        case SPREADSHEET_TYPE:
+            name = NEW_SPREADSHEET_NAME;
+            break;
+        case PRESENTATION_TYPE:
+            name = NEW_PRESENTATION_NAME;
+            break;
         }
 
         return name;

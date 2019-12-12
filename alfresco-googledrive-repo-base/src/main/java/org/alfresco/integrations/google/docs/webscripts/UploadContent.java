@@ -15,6 +15,17 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE;
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_CURRENT_PERMISSIONS;
+import static org.alfresco.model.ContentModel.ASPECT_TEMPORARY;
+import static org.alfresco.model.ContentModel.ASPECT_VERSIONABLE;
+import static org.alfresco.model.ContentModel.PROP_AUTO_VERSION;
+import static org.alfresco.model.ContentModel.PROP_AUTO_VERSION_PROPS;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.commons.httpclient.HttpStatus.SC_SERVICE_UNAVAILABLE;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,21 +33,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.drive.model.File;
-import org.alfresco.integrations.google.docs.GoogleDocsModel;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService.GooglePermission;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.version.Version2Model;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.version.VersionType;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -47,6 +53,9 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.drive.model.File;
 
 
 /**
@@ -99,7 +108,7 @@ public class UploadContent
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         if (googledocsService.isEnabled())
         {
@@ -114,7 +123,7 @@ public class UploadContent
         {
             Credential credential = googledocsService.getCredential();
 
-            if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
+            if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
             {
                 // Check the doc exists in Google - it may have been removed accidentally
                 try
@@ -129,11 +138,12 @@ public class UploadContent
                         log.debug(nodeRef + " Uploaded to Google.");
                     }
                     // Re-apply the previous permissions, if they exist
-                    if (nodeService.getProperty(nodeRef, GoogleDocsModel.PROP_CURRENT_PERMISSIONS) != null)
+                    if (nodeService.getProperty(nodeRef, PROP_CURRENT_PERMISSIONS) != null)
                     {
                         googledocsService.addRemotePermissions(credential,
                                 file,
-                                googledocsService.getGooglePermissions(nodeRef, GoogleDocsModel.PROP_CURRENT_PERMISSIONS)
+                            googledocsService.getGooglePermissions(nodeRef,
+                                PROP_CURRENT_PERMISSIONS)
                         );
                     }
                 }
@@ -164,15 +174,15 @@ public class UploadContent
             // version component to be triggered on save. The versionable aspect
             // is only added if this is existing content, not if it was just
             // created where the document is the initial version when saved
-            if (!nodeService.hasAspect(nodeRef, ContentModel.ASPECT_TEMPORARY)
-                && !nodeService.hasAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE))
+            if (!nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY)
+                && !nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
             {
-                Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
+                Map<String, Serializable> versionProperties = new HashMap<>();
                 versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
 
-                nodeService.setProperty(nodeRef, ContentModel.PROP_AUTO_VERSION, true);
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
                 // autoVersionOnUpdateProps now set to false to follow Share upload scripts (fixes GOOGLEDOCS-111)
-                nodeService.setProperty(nodeRef, ContentModel.PROP_AUTO_VERSION_PROPS, false);
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, false);
 
                 log.debug("Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
                 versionService.createVersion(nodeRef, versionProperties);
@@ -191,9 +201,9 @@ public class UploadContent
             googledocsService.decorateNode(nodeRef, file, googledocsService.getLatestRevision(credential, file), (List<GooglePermission>) jsonParams.get(PARAM_PERMISSIONS), false);
             googledocsService.lockNode(nodeRef);
         }
-        catch (GoogleDocsAuthenticationException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage(), gdae);
+            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage(), gdae);
         }
         catch (GoogleDocsServiceException gdse)
         {
@@ -206,26 +216,18 @@ public class UploadContent
                 throw new WebScriptException(gdse.getMessage());
             }
         }
-        catch (GoogleDocsRefreshTokenException gdrte)
+        catch (Exception ioe)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage(), gdrte);
-        }
-        catch (IOException ioe)
-        {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
-        }
-        catch (Exception e)
-        {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
         }
 
-        model.put(MODEL_NODEREF, nodeRef.toString());
+            model.put(MODEL_NODEREF, nodeRef.toString());
         model.put(MODEL_EDITOR_URL, file.getWebViewLink());
         
         }
         else
         {
-            throw new WebScriptException(HttpStatus.SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
+            throw new WebScriptException(SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
         }
 
         return model;
@@ -233,10 +235,10 @@ public class UploadContent
 
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {
-        final Map<String, Serializable> result = new HashMap<String, Serializable>();
+        final Map<String, Serializable> result = new HashMap<>();
         Content content = req.getContent();
         String jsonStr = null;
-        JSONObject json = null;
+        JSONObject json;
 
         try
         {
@@ -249,7 +251,7 @@ public class UploadContent
 
             if (jsonStr == null || jsonStr.trim().length() == 0)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "No content sent with request.");
+                throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
             log.debug("Parsed JSON: " + jsonStr);
 
@@ -258,15 +260,17 @@ public class UploadContent
             if (json.has(JSON_KEY_PERMISSIONS))
             {
                 JSONObject permissionData = json.getJSONObject(JSON_KEY_PERMISSIONS);
-                boolean sendEmail = permissionData.has(JSON_KEY_PERMISSIONS_SEND_EMAIL) ? 
-                        permissionData.getBoolean(JSON_KEY_PERMISSIONS_SEND_EMAIL) : true;
+                boolean sendEmail = !permissionData.has(
+                    JSON_KEY_PERMISSIONS_SEND_EMAIL) || permissionData.getBoolean(
+                    JSON_KEY_PERMISSIONS_SEND_EMAIL);
                 if (!permissionData.has(JSON_KEY_PERMISSIONS_ITEMS))
                 {
-                    throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Key " + JSON_KEY_PERMISSIONS_ITEMS + " is missing from JSON object: "
-                            + permissionData.toString());
+                    throw new WebScriptException(SC_BAD_REQUEST,
+                        "Key " + JSON_KEY_PERMISSIONS_ITEMS + " is missing from JSON object: "
+                        + permissionData.toString());
                 }
                 JSONArray jsonPerms = permissionData.getJSONArray(JSON_KEY_PERMISSIONS_ITEMS);
-                ArrayList<GooglePermission> permissions = new ArrayList<GoogleDocsService.GooglePermission>(jsonPerms.length());
+                ArrayList<GooglePermission> permissions = new ArrayList<>(jsonPerms.length());
                 for (int i = 0; i < jsonPerms.length(); i++)
                 {
                     JSONObject jsonPerm = jsonPerms.getJSONObject(i);
@@ -277,8 +281,9 @@ public class UploadContent
                     }
                     else
                     {
-                        throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Key " + JSON_KEY_AUTHORITY_ID + " is missing from JSON object: "
-                                                                                + jsonPerm.toString());
+                        throw new WebScriptException(SC_BAD_REQUEST,
+                            "Key " + JSON_KEY_AUTHORITY_ID + " is missing from JSON object: "
+                            + jsonPerm.toString());
                     }
                     if (jsonPerm.has(JSON_KEY_AUTHORITY_TYPE))
                     {
@@ -294,22 +299,23 @@ public class UploadContent
                     }
                     else
                     {
-                        throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Key " + JSON_KEY_ROLE_NAME + " is missing from JSON object: "
-                                                                                + jsonPerm.toString());
+                        throw new WebScriptException(SC_BAD_REQUEST,
+                            "Key " + JSON_KEY_ROLE_NAME + " is missing from JSON object: "
+                            + jsonPerm.toString());
                     }
                     permissions.add(new GooglePermission(authorityId, authorityType, roleName));
                 }
                 result.put(PARAM_PERMISSIONS, permissions);
-                result.put(PARAM_SEND_EMAIL, Boolean.valueOf(sendEmail));
+                result.put(PARAM_SEND_EMAIL, sendEmail);
             }
         }
         catch (final IOException ioe)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
         }
         catch (final JSONException je)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
         }
         catch (final WebScriptException wse)
         {
@@ -317,7 +323,8 @@ public class UploadContent
         }
         catch (final Exception e)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.", e);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.",
+                e);
         }
 
         return result;

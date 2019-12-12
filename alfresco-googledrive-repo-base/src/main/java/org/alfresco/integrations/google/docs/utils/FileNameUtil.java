@@ -82,7 +82,7 @@ public class FileNameUtil
 
     public String incrementFileName(String name, String mimetype)
     {
-        String newname = null;
+        String newname;
         String extension = mimetypeService.getExtension(mimetype);
 
         log.debug("Extension: " + extension);
@@ -197,14 +197,7 @@ public class FileNameUtil
      */
     public SiteInfo resolveSiteInfo(final NodeRef nodeRef)
     {
-        SiteInfo siteInfo = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<SiteInfo>()
-        {
-            @Override
-            public SiteInfo doWork() throws Exception
-            {
-                return siteService.getSite(nodeRef);
-            }
-        });
+        SiteInfo siteInfo = AuthenticationUtil.runAsSystem(() -> siteService.getSite(nodeRef));
 
         if (siteInfo != null && permissionService.hasReadPermission(siteInfo.getNodeRef()).equals(AccessStatus.ALLOWED))
         {

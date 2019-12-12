@@ -15,8 +15,8 @@
 
 package org.alfresco.integrations.google.docs.model;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE;
 
-import org.alfresco.integrations.google.docs.GoogleDocsModel;
 import org.alfresco.repo.copy.CopyBehaviourCallback;
 import org.alfresco.repo.copy.CopyDetails;
 import org.alfresco.repo.copy.CopyServicePolicies;
@@ -60,8 +60,10 @@ public class EditingInGoogleAspect
     public void init()
     {
         log.debug("Registering Behaviours in EditingInGoogleAspect");
-        policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyNodePolicy.QNAME, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE, new JavaBehaviour(this, "getCopyCallback"));
-        policyComponent.bindClassBehaviour(VersionServicePolicies.AfterVersionRevertPolicy.QNAME, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE, new JavaBehaviour(this, "afterVersionRevert"));
+        policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyNodePolicy.QNAME,
+            ASPECT_EDITING_IN_GOOGLE, new JavaBehaviour(this, "getCopyCallback"));
+        policyComponent.bindClassBehaviour(VersionServicePolicies.AfterVersionRevertPolicy.QNAME,
+            ASPECT_EDITING_IN_GOOGLE, new JavaBehaviour(this, "afterVersionRevert"));
     }
 
 
@@ -89,10 +91,10 @@ public class EditingInGoogleAspect
     @Override public void afterVersionRevert(NodeRef nodeRef, Version version)
     {
         log.debug("A node was reverted that has the EditingInGoogle aspect.  The aspect should be removed on the reverted node.");
-        if(nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
+        if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
         {
             log.debug("Removing EditingInGoogle Aspect from reverted node");
-            nodeService.removeAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE);
+            nodeService.removeAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE);
         }
 
     }
