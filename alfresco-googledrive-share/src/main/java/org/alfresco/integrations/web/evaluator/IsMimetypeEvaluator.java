@@ -57,10 +57,10 @@ public class IsMimetypeEvaluator
                 log.debug("NodeRef: " + node.get("nodeRef") + "; Mimetype supported: " + mimetype);
             }
         }
-        catch (Exception err)
+        catch (Exception e)
         {
             throw new AlfrescoRuntimeException(
-                "Failed to run action evaluator: " + err.getMessage());
+                "Failed to run action evaluator: " + e.getMessage());
         }
 
         return true;

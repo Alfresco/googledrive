@@ -766,9 +766,9 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
             log.debug("Authentication Complete: " + true);
             return true;
         }
-        catch (NoSuchSystemException nsse)
+        catch (NoSuchSystemException e)
         {
-            throw new GoogleDocsServiceException(nsse.getMessage());
+            throw new GoogleDocsServiceException(e.getMessage());
         }
     }
 
@@ -1175,9 +1175,9 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
                         .setFields(ALL_PROPERTY_FIELDS)
                         .execute();
         }
-        catch (IOException ioe)
+        catch (IOException e)
         {
-            throw ioe;
+            throw e;
         }
         catch (Exception e)
         {
@@ -1226,18 +1226,18 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
             {
                 deleteContent(credential, nodeRef, file); // also undecorates node
             }
-            catch (GoogleDocsServiceException gdse)
+            catch (GoogleDocsServiceException e)
             {
                 if (forceRemoval)
                 {
                     log.debug(
-                        "There was an error (" + gdse.getMessage() + ": " + gdse.getPassedStatusCode() + ") removing "
+                        "There was an error (" + e.getMessage() + ": " + e.getPassedStatusCode() + ") removing "
                         + file.getName() + " from " + AuthenticationUtil.getFullyAuthenticatedUser()
                         + "'s Google Account. Force Removal ignores the error.");
                 }
                 else
                 {
-                    throw gdse;
+                    throw e;
                 }
             }
 

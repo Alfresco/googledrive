@@ -60,9 +60,9 @@ public class CompleteAuth extends GoogleDocsWebScripts
                 authenticated = googledocsService.completeAuthentication(
                     req.getParameter(PARAM_ACCESS_TOKEN));
             }
-            catch (GoogleDocsServiceException | IOException gdse)
+            catch (GoogleDocsServiceException | IOException e)
             {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, gdse.getMessage());
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
 

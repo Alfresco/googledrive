@@ -69,11 +69,11 @@ public class Exportable extends GoogleDocsWebScripts
                 throw new WebScriptException(SC_NOT_ACCEPTABLE, "Content not exportable");
             }
         }
-        catch (MustUpgradeFormatException mufe)
+        catch (MustUpgradeFormatException e)
         {
             model.put(MODEL_EXPORT_ACION, ACTION_UPGRADE);
         }
-        catch (MustDowngradeFormatException mdfe)
+        catch (MustDowngradeFormatException e)
         {
             model.put(MODEL_EXPORT_ACION, ACTION_DOWNGRADE);
         }

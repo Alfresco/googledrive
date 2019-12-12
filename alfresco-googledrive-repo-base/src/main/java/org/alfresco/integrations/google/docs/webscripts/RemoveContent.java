@@ -109,26 +109,26 @@ public class RemoveContent extends GoogleDocsWebScripts
                 /* if we reach this point all should be completed */
                 success = true;
             }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
+            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
             {
-                throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
+                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
             }
-            catch (GoogleDocsServiceException gdse)
+            catch (GoogleDocsServiceException e)
             {
-                if (gdse.getPassedStatusCode() > -1)
+                if (e.getPassedStatusCode() > -1)
                 {
-                    throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
+                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
                 }
                 else
                 {
-                    throw new WebScriptException(gdse.getMessage());
+                    throw new WebScriptException(e.getMessage());
                 }
             }
-            catch (ConstraintException ce)
+            catch (ConstraintException e)
             {
-                throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
+                throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, e.getMessage(), e);
             }
-            catch (AccessDeniedException ade)
+            catch (AccessDeniedException e)
             {
                 // This code will make changes after the rollback has occurred to clean up the node
                 // (remove the lock and the Google Docs aspect
@@ -154,7 +154,7 @@ public class RemoveContent extends GoogleDocsWebScripts
                     }
                 });
 
-                throw new WebScriptException(SC_FORBIDDEN, ade.getMessage(), ade);
+                throw new WebScriptException(SC_FORBIDDEN, e.getMessage(), e);
             }
             catch (Exception e)
             {
@@ -212,17 +212,17 @@ public class RemoveContent extends GoogleDocsWebScripts
                 result.put(JSON_KEY_FORCE, json.getBoolean(JSON_KEY_FORCE));
             }
         }
-        catch (final IOException ioe)
+        catch (final IOException e)
         {
-            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
-        catch (final JSONException je)
+        catch (final JSONException e)
         {
             throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
         }
-        catch (final WebScriptException wse)
+        catch (final WebScriptException e)
         {
-            throw wse; // Ensure WebScriptExceptions get rethrown verbatim
+            throw e; // Ensure WebScriptExceptions get rethrown verbatim
         }
         catch (final Exception e)
         {
