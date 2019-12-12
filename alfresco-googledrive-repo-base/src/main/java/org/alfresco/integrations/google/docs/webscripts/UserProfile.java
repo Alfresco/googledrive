@@ -94,10 +94,7 @@ public class UserProfile extends GoogleDocsWebScripts
                 {
                     throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
                 }
-                else
-                {
-                    throw new WebScriptException(e.getMessage());
-                }
+                throw new WebScriptException(e.getMessage());
             }
             catch (IOException e)
             {

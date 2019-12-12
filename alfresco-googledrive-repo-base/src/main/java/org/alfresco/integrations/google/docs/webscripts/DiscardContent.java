@@ -291,10 +291,7 @@ public class DiscardContent extends GoogleDocsWebScripts
             {
                 throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
             }
-            else
-            {
-                throw new WebScriptException(e.getMessage());
-            }
+            throw new WebScriptException(e.getMessage());
         }
         catch (AccessDeniedException e)
         {
@@ -398,19 +395,16 @@ public class DiscardContent extends GoogleDocsWebScripts
                     "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
                     + jsonStr);
             }
+            NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
+            result.put(JSON_KEY_NODEREF, nodeRef);
+
+            if (json.has(JSON_KEY_OVERRIDE))
+            {
+                result.put(JSON_KEY_OVERRIDE, json.getBoolean(JSON_KEY_OVERRIDE));
+            }
             else
             {
-                NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
-                result.put(JSON_KEY_NODEREF, nodeRef);
-
-                if (json.has(JSON_KEY_OVERRIDE))
-                {
-                    result.put(JSON_KEY_OVERRIDE, json.getBoolean(JSON_KEY_OVERRIDE));
-                }
-                else
-                {
-                    result.put(JSON_KEY_OVERRIDE, false);
-                }
+                result.put(JSON_KEY_OVERRIDE, false);
             }
         }
         catch (final IOException e)

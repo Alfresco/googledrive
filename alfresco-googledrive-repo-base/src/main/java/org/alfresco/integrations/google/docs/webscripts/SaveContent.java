@@ -135,8 +135,6 @@ public class SaveContent extends GoogleDocsWebScripts
 
         Map<String, Object> model = new HashMap<>();
 
-        boolean success;
-
         Map<String, Serializable> map = parseContent(req);
         final NodeRef nodeRef = (NodeRef) map.get(JSON_KEY_NODEREF);
         log.debug("Saving Node to Alfresco from Google: " + nodeRef);
@@ -154,112 +152,103 @@ public class SaveContent extends GoogleDocsWebScripts
                 siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
             }
 
-            if (siteInfo == null || siteService.isMember(siteInfo.getShortName(),
+            if (siteInfo != null && !siteService.isMember(siteInfo.getShortName(),
                 AuthenticationUtil.getRunAsUser()))
-            {
-
-                if (!(Boolean) map.get(JSON_KEY_OVERRIDE))
-                {
-                    log.debug("Check for Concurent Users.");
-                    if (googledocsService.hasConcurrentEditors(credential, nodeRef))
-                    {
-                        throw new ConcurrentEditorException("Node: " + nodeRef.toString()
-                                                            + " has concurrent editors.");
-                    }
-                }
-
-                // Should the content be removed from the users Google Drive Account
-                boolean removeFromDrive = (map.get(
-                    JSON_KEY_REMOVEFROMDRIVE) != null) ? (Boolean) map.get(JSON_KEY_REMOVEFROMDRIVE)
-                                                       : true;
-
-                String contentType = googledocsService.getContentType(nodeRef);
-                log.debug("NodeRef: " + nodeRef + "; ContentType: " + contentType);
-                switch (contentType)
-                {
-                case DOCUMENT_TYPE:
-                    if (googledocsService.isGoogleDocsLockOwner(nodeRef))
-                    {
-                        googledocsService.unlockNode(nodeRef);
-                        googledocsService.getDocument(credential, nodeRef);
-
-                        success = true; // TODO Make getDocument return boolean
-                    }
-                    else
-                    {
-                        throw new WebScriptException(SC_FORBIDDEN,
-                            "Document is locked by another user.");
-                    }
-                    break;
-                case SPREADSHEET_TYPE:
-                    if (googledocsService.isGoogleDocsLockOwner(nodeRef))
-                    {
-                        googledocsService.unlockNode(nodeRef);
-                        googledocsService.getSpreadSheet(credential, nodeRef);
-
-                        success = true; // TODO Make getSpreadsheet return boolean
-                    }
-                    else
-                    {
-                        throw new WebScriptException(SC_FORBIDDEN,
-                            "Document is locked by another user.");
-                    }
-                    break;
-                case PRESENTATION_TYPE:
-                    if (googledocsService.isGoogleDocsLockOwner(nodeRef))
-                    {
-                        googledocsService.unlockNode(nodeRef);
-                        googledocsService.getPresentation(credential, nodeRef);
-
-                        success = true; // TODO Make getPresentation return boolean
-                    }
-                    else
-                    {
-                        throw new WebScriptException(SC_FORBIDDEN,
-                            "Document is locked by another user.");
-                    }
-                    break;
-                default:
-                    throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
-                        "Content Type: " + contentType + " unknown.");
-                }
-
-                // Finish this off with a version create or update
-                Map<String, Serializable> versionProperties = new HashMap<>();
-                if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
-                {
-                    versionProperties.put(Version2Model.PROP_VERSION_TYPE,
-                        map.get(JSON_KEY_MAJORVERSION));
-                    versionProperties.put(Version2Model.PROP_DESCRIPTION,
-                        map.get(JSON_KEY_DESCRIPTION));
-                }
-                else
-                {
-                    versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
-
-                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
-                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, true);
-                }
-
-                log.debug("Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
-                Version version = versionService.createVersion(nodeRef, versionProperties);
-
-                model.put(MODEL_VERSION, version.getVersionLabel());
-
-                if (!removeFromDrive)
-                {
-                    googledocsService.lockNode(nodeRef);
-                }
-                else
-                {
-                    googledocsService.deleteContent(credential, nodeRef);
-                }
-            }
-            else
             {
                 throw new AccessDeniedException(
                     "Access Denied.  You do not have the appropriate permissions to perform this operation.");
             }
+
+            if (!(Boolean) map.get(JSON_KEY_OVERRIDE))
+            {
+                log.debug("Check for Concurent Users.");
+                if (googledocsService.hasConcurrentEditors(credential, nodeRef))
+                {
+                    throw new ConcurrentEditorException("Node: " + nodeRef.toString()
+                                                        + " has concurrent editors.");
+                }
+            }
+
+            // Should the content be removed from the users Google Drive Account
+            boolean removeFromDrive = (map.get(
+                JSON_KEY_REMOVEFROMDRIVE) != null) ? (Boolean) map.get(JSON_KEY_REMOVEFROMDRIVE)
+                                                   : true;
+
+            String contentType = googledocsService.getContentType(nodeRef);
+            log.debug("NodeRef: " + nodeRef + "; ContentType: " + contentType);
+            switch (contentType)
+            {
+            case DOCUMENT_TYPE:
+                if (!googledocsService.isGoogleDocsLockOwner(nodeRef))
+                {
+                    throw new WebScriptException(SC_FORBIDDEN,
+                        "Document is locked by another user.");
+                }
+                googledocsService.unlockNode(nodeRef);
+                googledocsService.getDocument(credential, nodeRef);
+
+                // TODO Make getDocument return boolean
+                break;
+            case SPREADSHEET_TYPE:
+                if (!googledocsService.isGoogleDocsLockOwner(nodeRef))
+                {
+                    throw new WebScriptException(SC_FORBIDDEN,
+                        "Document is locked by another user.");
+                }
+                googledocsService.unlockNode(nodeRef);
+                googledocsService.getSpreadSheet(credential, nodeRef);
+
+                // TODO Make getSpreadsheet return boolean
+                break;
+            case PRESENTATION_TYPE:
+                if (!googledocsService.isGoogleDocsLockOwner(nodeRef))
+                {
+                    throw new WebScriptException(SC_FORBIDDEN,
+                        "Document is locked by another user.");
+                }
+                googledocsService.unlockNode(nodeRef);
+                googledocsService.getPresentation(credential, nodeRef);
+
+                // TODO Make getPresentation return boolean
+                break;
+            default:
+                throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
+                    "Content Type: " + contentType + " unknown.");
+            }
+
+            // Finish this off with a version create or update
+            Map<String, Serializable> versionProperties = new HashMap<>();
+            if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
+            {
+                versionProperties.put(Version2Model.PROP_VERSION_TYPE,
+                    map.get(JSON_KEY_MAJORVERSION));
+                versionProperties.put(Version2Model.PROP_DESCRIPTION,
+                    map.get(JSON_KEY_DESCRIPTION));
+            }
+            else
+            {
+                versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
+
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, true);
+            }
+
+            log.debug("Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
+            Version version = versionService.createVersion(nodeRef, versionProperties);
+
+            model.put(MODEL_VERSION, version.getVersionLabel());
+
+            if (!removeFromDrive)
+            {
+                googledocsService.lockNode(nodeRef);
+            }
+            else
+            {
+                googledocsService.deleteContent(credential, nodeRef);
+            }
+
+            model.put(MODEL_SUCCESS, true);
+            return model;
         }
         catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
@@ -271,10 +260,7 @@ public class SaveContent extends GoogleDocsWebScripts
             {
                 throw new WebScriptException(e.getPassedStatusCode(), e.getMessage(), e);
             }
-            else
-            {
-                throw new WebScriptException(e.getMessage(), e);
-            }
+            throw new WebScriptException(e.getMessage(), e);
         }
         catch (ConstraintException e)
         {
@@ -316,10 +302,6 @@ public class SaveContent extends GoogleDocsWebScripts
         {
             throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
-
-        model.put(MODEL_SUCCESS, success);
-
-        return model;
     }
 
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
@@ -352,32 +334,29 @@ public class SaveContent extends GoogleDocsWebScripts
                     "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
                     + jsonStr);
             }
+            NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
+            result.put(JSON_KEY_NODEREF, nodeRef);
+
+            if (json.has(JSON_KEY_OVERRIDE))
+            {
+                result.put(JSON_KEY_OVERRIDE, json.getBoolean(JSON_KEY_OVERRIDE));
+            }
             else
             {
-                NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
-                result.put(JSON_KEY_NODEREF, nodeRef);
+                result.put(JSON_KEY_OVERRIDE, false);
+            }
 
-                if (json.has(JSON_KEY_OVERRIDE))
-                {
-                    result.put(JSON_KEY_OVERRIDE, json.getBoolean(JSON_KEY_OVERRIDE));
-                }
-                else
-                {
-                    result.put(JSON_KEY_OVERRIDE, false);
-                }
+            if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
+            {
+                result.put(JSON_KEY_MAJORVERSION,
+                    json.getBoolean(JSON_KEY_MAJORVERSION) ? VersionType.MAJOR
+                                                           : VersionType.MINOR);
+                result.put(JSON_KEY_DESCRIPTION, json.getString(JSON_KEY_DESCRIPTION));
+            }
 
-                if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
-                {
-                    result.put(JSON_KEY_MAJORVERSION,
-                        json.getBoolean(JSON_KEY_MAJORVERSION) ? VersionType.MAJOR
-                                                               : VersionType.MINOR);
-                    result.put(JSON_KEY_DESCRIPTION, json.getString(JSON_KEY_DESCRIPTION));
-                }
-
-                if (json.has(JSON_KEY_REMOVEFROMDRIVE))
-                {
-                    result.put(JSON_KEY_REMOVEFROMDRIVE, json.getBoolean(JSON_KEY_REMOVEFROMDRIVE));
-                }
+            if (json.has(JSON_KEY_REMOVEFROMDRIVE))
+            {
+                result.put(JSON_KEY_REMOVEFROMDRIVE, json.getBoolean(JSON_KEY_REMOVEFROMDRIVE));
             }
         }
         catch (final IOException e)
