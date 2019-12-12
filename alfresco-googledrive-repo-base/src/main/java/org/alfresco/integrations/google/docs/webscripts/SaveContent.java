@@ -15,27 +15,37 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.ALF_SITES_PATH_FQNS_ELEMENT;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.DOCUMENT_TYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.PRESENTATION_TYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.SPREADSHEET_TYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.STATUS_INTEGIRTY_VIOLATION;
+import static org.alfresco.model.ContentModel.ASPECT_TEMPORARY;
+import static org.alfresco.model.ContentModel.ASPECT_VERSIONABLE;
+import static org.alfresco.model.ContentModel.PROP_AUTO_VERSION;
+import static org.alfresco.model.ContentModel.PROP_AUTO_VERSION_PROPS;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.commons.httpclient.HttpStatus.SC_CONFLICT;
+import static org.apache.commons.httpclient.HttpStatus.SC_FORBIDDEN;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.commons.httpclient.HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
-import org.alfresco.integrations.google.docs.GoogleDocsConstants;
 import org.alfresco.integrations.google.docs.exceptions.ConcurrentEditorException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.integrations.google.docs.utils.FileNameUtil;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
-import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.repo.version.Version2Model;
 import org.alfresco.service.cmr.dictionary.ConstraintException;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -46,7 +56,6 @@ import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.version.VersionType;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -56,6 +65,8 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
 
 
 /**
@@ -123,9 +134,9 @@ public class SaveContent
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
-        boolean success = false;
+        boolean success;
 
         Map<String, Serializable> map = parseContent(req);
         final NodeRef nodeRef = (NodeRef)map.get(JSON_KEY_NODEREF);
@@ -139,7 +150,7 @@ public class SaveContent
             String pathElement = getPathElement(nodeRef, 2);
 
             //Is the node in a site?
-            if (pathElement.equals(GoogleDocsConstants.ALF_SITES_PATH_FQNS_ELEMENT))
+            if (pathElement.equals(ALF_SITES_PATH_FQNS_ELEMENT))
             {
                 siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
             }
@@ -163,8 +174,9 @@ public class SaveContent
 
                 String contentType = googledocsService.getContentType(nodeRef);
                 log.debug("NodeRef: " + nodeRef + "; ContentType: " + contentType);
-                if (contentType.equals(GoogleDocsConstants.DOCUMENT_TYPE))
+                switch (contentType)
                 {
+                case DOCUMENT_TYPE:
                     if (googledocsService.isGoogleDocsLockOwner(nodeRef))
                     {
                         googledocsService.unlockNode(nodeRef);
@@ -174,11 +186,11 @@ public class SaveContent
                     }
                     else
                     {
-                        throw new WebScriptException(HttpStatus.SC_FORBIDDEN, "Document is locked by another user.");
+                        throw new WebScriptException(SC_FORBIDDEN,
+                            "Document is locked by another user.");
                     }
-                }
-                else if (contentType.equals(GoogleDocsConstants.SPREADSHEET_TYPE))
-                {
+                    break;
+                case SPREADSHEET_TYPE:
                     if (googledocsService.isGoogleDocsLockOwner(nodeRef))
                     {
                         googledocsService.unlockNode(nodeRef);
@@ -188,11 +200,11 @@ public class SaveContent
                     }
                     else
                     {
-                        throw new WebScriptException(HttpStatus.SC_FORBIDDEN, "Document is locked by another user.");
+                        throw new WebScriptException(SC_FORBIDDEN,
+                            "Document is locked by another user.");
                     }
-                }
-                else if (contentType.equals(GoogleDocsConstants.PRESENTATION_TYPE))
-                {
+                    break;
+                case PRESENTATION_TYPE:
                     if (googledocsService.isGoogleDocsLockOwner(nodeRef))
                     {
                         googledocsService.unlockNode(nodeRef);
@@ -202,17 +214,18 @@ public class SaveContent
                     }
                     else
                     {
-                        throw new WebScriptException(HttpStatus.SC_FORBIDDEN, "Document is locked by another user.");
+                        throw new WebScriptException(SC_FORBIDDEN,
+                            "Document is locked by another user.");
                     }
-                }
-                else
-                {
-                    throw new WebScriptException(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE, "Content Type: " + contentType + " unknown.");
+                    break;
+                default:
+                    throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
+                        "Content Type: " + contentType + " unknown.");
                 }
 
                 // Finish this off with a version create or update
-                Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
-                if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE))
+                Map<String, Serializable> versionProperties = new HashMap<>();
+                if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
                 {
                     versionProperties.put(Version2Model.PROP_VERSION_TYPE, map.get(JSON_KEY_MAJORVERSION));
                     versionProperties.put(Version2Model.PROP_DESCRIPTION, map.get(JSON_KEY_DESCRIPTION));
@@ -221,8 +234,8 @@ public class SaveContent
                 {
                     versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
 
-                    nodeService.setProperty(nodeRef, ContentModel.PROP_AUTO_VERSION, true);
-                    nodeService.setProperty(nodeRef, ContentModel.PROP_AUTO_VERSION_PROPS, true);
+                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
+                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, true);
                 }
 
                 log.debug("Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
@@ -246,9 +259,9 @@ public class SaveContent
             }
 
         }
-        catch (GoogleDocsAuthenticationException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage(), gdae);
+            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage(), gdae);
         }
         catch (GoogleDocsServiceException gdse)
         {
@@ -261,13 +274,9 @@ public class SaveContent
                 throw new WebScriptException(gdse.getMessage(), gdse);
             }
         }
-        catch (GoogleDocsRefreshTokenException gdrte)
-        {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage(), gdrte);
-        }
         catch (ConstraintException ce)
         {
-            throw new WebScriptException(GoogleDocsConstants.STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
+            throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
         }
         catch (AccessDeniedException ade)
         {
@@ -278,43 +287,32 @@ public class SaveContent
                 public void afterRollback()
                 {
                     log.debug("Rollback Save to node: " + nodeRef);
-                    transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionCallback<Object>()
-                    {
-                        public Object execute()
-                            throws Throwable
-                        {
-                            return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>()
+                    transactionService.getRetryingTransactionHelper().doInTransaction(
+                        () -> AuthenticationUtil.runAsSystem(() -> {
+                            googledocsService.unlockNode(nodeRef);
+                            googledocsService.unDecorateNode(nodeRef);
+
+                            // If the node was just created ('Create Content') it will have the temporary aspect and should
+                            // be completely removed.
+                            if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
                             {
-                                public Object doWork()
-                                    throws Exception
-                                {
-                                    googledocsService.unlockNode(nodeRef);
-                                    googledocsService.unDecorateNode(nodeRef);
+                                nodeService.deleteNode(nodeRef);
+                            }
 
-                                    // If the node was just created ('Create Content') it will have the temporary aspect and should
-                                    // be completely removed.
-                                    if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_TEMPORARY))
-                                    {
-                                        nodeService.deleteNode(nodeRef);
-                                    }
-
-                                    return null;
-                                }
-                            });
-                        }
-                    }, false, true);
+                            return null;
+                        }), false, true);
                 }
             });
 
-            throw new WebScriptException(HttpStatus.SC_FORBIDDEN, ade.getMessage(), ade);
+            throw new WebScriptException(SC_FORBIDDEN, ade.getMessage(), ade);
         }
         catch (ConcurrentEditorException e)
         {
-            throw new WebScriptException(HttpStatus.SC_CONFLICT, e.getMessage(), e);
+            throw new WebScriptException(SC_CONFLICT, e.getMessage(), e);
         }
         catch (Exception e)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
 
         model.put(MODEL_SUCCESS, success);
@@ -325,23 +323,23 @@ public class SaveContent
 
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {
-        final Map<String, Serializable> result = new HashMap<String, Serializable>();
+        final Map<String, Serializable> result = new HashMap<>();
         Content content = req.getContent();
         String jsonStr = null;
-        JSONObject json = null;
+        JSONObject json;
 
         try
         {
             if (content == null || content.getSize() == 0)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "No content sent with request.");
+                throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
 
             jsonStr = content.getContent();
 
             if (jsonStr == null || jsonStr.trim().length() == 0)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "No content sent with request.");
+                throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
             log.debug("Parsed JSON: " + jsonStr);
 
@@ -349,8 +347,9 @@ public class SaveContent
 
             if (!json.has(JSON_KEY_NODEREF))
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
-                                                                        + jsonStr);
+                throw new WebScriptException(SC_BAD_REQUEST,
+                    "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
+                    + jsonStr);
             }
             else
             {
@@ -366,7 +365,7 @@ public class SaveContent
                     result.put(JSON_KEY_OVERRIDE, false);
                 }
 
-                if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE))
+                if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
                 {
                     result.put(JSON_KEY_MAJORVERSION, json.getBoolean(JSON_KEY_MAJORVERSION) ? VersionType.MAJOR
                                                                                             : VersionType.MINOR);
@@ -381,11 +380,11 @@ public class SaveContent
         }
         catch (final IOException ioe)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
         }
         catch (final JSONException je)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr, je);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr, je);
         }
         catch (final WebScriptException wse)
         {
@@ -393,7 +392,8 @@ public class SaveContent
         }
         catch (final Exception e)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.", e);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.",
+                e);
         }
 
         return result;

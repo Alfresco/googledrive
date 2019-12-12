@@ -44,17 +44,25 @@ public class GoogleDocsIT
     @Test
     public void testShareLogin()
     {
-        try {
+        try
+        {
             driver.get("http://share:8080/share/page");
-            driver.findElement(By.xpath("//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-username\"]")).sendKeys("admin");
-            driver.findElement(By.xpath("//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-password\"]")).sendKeys("admin");
-            driver.findElement(By.xpath("//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-submit-button\"]")).click();
+            driver.findElement(By.xpath(
+                "//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-username\"]"))
+                  .sendKeys("admin");
+            driver.findElement(By.xpath(
+                "//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-password\"]"))
+                  .sendKeys("admin");
+            driver.findElement(By.xpath(
+                "//*[@id=\"page_x002e_components_x002e_slingshot-login_x0023_default-submit-button\"]"))
+                  .click();
 
             WebElement titleElement = wait.until(presenceOfElementLocated(By.id("HEADER_TITLE")));
             Assert.assertEquals("Administrator Dashboard", titleElement.getText());
-        } finally {
+        }
+        finally
+        {
             driver.quit();
         }
     }
-
 }

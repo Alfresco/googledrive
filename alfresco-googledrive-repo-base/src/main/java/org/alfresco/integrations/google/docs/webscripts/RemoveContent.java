@@ -15,31 +15,31 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.STATUS_INTEGIRTY_VIOLATION;
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE;
+import static org.alfresco.model.ContentModel.ASPECT_TEMPORARY;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.commons.httpclient.HttpStatus.SC_FORBIDDEN;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.drive.model.File;
-import org.alfresco.integrations.google.docs.GoogleDocsConstants;
-import org.alfresco.integrations.google.docs.GoogleDocsModel;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
-import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.service.cmr.dictionary.ConstraintException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -49,6 +49,9 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.drive.model.File;
 
 
 public class RemoveContent
@@ -88,7 +91,7 @@ public class RemoveContent
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         boolean success = false;
 
@@ -97,7 +100,7 @@ public class RemoveContent
         final NodeRef nodeRef = (NodeRef)map.get(JSON_KEY_NODEREF);
 
         /* Make sure the node is currently "checked out" to Google */
-        if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
+        if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
         {
             try
             {
@@ -112,9 +115,9 @@ public class RemoveContent
                 success = true;
 
             }
-            catch (GoogleDocsAuthenticationException gdae)
+            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage());
+                throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
             }
             catch (GoogleDocsServiceException gdse)
             {
@@ -127,13 +130,9 @@ public class RemoveContent
                     throw new WebScriptException(gdse.getMessage());
                 }
             }
-            catch (GoogleDocsRefreshTokenException gdrte)
-            {
-                throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage());
-            }
             catch (ConstraintException ce)
             {
-                throw new WebScriptException(GoogleDocsConstants.STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
+                throw new WebScriptException(STATUS_INTEGIRTY_VIOLATION, ce.getMessage(), ce);
             }
             catch (AccessDeniedException ade)
             {
@@ -144,39 +143,28 @@ public class RemoveContent
                     public void afterRollback()
                     {
                         log.debug("Rollback Save to node: " + nodeRef);
-                        transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionCallback<Object>()
-                        {
-                            public Object execute()
-                                throws Throwable
-                            {
-                                return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>()
+                        transactionService.getRetryingTransactionHelper().doInTransaction(
+                            () -> AuthenticationUtil.runAsSystem(() -> {
+                                googledocsService.unlockNode(nodeRef);
+                                googledocsService.unDecorateNode(nodeRef);
+
+                                // If the node was just created ('Create Content') it will
+                                // have the temporary aspect and should be completely removed.
+                                if (nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY))
                                 {
-                                    public Object doWork()
-                                        throws Exception
-                                    {
-                                        googledocsService.unlockNode(nodeRef);
-                                        googledocsService.unDecorateNode(nodeRef);
+                                    nodeService.deleteNode(nodeRef);
+                                }
 
-                                        // If the node was just created ('Create Content') it will
-                                        // have the temporary aspect and should be completely removed.
-                                        if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_TEMPORARY))
-                                        {
-                                            nodeService.deleteNode(nodeRef);
-                                        }
-
-                                        return null;
-                                    }
-                                });
-                            }
-                        }, false, true);
+                                return null;
+                            }), false, true);
                     }
                 });
 
-                throw new WebScriptException(HttpStatus.SC_FORBIDDEN, ade.getMessage(), ade);
+                throw new WebScriptException(SC_FORBIDDEN, ade.getMessage(), ade);
             }
             catch (Exception e)
             {
-                throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
             }
         }
 
@@ -188,23 +176,23 @@ public class RemoveContent
 
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {
-        final Map<String, Serializable> result = new HashMap<String, Serializable>();
+        final Map<String, Serializable> result = new HashMap<>();
         Content content = req.getContent();
         String jsonStr = null;
-        JSONObject json = null;
+        JSONObject json;
 
         try
         {
             if (content == null || content.getSize() == 0)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "No content sent with request.");
+                throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
 
             jsonStr = content.getContent();
 
             if (jsonStr == null || jsonStr.trim().length() == 0)
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "No content sent with request.");
+                throw new WebScriptException(SC_BAD_REQUEST, "No content sent with request.");
             }
             log.debug("Parsed JSON: " + jsonStr);
 
@@ -212,8 +200,9 @@ public class RemoveContent
 
             if (!json.has(JSON_KEY_NODEREF))
             {
-                throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
-                                                                        + jsonStr);
+                throw new WebScriptException(SC_BAD_REQUEST,
+                    "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
+                    + jsonStr);
             }
             else
             {
@@ -233,11 +222,11 @@ public class RemoveContent
         }
         catch (final IOException ioe)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage(), ioe);
         }
         catch (final JSONException je)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON: " + jsonStr);
         }
         catch (final WebScriptException wse)
         {
@@ -245,7 +234,8 @@ public class RemoveContent
         }
         catch (final Exception e)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.", e);
+            throw new WebScriptException(SC_BAD_REQUEST, "Unable to parse JSON '" + jsonStr + "'.",
+                e);
         }
 
         return result;

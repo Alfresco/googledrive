@@ -15,6 +15,7 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.apache.commons.httpclient.HttpStatus.SC_NOT_ACCEPTABLE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,6 @@ import java.util.Map;
 import org.alfresco.integrations.google.docs.exceptions.MustDowngradeFormatException;
 import org.alfresco.integrations.google.docs.exceptions.MustUpgradeFormatException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
@@ -60,7 +60,7 @@ public class Exportable
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         try
         {
@@ -70,7 +70,7 @@ public class Exportable
             }
             else
             {
-                throw new WebScriptException(HttpStatus.SC_NOT_ACCEPTABLE, "Content not exportable");
+                throw new WebScriptException(SC_NOT_ACCEPTABLE, "Content not exportable");
             }
         }
         catch (MustUpgradeFormatException mufe)

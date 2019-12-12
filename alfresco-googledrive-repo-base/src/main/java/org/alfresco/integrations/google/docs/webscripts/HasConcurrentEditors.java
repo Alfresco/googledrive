@@ -15,21 +15,23 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
 
 
 /**
@@ -55,7 +57,7 @@ public class HasConcurrentEditors
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         String param_nodeRef = req.getParameter(PARAM_NODEREF);
         NodeRef nodeRef = new NodeRef(param_nodeRef);
@@ -66,13 +68,9 @@ public class HasConcurrentEditors
 
             model.put(MODEL_CONCURRENT_EDITORS, googledocsService.hasConcurrentEditors(credential, nodeRef));
         }
-        catch (GoogleDocsAuthenticationException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage());
-        }
-        catch (GoogleDocsRefreshTokenException gdrte)
-        {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage());
+            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
         }
         catch (GoogleDocsServiceException gdse)
         {
@@ -87,7 +85,7 @@ public class HasConcurrentEditors
         }
         catch (Exception e)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
 
         return model;

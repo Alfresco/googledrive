@@ -24,18 +24,18 @@ import org.alfresco.service.namespace.QName;
  */
 public interface GoogleDocsModel
 {
-    public static final String ORG_GOOGLEDOCS_MODEL_2_0_URI = "http://www.alfresco.org/model/googledocs/2.0";
+    String ORG_GOOGLEDOCS_MODEL_2_0_URI = "http://www.alfresco.org/model/googledocs/2.0";
 
-    public static final QName  ASPECT_EDITING_IN_GOOGLE     = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "editingInGoogle");
+    QName  ASPECT_EDITING_IN_GOOGLE     = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "editingInGoogle");
 
-    public static final QName  ASPECT_SHARED_IN_GOOGLE      = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "sharedInGoogle");
+    QName  ASPECT_SHARED_IN_GOOGLE      = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "sharedInGoogle");
 
-    public static final QName  PROP_RESOURCE_ID             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "resourceID");
-    public static final QName  PROP_LOCKED                  = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "locked");
-    public static final QName  PROP_EDITORURL               = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "editorURL");
-    public static final QName  PROP_DRIVE_WORKING_FOLDER    = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "driveWorkingDir");
-    public static final QName  PROP_REVISION_ID             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "revisionID");
+    QName  PROP_RESOURCE_ID             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "resourceID");
+    QName  PROP_LOCKED                  = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "locked");
+    QName  PROP_EDITORURL               = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "editorURL");
+    QName  PROP_DRIVE_WORKING_FOLDER    = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "driveWorkingDir");
+    QName  PROP_REVISION_ID             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "revisionID");
 
-    public static final QName  PROP_PERMISSIONS             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "permissions");
-    public static final QName  PROP_CURRENT_PERMISSIONS     = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "currentPermissions");
+    QName  PROP_PERMISSIONS             = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "permissions");
+    QName  PROP_CURRENT_PERMISSIONS     = QName.createQName(ORG_GOOGLEDOCS_MODEL_2_0_URI, "currentPermissions");
 }

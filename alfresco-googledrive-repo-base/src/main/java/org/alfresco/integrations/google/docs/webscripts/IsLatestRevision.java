@@ -19,28 +19,32 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE;
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_REVISION_ID;
+import static org.apache.commons.httpclient.HttpStatus.SC_BAD_GATEWAY;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.commons.httpclient.HttpStatus.SC_PRECONDITION_FAILED;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.drive.model.Revision;
-import org.alfresco.integrations.google.docs.GoogleDocsModel;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.drive.model.Revision;
 
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
@@ -76,7 +80,7 @@ public class IsLatestRevision
     {
         getGoogleDocsServiceSubsystem();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         /* Get the nodeRef to test */
         String param_nodeRef = req.getParameter(PARAM_NODEREF);
@@ -84,19 +88,19 @@ public class IsLatestRevision
         log.debug("Comparing Node Revision Id from Alfresco and Google: " + nodeRef);
 
         /* The revision Id persisted on the node */
-        String currentRevision = null;
+        String currentRevision;
         /* The latest revision Id from Google for the file */
-        String latestRevision = null;
+        String latestRevision;
 
         try
         {
             /* The node needs the editingInGoogle aspect if not then tell return 412 */
-            if (nodeService.hasAspect(nodeRef, GoogleDocsModel.ASPECT_EDITING_IN_GOOGLE))
+            if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
             {
                 Credential credential = googledocsService.getCredential();
 
                 /* get the nodes revision Id null if not found */
-                Serializable property = nodeService.getProperty(nodeRef, GoogleDocsModel.PROP_REVISION_ID);
+                Serializable property = nodeService.getProperty(nodeRef, PROP_REVISION_ID);
                 currentRevision = property != null ? property.toString() : null;
                 log.debug("currentRevision: " + currentRevision);
 
@@ -116,13 +120,13 @@ public class IsLatestRevision
             }
             else
             {
-                throw new WebScriptException(HttpStatus.SC_PRECONDITION_FAILED, "Node: " + nodeRef.toString()
-                                                                                + " has no revision Ids.");
+                throw new WebScriptException(SC_PRECONDITION_FAILED, "Node: " + nodeRef.toString()
+                                                                     + " has no revision Ids.");
             }
         }
-        catch (GoogleDocsAuthenticationException gdae)
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
         {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdae.getMessage());
+            throw new WebScriptException(SC_BAD_GATEWAY, gdae.getMessage());
         }
         catch (GoogleDocsServiceException gdse)
         {
@@ -135,13 +139,9 @@ public class IsLatestRevision
                 throw new WebScriptException(gdse.getMessage());
             }
         }
-        catch (GoogleDocsRefreshTokenException gdrte)
-        {
-            throw new WebScriptException(HttpStatus.SC_BAD_GATEWAY, gdrte.getMessage());
-        }
         catch (IOException ioe)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
         }
 
 

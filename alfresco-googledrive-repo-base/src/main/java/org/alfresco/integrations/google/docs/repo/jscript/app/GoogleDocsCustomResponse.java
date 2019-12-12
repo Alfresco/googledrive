@@ -45,8 +45,8 @@ public class GoogleDocsCustomResponse
     @Override
     public Serializable populate()
     {
-        Map<String, Serializable> map = new LinkedHashMap<String, Serializable>(2);
-        map.put("enabled", (Serializable)googledocsService.isEnabled());
+        Map<String, Serializable> map = new LinkedHashMap<>(2);
+        map.put("enabled", googledocsService.isEnabled());
         map.put("importFormats", (Serializable)googledocsService.getImportFormats());
 
         return (Serializable)map;

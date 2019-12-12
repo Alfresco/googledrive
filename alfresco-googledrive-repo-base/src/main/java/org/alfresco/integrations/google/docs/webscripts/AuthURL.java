@@ -15,17 +15,17 @@
 
 package org.alfresco.integrations.google.docs.webscripts;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_PERMISSIONS;
+import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.integrations.google.docs.GoogleDocsModel;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
@@ -66,7 +66,7 @@ public class AuthURL
 
         String nodeRef = req.getParameter(PARAM_NODEREF);
         
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         boolean authenticated = false;
 
@@ -84,7 +84,7 @@ public class AuthURL
                 }
 
                 log.debug("Authenticated: " + authenticated + "; AuthUrl: "
-                          + ((model.containsKey(MODEL_AUTHURL)) ? model.get(MODEL_AUTHURL) : ""));
+                          + (model.getOrDefault(MODEL_AUTHURL, "")));
             }
             else
             {
@@ -96,13 +96,13 @@ public class AuthURL
             if (nodeRef != null && nodeRef.length() > 0)
             {
                 List<GoogleDocsService.GooglePermission> permissions =
-                        googledocsService.getGooglePermissions(new NodeRef(nodeRef), GoogleDocsModel.PROP_PERMISSIONS);
+                    googledocsService.getGooglePermissions(new NodeRef(nodeRef), PROP_PERMISSIONS);
                 model.put(MODEL_PERMISSIONS, permissions); // permissions may be null
             }
         }
         catch(IOException | GoogleDocsServiceException e)
         {
-            throw new WebScriptException(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         model.put(MODEL_AUTHENTICATED, authenticated);
