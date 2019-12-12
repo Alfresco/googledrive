@@ -15,6 +15,8 @@
 
 package org.alfresco.integrations.google.docs.service;
 
+import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_EDITORURL;
+import static org.alfresco.model.ContentModel.PROP_VERSION_TYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1007,11 +1009,7 @@ public class GoogleDocsServiceImpl
                 .setFields(ALL_PROPERTY_FIELDS)
                 .execute();
 
-            // Non GD files need use are exported differently
-            final InputStream inputStream =
-                isGoogleDriveMimeType(contentMimetype) ?
-                drive.files().export(file.getId(), mimetype).executeMediaAsInputStream() :
-                drive.files().get(file.getId()).executeMediaAsInputStream();
+            final InputStream inputStream = exportGoodleDriveFile(file, mimetype, drive, nodeRef);
 
             ContentWriter writer = fileFolderService.getWriter(nodeRef);
             writer.setMimetype(mimetype);
@@ -1049,7 +1047,34 @@ public class GoogleDocsServiceImpl
                     "Unable to create activity entry: " + jsonException.getMessage(), jsonException);
         }
     }
-    
+
+    private InputStream exportGoodleDriveFile(final File file, final String mimetype,
+        final Drive drive, final NodeRef nodeRef) throws IOException
+    {
+        final Object versionType = fileFolderService.getFileInfo(nodeRef).getProperties()
+                                                    .get(PROP_VERSION_TYPE);
+
+        final String editorURL = String.valueOf(fileFolderService
+            .getFileInfo(nodeRef).getProperties().getOrDefault(PROP_EDITORURL, ""));
+
+        // Different export mechanisms depending on the GD file mimetype (in GD, not Alfresco)
+        if (versionType == null ||
+            isGoogleDriveMimeType(mimetype) ||
+            editorURL.contains("://docs.google.com/"))
+        {
+            try
+            {
+                return drive.files().export(file.getId(), mimetype).executeMediaAsInputStream();
+            }
+            catch (GoogleJsonResponseException e)
+            {
+                log.info(
+                    "Failed to export GoogleDrive document from GD mimetype (retrying): " + e.getMessage());
+            }
+        }
+        return drive.files().get(file.getId()).executeMediaAsInputStream();
+    }
+
     private static boolean isGoogleDriveMimeType(final String mimeType)
     {
         return mimeType != null && mimeType.startsWith("application/vnd.google-apps.");
@@ -1463,7 +1488,7 @@ public class GoogleDocsServiceImpl
             Map<QName, Serializable> aspectProperties = new HashMap<QName, Serializable>();
             aspectProperties.put(GoogleDocsModel.PROP_CURRENT_PERMISSIONS, buildPermissionsPropertyValue(permissions));
             aspectProperties.put(GoogleDocsModel.PROP_RESOURCE_ID, file.getId());
-            aspectProperties.put(GoogleDocsModel.PROP_EDITORURL, file.getWebViewLink());
+            aspectProperties.put(PROP_EDITORURL, file.getWebViewLink());
             aspectProperties.put(GoogleDocsModel.PROP_DRIVE_WORKING_FOLDER, file.getParents().get(0));
             if (revision != null)
             {
@@ -1481,7 +1506,7 @@ public class GoogleDocsServiceImpl
                 }
             }
             log.debug("Resource Id: " + aspectProperties.get(GoogleDocsModel.PROP_RESOURCE_ID));
-            log.debug("Editor Url:" + aspectProperties.get(GoogleDocsModel.PROP_EDITORURL));
+            log.debug("Editor Url:" + aspectProperties.get(PROP_EDITORURL));
             log.debug("Revision Id: "
                       + ((revision != null) ? aspectProperties.get(GoogleDocsModel.PROP_REVISION_ID)
                                             : "No file revision provided"));
@@ -2524,26 +2549,24 @@ public class GoogleDocsServiceImpl
         GoogleDocsAuthenticationException
     {
         Drive drive = getDriveApiWithCredentialCheck(credential);
-        File file;
         try
         {
-            List<String> parents = Collections.singletonList(parentId);
-            file = new File()
+            final List<String> parents = Collections.singletonList(parentId);
+            File file = new File()
                 .setName(fileName)
                 .setDescription(description)
                 .setMimeType(mimeType)
                 .setParents(parents);
 
-            file = drive.files()
-                .create(file)
-                .setFields(ALL_PROPERTY_FIELDS)
-                .execute();
+            return drive.files()
+                        .create(file)
+                        .setFields(ALL_PROPERTY_FIELDS)
+                        .execute();
         }
         catch (GoogleJsonResponseException e)
         {
             throw new GoogleDocsServiceException(e.getMessage(), e.getStatusCode(), e);
         }
-        return file;
     }
 
     private List<File> getFolder(Credential credential, String parentId, String folderName)
