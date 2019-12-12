@@ -1060,7 +1060,7 @@ public class GoogleDocsServiceImpl
         // Different export mechanisms depending on the GD file mimetype (in GD, not Alfresco)
         if (versionType == null ||
             isGoogleDriveMimeType(mimetype) ||
-            editorURL.contains("://docs.google.com/document"))
+            editorURL.contains("://docs.google.com/"))
         {
             try
             {
