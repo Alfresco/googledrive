@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -39,7 +39,6 @@ import java.util.Map;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsAuthenticationException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsRefreshTokenException;
 import org.alfresco.integrations.google.docs.exceptions.GoogleDocsServiceException;
-import org.alfresco.integrations.google.docs.exceptions.GoogleDocsTypeException;
 import org.alfresco.integrations.google.docs.service.GoogleDocsService;
 import org.alfresco.integrations.google.docs.utils.FileNameUtil;
 import org.alfresco.repo.management.subsystems.ApplicationContextFactory;
@@ -62,24 +61,22 @@ import com.google.api.services.drive.model.File;
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
  */
-public class CreateContent
-    extends GoogleDocsWebScripts
+public class CreateContent extends GoogleDocsWebScripts
 {
-    private static final Log    log           = LogFactory.getLog(CreateContent.class);
+    private static final Log log = LogFactory.getLog(CreateContent.class);
 
-    private final static String FILENAMEUTIL     = "fileNameUtil";
+    private final static String FILENAMEUTIL = "fileNameUtil";
 
-    private GoogleDocsService   googledocsService;
-    private FileFolderService   fileFolderService;
+    private GoogleDocsService googledocsService;
+    private FileFolderService fileFolderService;
 
-    private FileNameUtil        fileNameUtil;
+    private FileNameUtil fileNameUtil;
 
-    private final static String PARAM_TYPE       = "contenttype";
-    private final static String PARAM_PARENT     = "parent";
+    private final static String PARAM_TYPE   = "contenttype";
+    private final static String PARAM_PARENT = "parent";
 
     private final static String MODEL_NODEREF    = "nodeRef";
     private final static String MODEL_EDITOR_URL = "editorUrl";
-
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
@@ -95,7 +92,6 @@ public class CreateContent
     {
         this.fileNameUtil = fileNameUtil;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -137,8 +133,8 @@ public class CreateContent
                         "Content Type Not Found.");
                 }
 
-                googledocsService.decorateNode(newNode, file, googledocsService.getLatestRevision(credential, file), true);
-
+                googledocsService.decorateNode(newNode, file,
+                    googledocsService.getLatestRevision(credential, file), true);
             }
             catch (GoogleDocsServiceException gdse)
             {
@@ -164,7 +160,6 @@ public class CreateContent
 
             model.put(MODEL_NODEREF, newNode.toString());
             model.put(MODEL_EDITOR_URL, file.getWebViewLink());
-
         }
         else
         {
@@ -183,12 +178,14 @@ public class CreateContent
      *
      * @param parentNodeRef NodeRef identifying the folder where the content will be created
      * @param contentType   The type of content to be created, one of 'document', 'spreadsheet' or 'presentation'
-     * @param mimetype  The mimetype of the new content item, used to determine the file extension to add
-     * @return  A FileInfo object representing the new content item. Call fileInfo.getNodeRef() to get the nodeRef
+     * @param mimetype      The mimetype of the new content item, used to determine the file extension to add
+     * @return A FileInfo object representing the new content item. Call fileInfo.getNodeRef() to get the nodeRef
      */
-    private NodeRef createFile(final NodeRef parentNodeRef, final String contentType, final String mimetype)
+    private NodeRef createFile(final NodeRef parentNodeRef, final String contentType,
+        final String mimetype)
     {
-        String baseName = getNewFileName(contentType), fileExt = fileNameUtil.getExtension(mimetype);
+        final String baseName = getNewFileName(contentType), fileExt =
+            fileNameUtil.getExtension(mimetype);
         final StringBuilder sb = new StringBuilder(baseName);
         if (fileExt != null && !fileExt.equals(""))
         {
@@ -199,7 +196,8 @@ public class CreateContent
         while (i <= maxCount)
         {
             List<String> parts = new ArrayList<>(1);
-            parts.add(QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, sb.toString()).toPrefixString());
+            parts.add(QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
+                sb.toString()).toPrefixString());
             try
             {
                 if (fileFolderService.resolveNamePath(parentNodeRef, parts, false) == null)
@@ -227,10 +225,9 @@ public class CreateContent
             "Too many untitled files. Try renaming some existing documents.");
     }
 
-
     /**
      * Get the default new content name
-     * 
+     *
      * @param type
      * @return
      */
@@ -253,12 +250,12 @@ public class CreateContent
         return name;
     }
 
-
     protected void getGoogleDocsServiceSubsystem()
     {
-        ApplicationContextFactory subsystem = (ApplicationContextFactory)applicationContext.getBean(GOOGLEDOCS_DRIVE_SUBSYSTEM);
-        ConfigurableApplicationContext childContext = (ConfigurableApplicationContext)subsystem.getApplicationContext();
-        setGoogledocsService((GoogleDocsService)childContext.getBean(GOOGLEDOCSSERVICE));
-        setFileNameUtil((FileNameUtil)childContext.getBean(FILENAMEUTIL));
+        ApplicationContextFactory subsystem = (ApplicationContextFactory) applicationContext
+            .getBean(GOOGLEDOCS_DRIVE_SUBSYSTEM);
+        ConfigurableApplicationContext childContext = (ConfigurableApplicationContext) subsystem.getApplicationContext();
+        setGoogledocsService((GoogleDocsService) childContext.getBean(GOOGLEDOCSSERVICE));
+        setFileNameUtil((FileNameUtil) childContext.getBean(FILENAMEUTIL));
     }
 }

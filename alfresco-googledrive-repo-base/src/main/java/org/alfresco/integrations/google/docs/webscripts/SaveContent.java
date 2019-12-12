@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -68,12 +68,10 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 
 import com.google.api.client.auth.oauth2.Credential;
 
-
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
  */
-public class SaveContent
-    extends GoogleDocsWebScripts
+public class SaveContent extends GoogleDocsWebScripts
 {
     private static final Log log = LogFactory.getLog(SaveContent.class);
 
@@ -92,42 +90,35 @@ public class SaveContent
     private static final String MODEL_SUCCESS = "success";
     private static final String MODEL_VERSION = "version";
 
-
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
-
 
     public void setNodeService(NodeService nodeService)
     {
         this.nodeService = nodeService;
     }
 
-
     public void setVersionService(VersionService versionService)
     {
         this.versionService = versionService;
     }
-
 
     public void setTransactionService(TransactionService transactionService)
     {
         this.transactionService = transactionService;
     }
 
-
     public void setSiteService(SiteService siteService)
     {
         this.siteService = siteService;
     }
 
-
     public void setFileNameUtil(FileNameUtil fileNameUtil)
     {
         this.fileNameUtil = fileNameUtil;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -139,7 +130,7 @@ public class SaveContent
         boolean success;
 
         Map<String, Serializable> map = parseContent(req);
-        final NodeRef nodeRef = (NodeRef)map.get(JSON_KEY_NODEREF);
+        final NodeRef nodeRef = (NodeRef) map.get(JSON_KEY_NODEREF);
         log.debug("Saving Node to Alfresco from Google: " + nodeRef);
 
         try
@@ -155,10 +146,11 @@ public class SaveContent
                 siteInfo = fileNameUtil.resolveSiteInfo(nodeRef);
             }
 
-            if (siteInfo == null || siteService.isMember(siteInfo.getShortName(), AuthenticationUtil.getRunAsUser()))
+            if (siteInfo == null || siteService.isMember(siteInfo.getShortName(),
+                AuthenticationUtil.getRunAsUser()))
             {
 
-                if (!(Boolean)map.get(JSON_KEY_OVERRIDE))
+                if (!(Boolean) map.get(JSON_KEY_OVERRIDE))
                 {
                     log.debug("Check for Concurent Users.");
                     if (googledocsService.hasConcurrentEditors(credential, nodeRef))
@@ -169,8 +161,9 @@ public class SaveContent
                 }
 
                 // Should the content be removed from the users Google Drive Account
-                boolean removeFromDrive = (map.get(JSON_KEY_REMOVEFROMDRIVE) != null) ? (Boolean)map.get(JSON_KEY_REMOVEFROMDRIVE)
-                                                                                      : true;
+                boolean removeFromDrive = (map.get(
+                    JSON_KEY_REMOVEFROMDRIVE) != null) ? (Boolean) map.get(JSON_KEY_REMOVEFROMDRIVE)
+                                                       : true;
 
                 String contentType = googledocsService.getContentType(nodeRef);
                 log.debug("NodeRef: " + nodeRef + "; ContentType: " + contentType);
@@ -227,8 +220,10 @@ public class SaveContent
                 Map<String, Serializable> versionProperties = new HashMap<>();
                 if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
                 {
-                    versionProperties.put(Version2Model.PROP_VERSION_TYPE, map.get(JSON_KEY_MAJORVERSION));
-                    versionProperties.put(Version2Model.PROP_DESCRIPTION, map.get(JSON_KEY_DESCRIPTION));
+                    versionProperties.put(Version2Model.PROP_VERSION_TYPE,
+                        map.get(JSON_KEY_MAJORVERSION));
+                    versionProperties.put(Version2Model.PROP_DESCRIPTION,
+                        map.get(JSON_KEY_DESCRIPTION));
                 }
                 else
                 {
@@ -240,9 +235,9 @@ public class SaveContent
 
                 log.debug("Version Node:" + nodeRef + "; Version Properties: " + versionProperties);
                 Version version = versionService.createVersion(nodeRef, versionProperties);
-                
+
                 model.put(MODEL_VERSION, version.getVersionLabel());
-                
+
                 if (!removeFromDrive)
                 {
                     googledocsService.lockNode(nodeRef);
@@ -251,13 +246,12 @@ public class SaveContent
                 {
                     googledocsService.deleteContent(credential, nodeRef);
                 }
-                
             }
             else
             {
-                throw new AccessDeniedException("Access Denied.  You do not have the appropriate permissions to perform this operation.");
+                throw new AccessDeniedException(
+                    "Access Denied.  You do not have the appropriate permissions to perform this operation.");
             }
-
         }
         catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
         {
@@ -320,7 +314,6 @@ public class SaveContent
         return model;
     }
 
-
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {
         final Map<String, Serializable> result = new HashMap<>();
@@ -367,15 +360,16 @@ public class SaveContent
 
                 if (nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
                 {
-                    result.put(JSON_KEY_MAJORVERSION, json.getBoolean(JSON_KEY_MAJORVERSION) ? VersionType.MAJOR
-                                                                                            : VersionType.MINOR);
+                    result.put(JSON_KEY_MAJORVERSION,
+                        json.getBoolean(JSON_KEY_MAJORVERSION) ? VersionType.MAJOR
+                                                               : VersionType.MINOR);
                     result.put(JSON_KEY_DESCRIPTION, json.getString(JSON_KEY_DESCRIPTION));
                 }
-                
+
                 if (json.has(JSON_KEY_REMOVEFROMDRIVE))
                 {
                     result.put(JSON_KEY_REMOVEFROMDRIVE, json.getBoolean(JSON_KEY_REMOVEFROMDRIVE));
-                }  
+                }
             }
         }
         catch (final IOException ioe)

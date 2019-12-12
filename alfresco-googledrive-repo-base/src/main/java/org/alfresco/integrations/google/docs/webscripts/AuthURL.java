@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,7 +18,6 @@ package org.alfresco.integrations.google.docs.webscripts;
 import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_PERMISSIONS;
 import static org.apache.commons.httpclient.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,31 +32,27 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
-
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
  */
-public class AuthURL
-    extends GoogleDocsWebScripts
+public class AuthURL extends GoogleDocsWebScripts
 {
-    private static final Log    log                 = LogFactory.getLog(AuthURL.class);
+    private static final Log log = LogFactory.getLog(AuthURL.class);
 
     private final static String MODEL_AUTHURL       = "authURL";
     private final static String MODEL_AUTHENTICATED = "authenticated";
     private final static String MODEL_PERMISSIONS   = "permissions";
 
-    private final static String PARAM_STATE         = "state";
-    private final static String PARAM_OVERRIDE      = "override";
-    private final static String PARAM_NODEREF       = "nodeRef";
+    private final static String PARAM_STATE    = "state";
+    private final static String PARAM_OVERRIDE = "override";
+    private final static String PARAM_NODEREF  = "nodeRef";
 
-    private GoogleDocsService   googledocsService;
-
+    private GoogleDocsService googledocsService;
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -65,7 +60,7 @@ public class AuthURL
         getGoogleDocsServiceSubsystem();
 
         String nodeRef = req.getParameter(PARAM_NODEREF);
-        
+
         Map<String, Object> model = new HashMap<>();
 
         boolean authenticated = false;
@@ -80,7 +75,8 @@ public class AuthURL
                 }
                 else
                 {
-                    model.put(MODEL_AUTHURL, googledocsService.getAuthenticateUrl(req.getParameter(PARAM_STATE)));
+                    model.put(MODEL_AUTHURL,
+                        googledocsService.getAuthenticateUrl(req.getParameter(PARAM_STATE)));
                 }
 
                 log.debug("Authenticated: " + authenticated + "; AuthUrl: "
@@ -88,9 +84,11 @@ public class AuthURL
             }
             else
             {
-                model.put(MODEL_AUTHURL, googledocsService.getAuthenticateUrl(req.getParameter(PARAM_STATE)));
+                model.put(MODEL_AUTHURL,
+                    googledocsService.getAuthenticateUrl(req.getParameter(PARAM_STATE)));
                 authenticated = googledocsService.isAuthenticated();
-                log.debug("Forced AuthURL. AuthUrl: " + model.get(MODEL_AUTHURL) + "; Authenticated: " + authenticated);
+                log.debug("Forced AuthURL. AuthUrl: " + model.get(
+                    MODEL_AUTHURL) + "; Authenticated: " + authenticated);
             }
 
             if (nodeRef != null && nodeRef.length() > 0)
@@ -100,7 +98,7 @@ public class AuthURL
                 model.put(MODEL_PERMISSIONS, permissions); // permissions may be null
             }
         }
-        catch(IOException | GoogleDocsServiceException e)
+        catch (GoogleDocsServiceException e)
         {
             throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }

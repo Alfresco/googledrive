@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -34,27 +34,24 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.User;
 
-
 /**
  * @author Will Abson
  */
 public class UserProfile extends GoogleDocsWebScripts
 {
     private final static String MODEL_AUTHENTICATED = "authenticated";
-    private final static String MODEL_EMAIL = "email";
-    private final static String MODEL_NAME = "name";
-    private final static String MODEL_FIRSTNAME = "firstName";
-    private final static String MODEL_LASTNAME = "lastName";
-    private final static String MODEL_ID = "id";
+    private final static String MODEL_EMAIL         = "email";
+    private final static String MODEL_NAME          = "name";
+    private final static String MODEL_FIRSTNAME     = "firstName";
+    private final static String MODEL_LASTNAME      = "lastName";
+    private final static String MODEL_ID            = "id";
 
-    private GoogleDocsService   googledocsService;
-
+    private GoogleDocsService googledocsService;
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -99,7 +96,7 @@ public class UserProfile extends GoogleDocsWebScripts
                 throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
             }
         }
-        
+
         model.put(MODEL_AUTHENTICATED, authenticated);
 
         return model;

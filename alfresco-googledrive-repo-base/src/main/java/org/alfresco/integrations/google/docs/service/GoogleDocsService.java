@@ -58,7 +58,7 @@ public interface GoogleDocsService
      * @return
      */
     @Auditable(parameters = {"state"})
-    String getAuthenticateUrl(String state) throws IOException, GoogleDocsServiceException;
+    String getAuthenticateUrl(String state) throws GoogleDocsServiceException;
 
     /**
      * Complete the OAuth2 Dance for the current user, persisting the OAuth2 Tokens.
@@ -72,6 +72,7 @@ public interface GoogleDocsService
 
     /**
      * Is the Google Docs Integration enabled
+     *
      * @return
      */
     @Auditable
@@ -141,8 +142,8 @@ public interface GoogleDocsService
      * @param nodeRef
      * @param file
      * @param revision
-     * @param permissions   List of permissions which have been applied to the file in Google, to be stored in against the node, used for re-creating permissions if the remote copy is removed.
-     * @param newcontent If this is a new node, mark the content as temporary.
+     * @param permissions List of permissions which have been applied to the file in Google, to be stored in against the node, used for re-creating permissions if the remote copy is removed.
+     * @param newcontent  If this is a new node, mark the content as temporary.
      */
     void decorateNode(NodeRef nodeRef, File file, Revision revision,
         List<GoogleDocsService.GooglePermission> permissions, boolean newcontent);
@@ -159,7 +160,7 @@ public interface GoogleDocsService
      *
      * @param mimetype
      * @return
-     * @throws MustUpgradeFormatException Thrown if the mimetype must be changed to a newer mimetype (ex. sxw -> odt)
+     * @throws MustUpgradeFormatException   Thrown if the mimetype must be changed to a newer mimetype (ex. sxw -> odt)
      * @throws MustDowngradeFormatException Thrown if the mimetype must be changed to an older mimetype (ex. docx -> doc)
      */
     boolean isExportable(String mimetype) throws MustUpgradeFormatException,
@@ -289,7 +290,7 @@ public interface GoogleDocsService
 
     /**
      * @param credential
-     * @param nodeRef Alfresco Node which is currently uploaded to Google Drive
+     * @param nodeRef    Alfresco Node which is currently uploaded to Google Drive
      * @return
      * @throws IOException
      * @throws GoogleDocsAuthenticationException
@@ -338,7 +339,7 @@ public interface GoogleDocsService
      * @param nodeRef
      * @param file
      * @param forceRemoval ignore <code>GoogleDocsServiceException</code> exceptions when attempting to remove content from user's
-     * Google account
+     *                     Google account
      * @throws GoogleDocsRefreshTokenException
      * @throws GoogleDocsServiceException
      * @throws GoogleDocsAuthenticationException
@@ -411,7 +412,6 @@ public interface GoogleDocsService
     boolean isGoogleDocsLockOwner(NodeRef nodeRef);
 
     /**
-     *
      * @param nodeRef
      * @return
      */
@@ -431,7 +431,7 @@ public interface GoogleDocsService
     /**
      * Add permissions on the remote object stored in Google
      *
-     * @param file Drive file instance of the remote object
+     * @param file        Drive file instance of the remote object
      * @param permissions A list of permissions objects stored for this node
      */
     @Auditable(parameters = {"nodeRef"})

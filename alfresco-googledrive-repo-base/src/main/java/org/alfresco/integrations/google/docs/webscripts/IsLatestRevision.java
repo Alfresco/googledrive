@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -49,31 +49,27 @@ import com.google.api.services.drive.model.Revision;
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
  */
-public class IsLatestRevision
-    extends GoogleDocsWebScripts
+public class IsLatestRevision extends GoogleDocsWebScripts
 {
-    private static final Log    log                      = LogFactory.getLog(IsLatestRevision.class);
+    private static final Log log = LogFactory.getLog(IsLatestRevision.class);
 
-    private GoogleDocsService   googledocsService;
+    private GoogleDocsService googledocsService;
 
-    private boolean             isLatestRevision         = false;
+    private boolean isLatestRevision = false;
 
-    private final static String PARAM_NODEREF            = "nodeRef";
+    private final static String PARAM_NODEREF = "nodeRef";
 
     private static final String MODEL_IS_LATEST_REVISION = "isLatestRevision";
-
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
 
-
     public void setNodeService(NodeService nodeService)
     {
         this.nodeService = nodeService;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -110,9 +106,9 @@ public class IsLatestRevision
                 log.debug("latestRevision: " + latestRevision);
 
                 /* compare the revision Ids */
-                if (currentRevision!= null && latestRevision != null)
+                if (currentRevision != null && latestRevision != null)
                 {
-                    
+
                     isLatestRevision = currentRevision.equals(latestRevision);
                 }
 
@@ -143,7 +139,6 @@ public class IsLatestRevision
         {
             throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
         }
-
 
         return model;
     }

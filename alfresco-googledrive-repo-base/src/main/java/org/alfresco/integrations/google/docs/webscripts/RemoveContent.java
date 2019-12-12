@@ -53,38 +53,32 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
 
-
-public class RemoveContent
-    extends GoogleDocsWebScripts
+public class RemoveContent extends GoogleDocsWebScripts
 {
-    private static final Log    log              = LogFactory.getLog(RemoveContent.class);
+    private static final Log log = LogFactory.getLog(RemoveContent.class);
 
-    private GoogleDocsService   googledocsService;
-    private TransactionService  transactionService;
+    private GoogleDocsService  googledocsService;
+    private TransactionService transactionService;
 
     private static final String JSON_KEY_NODEREF = "nodeRef";
     private static final String JSON_KEY_FORCE   = "force";
 
     private static final String MODEL_SUCCESSFUL = "success";
 
-
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
-
 
     public void setNodeService(NodeService nodeService)
     {
         this.nodeService = nodeService;
     }
 
-
     public void setTransactionService(TransactionService transactionService)
     {
         this.transactionService = transactionService;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -97,7 +91,7 @@ public class RemoveContent
 
         /* The node we are working on */
         Map<String, Serializable> map = parseContent(req);
-        final NodeRef nodeRef = (NodeRef)map.get(JSON_KEY_NODEREF);
+        final NodeRef nodeRef = (NodeRef) map.get(JSON_KEY_NODEREF);
 
         /* Make sure the node is currently "checked out" to Google */
         if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
@@ -109,11 +103,11 @@ public class RemoveContent
                 /* Get the metadata for the file we are working on */
                 File file = googledocsService.getDriveFile(credential, nodeRef);
                 /* remove it from users Google account and free it in the repo */
-                googledocsService.removeContent(credential, nodeRef, file, (Boolean)map.get(JSON_KEY_FORCE));
+                googledocsService.removeContent(credential, nodeRef, file,
+                    (Boolean) map.get(JSON_KEY_FORCE));
 
                 /* if we reach this point all should be completed */
                 success = true;
-
             }
             catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException gdae)
             {
@@ -173,7 +167,6 @@ public class RemoveContent
         return model;
     }
 
-
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {
         final Map<String, Serializable> result = new HashMap<>();
@@ -218,7 +211,6 @@ public class RemoveContent
             {
                 result.put(JSON_KEY_FORCE, json.getBoolean(JSON_KEY_FORCE));
             }
-
         }
         catch (final IOException ioe)
         {
@@ -240,5 +232,4 @@ public class RemoveContent
 
         return result;
     }
-
 }
