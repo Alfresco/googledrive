@@ -31,31 +31,26 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * Created by jottley on 3/27/15.
  */
-public class EditingInGoogleAspect
-        implements CopyServicePolicies.OnCopyNodePolicy,
-        VersionServicePolicies.AfterVersionRevertPolicy
+public class EditingInGoogleAspect implements CopyServicePolicies.OnCopyNodePolicy,
+    VersionServicePolicies.AfterVersionRevertPolicy
 {
     private static final Log log = LogFactory.getLog(EditingInGoogleAspect.class);
 
     private PolicyComponent policyComponent;
-    private NodeService nodeService;
-
+    private NodeService     nodeService;
 
     public void setPolicyComponent(PolicyComponent policyComponent)
     {
         this.policyComponent = policyComponent;
     }
 
-
     public void setNodeService(NodeService nodeService)
     {
         this.nodeService = nodeService;
     }
-
 
     public void init()
     {
@@ -66,7 +61,6 @@ public class EditingInGoogleAspect
             ASPECT_EDITING_IN_GOOGLE, new JavaBehaviour(this, "afterVersionRevert"));
     }
 
-
     /**
      * Don't allow copying of aspect when in Editing Session
      *
@@ -74,12 +68,13 @@ public class EditingInGoogleAspect
      * @param copyDetails
      * @return
      */
-    @Override public CopyBehaviourCallback getCopyCallback(QName classRef, CopyDetails copyDetails)
+    @Override
+    public CopyBehaviourCallback getCopyCallback(QName classRef, CopyDetails copyDetails)
     {
-        log.debug("Attempting to copy EditingInGoogle Aspect - copying is not allowed - It is being removed");
+        log.debug(
+            "Attempting to copy EditingInGoogle Aspect - copying is not allowed - It is being removed");
         return new DoNothingCopyBehaviourCallback();
     }
-
 
     /**
      * Don't allow the EditingInGoogle aspect to be applied when on a node that is being reverted
@@ -88,14 +83,15 @@ public class EditingInGoogleAspect
      * @param nodeRef
      * @param version
      */
-    @Override public void afterVersionRevert(NodeRef nodeRef, Version version)
+    @Override
+    public void afterVersionRevert(NodeRef nodeRef, Version version)
     {
-        log.debug("A node was reverted that has the EditingInGoogle aspect.  The aspect should be removed on the reverted node.");
+        log.debug(
+            "A node was reverted that has the EditingInGoogle aspect.  The aspect should be removed on the reverted node.");
         if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
         {
             log.debug("Removing EditingInGoogle Aspect from reverted node");
             nodeService.removeAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE);
         }
-
     }
 }

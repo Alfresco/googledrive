@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -62,9 +62,7 @@ import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.model.File;
 
-
-public class DiscardContent
-    extends GoogleDocsWebScripts
+public class DiscardContent extends GoogleDocsWebScripts
 {
     private static final Log log = LogFactory.getLog(DiscardContent.class);
 
@@ -78,36 +76,30 @@ public class DiscardContent
 
     private static final String MODEL_SUCCESS = "success";
 
-
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
         this.googledocsService = googledocsService;
     }
-
 
     public void setNodeService(NodeService nodeService)
     {
         this.nodeService = nodeService;
     }
 
-
     public void setTransactionService(TransactionService transactionService)
     {
         this.transactionService = transactionService;
     }
-
 
     public void setSiteService(SiteService siteService)
     {
         this.siteService = siteService;
     }
 
-
     public void setFileNameUtil(FileNameUtil fileNameUtil)
     {
         this.fileNameUtil = fileNameUtil;
     }
-
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -117,7 +109,7 @@ public class DiscardContent
         Map<String, Object> model = new HashMap<>();
 
         Map<String, Serializable> map = parseContent(req);
-        final NodeRef nodeRef = (NodeRef)map.get(JSON_KEY_NODEREF);
+        final NodeRef nodeRef = (NodeRef) map.get(JSON_KEY_NODEREF);
 
         final Credential credential;
         boolean deleted = false;
@@ -145,7 +137,8 @@ public class DiscardContent
                         //The second part of this test maybe too exclusive.  What if the user has write permissions to the node
                         // but not membership in the containing site? Should the test just ask if the user has write permission
                         // to the node?
-                        if (siteInfo == null || siteService.isMember(siteInfo.getShortName(), AuthenticationUtil.getRunAsUser()))
+                        if (siteInfo == null || siteService.isMember(siteInfo.getShortName(),
+                            AuthenticationUtil.getRunAsUser()))
                         {
                             if (googledocsService.hasConcurrentEditors(credential, nodeRef))
                             {
@@ -155,13 +148,15 @@ public class DiscardContent
                         }
                         else
                         {
-                            throw new AccessDeniedException("Access Denied.  You do not have the appropriate permissions to perform this operation.");
+                            throw new AccessDeniedException(
+                                "Access Denied.  You do not have the appropriate permissions to perform this operation.");
                         }
                     }
 
-                        deleted = delete(credential, nodeRef);
+                    deleted = delete(credential, nodeRef);
                 }
-                else if (googledocsService.isSiteManager(nodeRef, AuthenticationUtil.getFullyAuthenticatedUser()))
+                else if (googledocsService.isSiteManager(nodeRef,
+                    AuthenticationUtil.getFullyAuthenticatedUser()))
                 {
                     final String lockOwner = googledocsService.getGoogleDocsLockOwner(nodeRef);
 
@@ -180,23 +175,24 @@ public class DiscardContent
                             {
                                 Throwable thrown = e.getCause();
 
-                                if ((thrown instanceof GoogleJsonResponseException || 
+                                if ((thrown instanceof GoogleJsonResponseException ||
                                      thrown instanceof TokenResponseException))
                                 {
                                     final int status1;
 
                                     if (thrown instanceof GoogleJsonResponseException)
                                     {
-                                        status1 = ((GoogleJsonResponseException)thrown).getStatusCode();
+                                        status1 = ((GoogleJsonResponseException) thrown).getStatusCode();
                                     }
                                     else
                                     {
-                                        status1 = ((TokenResponseException)thrown).getStatusCode();
+                                        status1 = ((TokenResponseException) thrown).getStatusCode();
                                     }
 
                                     if (status1 == SC_UNAUTHORIZED || status1 == SC_BAD_REQUEST)
                                     {
-                                        log.info("Unable to access " + nodeRef +" as " + lockOwner);
+                                        log.info(
+                                            "Unable to access " + nodeRef + " as " + lockOwner);
                                         googledocsService.unlockNode(nodeRef);
                                         googledocsService.unDecorateNode(nodeRef);
 
@@ -210,7 +206,7 @@ public class DiscardContent
                                         throw e;
                                     }
 
-                                    deletedAsUser =  true;
+                                    deletedAsUser = true;
                                 }
                                 else
                                 {
@@ -219,7 +215,7 @@ public class DiscardContent
                             }
                             catch (IllegalStateException e)
                             {
-                                log.info("Unable to access " + nodeRef +" as " + lockOwner);
+                                log.info("Unable to access " + nodeRef + " as " + lockOwner);
                                 googledocsService.unlockNode(nodeRef);
                                 googledocsService.unDecorateNode(nodeRef);
 
@@ -228,7 +224,7 @@ public class DiscardContent
                                     nodeService.deleteNode(nodeRef);
                                 }
 
-                                deletedAsUser =  true;
+                                deletedAsUser = true;
                             }
 
                             return deletedAsUser;
@@ -237,7 +233,6 @@ public class DiscardContent
                 }
 
                 model.put(MODEL_SUCCESS, deleted);
-
             }
             catch (InvalidNodeRefException ine)
             {
@@ -272,7 +267,7 @@ public class DiscardContent
                                             nodeService.deleteNode(nodeRef);
                                         }
 
-                                       return null;
+                                        return null;
                                     });
 
                                     return null;
@@ -280,8 +275,8 @@ public class DiscardContent
                         }
                     });
                     model.put(MODEL_SUCCESS, true);
-                } else
-                if (gdse.getPassedStatusCode() > -1)
+                }
+                else if (gdse.getPassedStatusCode() > -1)
                 {
                     throw new WebScriptException(gdse.getPassedStatusCode(), gdse.getMessage());
                 }
@@ -335,10 +330,9 @@ public class DiscardContent
         return model;
     }
 
-
     /**
      * Delete the node from Google. If the node has the temporary aspect it is also removed from Alfresco.
-     * 
+     *
      * @param nodeRef
      * @return
      * @throws InvalidNodeRefException
@@ -349,10 +343,10 @@ public class DiscardContent
      */
     private boolean delete(Credential credential, NodeRef nodeRef)
         throws InvalidNodeRefException,
-            IOException,
-            GoogleDocsServiceException,
-            GoogleDocsAuthenticationException,
-            GoogleDocsRefreshTokenException
+        IOException,
+        GoogleDocsServiceException,
+        GoogleDocsAuthenticationException,
+        GoogleDocsRefreshTokenException
     {
         File file = googledocsService.getDriveFile(credential, nodeRef);
         googledocsService.unlockNode(nodeRef);
@@ -368,7 +362,6 @@ public class DiscardContent
 
         return deleted;
     }
-
 
     private Map<String, Serializable> parseContent(final WebScriptRequest req)
     {

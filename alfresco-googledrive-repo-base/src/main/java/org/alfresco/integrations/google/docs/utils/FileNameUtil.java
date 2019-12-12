@@ -1,20 +1,19 @@
 /**
  * Copyright (C) 2005-2015 Alfresco Software Limited.
- * 
+ *
  * This file is part of Alfresco
- * 
+ *
  * Alfresco is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * Alfresco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Alfresco. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 
 package org.alfresco.integrations.google.docs.utils;
-
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +28,6 @@ import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
@@ -48,12 +46,10 @@ public class FileNameUtil
     private SiteService       siteService;
     private PermissionService permissionService;
 
-
     public void setMimetypeService(MimetypeService mimetypeService)
     {
         this.mimetypeService = mimetypeService;
     }
-
 
     public void setFileFolderService(FileFolderService filefolderService)
     {
@@ -70,7 +66,6 @@ public class FileNameUtil
         this.permissionService = permissionService;
     }
 
-
     public String incrementFileName(NodeRef nodeRef)
     {
         String name = filefolderService.getFileInfo(nodeRef).getName();
@@ -78,7 +73,6 @@ public class FileNameUtil
 
         return incrementFileName(name, mimetype);
     }
-
 
     public String incrementFileName(String name, String mimetype)
     {
@@ -97,7 +91,8 @@ public class FileNameUtil
             Matcher matcher = pattern.matcher(m.group());
             matcher.find();
 
-            newname = m.replaceFirst("-" + (Integer.parseInt(matcher.group()) + 1) + ".") + extension;
+            newname = m.replaceFirst(
+                "-" + (Integer.parseInt(matcher.group()) + 1) + ".") + extension;
             log.debug("Increment filename from: " + name + " to: " + newname);
         }
         else
@@ -123,7 +118,8 @@ public class FileNameUtil
                 if (m_ext.find())
                 {
                     log.debug("Matching filename found: " + name);
-                    String sansExtention = name.substring(0, name.length() - (extension.length() + 1));
+                    String sansExtention = name.substring(0,
+                        name.length() - (extension.length() + 1));
                     newname = sansExtention.concat(FIRST_DUP).concat(extension);
                     log.debug("Increment filename from: " + name + " to: " + newname);
                 }
@@ -138,7 +134,6 @@ public class FileNameUtil
 
         return newname;
     }
-
 
     /**
      * Increment the number in the given file name, or add a -1 suffix to the file name,
@@ -157,7 +152,8 @@ public class FileNameUtil
         if (m.matches())
         {
             String fileExt = m.group(4), fileName = m.group(1), number = m.group(3);
-            log.debug("Matching filename: " + name + ", base: " + fileName + ", number: " + number + ", extension: " + fileExt);
+            log.debug("Matching filename: " + name + ", base: " + fileName + ", number: " +
+                      number + ", extension: " + fileExt);
 
             int newNumber = 1;
 
@@ -173,7 +169,6 @@ public class FileNameUtil
         return newname;
     }
 
-
     /**
      * Return default file extension for the given mimetype
      *
@@ -184,7 +179,6 @@ public class FileNameUtil
     {
         return mimetypeService.getExtension(mimetype);
     }
-
 
     /**
      * This method gets the {@link SiteInfo} for the Share Site which contains the given NodeRef.
@@ -199,7 +193,8 @@ public class FileNameUtil
     {
         SiteInfo siteInfo = AuthenticationUtil.runAsSystem(() -> siteService.getSite(nodeRef));
 
-        if (siteInfo != null && permissionService.hasReadPermission(siteInfo.getNodeRef()).equals(AccessStatus.ALLOWED))
+        if (siteInfo != null &&
+            permissionService.hasReadPermission(siteInfo.getNodeRef()).equals(AccessStatus.ALLOWED))
         {
             return siteInfo;
         }
@@ -207,6 +202,4 @@ public class FileNameUtil
         // site was not found or current user has no permissions to access site
         return null;
     }
-
-
 }

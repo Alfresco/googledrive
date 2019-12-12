@@ -19,7 +19,6 @@
 
 package org.alfresco.integrations.google.docs.exceptions;
 
-
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
  */
