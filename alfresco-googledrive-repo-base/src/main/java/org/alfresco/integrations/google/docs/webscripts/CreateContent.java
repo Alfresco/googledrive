@@ -109,70 +109,64 @@ public class CreateContent extends GoogleDocsWebScripts
 
         Map<String, Object> model = new HashMap<>();
 
-        if (googledocsService.isEnabled())
-        {
-
-            String contentType = req.getParameter(PARAM_TYPE);
-            NodeRef parentNodeRef = new NodeRef(req.getParameter(PARAM_PARENT));
-
-            log.debug("ContentType: " + contentType + "; Parent: " + parentNodeRef);
-
-            NodeRef newNode;
-            File file;
-            try
-            {
-                Credential credential = googledocsService.getCredential();
-                switch (contentType)
-                {
-                case DOCUMENT_TYPE:
-                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_DOCUMENT);
-                    file = googledocsService.createDocument(credential, newNode);
-                    break;
-                case SPREADSHEET_TYPE:
-                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_SPREADSHEET);
-                    file = googledocsService.createSpreadSheet(credential, newNode);
-                    break;
-                case PRESENTATION_TYPE:
-                    newNode = createFile(parentNodeRef, contentType, MIMETYPE_PRESENTATION);
-                    file = googledocsService.createPresentation(credential, newNode);
-                    break;
-                default:
-                    throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
-                        "Content Type Not Found.");
-                }
-
-                googledocsService.decorateNode(newNode, file,
-                    googledocsService.getLatestRevision(credential, file), true);
-            }
-            catch (GoogleDocsServiceException e)
-            {
-                if (e.getPassedStatusCode() > -1)
-                {
-                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
-                }
-                else
-                {
-                    throw new WebScriptException(e.getMessage());
-                }
-            }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
-            {
-                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
-            }
-            catch (Exception e)
-            {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
-            }
-
-            googledocsService.lockNode(newNode);
-
-            model.put(MODEL_NODEREF, newNode.toString());
-            model.put(MODEL_EDITOR_URL, file.getWebViewLink());
-        }
-        else
+        if (!googledocsService.isEnabled())
         {
             throw new WebScriptException(SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
         }
+
+        String contentType = req.getParameter(PARAM_TYPE);
+        NodeRef parentNodeRef = new NodeRef(req.getParameter(PARAM_PARENT));
+
+        log.debug("ContentType: " + contentType + "; Parent: " + parentNodeRef);
+
+        NodeRef newNode;
+        File file;
+        try
+        {
+            Credential credential = googledocsService.getCredential();
+            switch (contentType)
+            {
+            case DOCUMENT_TYPE:
+                newNode = createFile(parentNodeRef, contentType, MIMETYPE_DOCUMENT);
+                file = googledocsService.createDocument(credential, newNode);
+                break;
+            case SPREADSHEET_TYPE:
+                newNode = createFile(parentNodeRef, contentType, MIMETYPE_SPREADSHEET);
+                file = googledocsService.createSpreadSheet(credential, newNode);
+                break;
+            case PRESENTATION_TYPE:
+                newNode = createFile(parentNodeRef, contentType, MIMETYPE_PRESENTATION);
+                file = googledocsService.createPresentation(credential, newNode);
+                break;
+            default:
+                throw new WebScriptException(SC_UNSUPPORTED_MEDIA_TYPE,
+                    "Content Type Not Found.");
+            }
+
+            googledocsService.decorateNode(newNode, file,
+                googledocsService.getLatestRevision(credential, file), true);
+        }
+        catch (GoogleDocsServiceException e)
+        {
+            if (e.getPassedStatusCode() > -1)
+            {
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
+            }
+            throw new WebScriptException(e.getMessage());
+        }
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
+        {
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage());
+        }
+        catch (Exception e)
+        {
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+
+        googledocsService.lockNode(newNode);
+
+        model.put(MODEL_NODEREF, newNode.toString());
+        model.put(MODEL_EDITOR_URL, file.getWebViewLink());
 
         return model;
     }
@@ -213,13 +207,12 @@ public class CreateContent extends GoogleDocsWebScripts
                     return fileFolderService.create(parentNodeRef, sb.toString(),
                         TYPE_CONTENT).getNodeRef();
                 }
-                else
+                log.debug("Filename " + sb.toString() + " already exists");
+                String name = fileNameUtil.incrementFileName(sb.toString());
+                sb.replace(0, sb.length(), name);
+                if (log.isDebugEnabled())
                 {
-                    log.debug("Filename " + sb.toString() + " already exists");
-                    String name = fileNameUtil.incrementFileName(sb.toString());
-                    sb.replace(0, sb.length(), name);
-                    if (log.isDebugEnabled())
-                        log.debug("new file name " + sb.toString());
+                    log.debug("new file name " + sb.toString());
                 }
             }
             catch (FileNotFoundException e) // We should never catch this because we set mustExist=false

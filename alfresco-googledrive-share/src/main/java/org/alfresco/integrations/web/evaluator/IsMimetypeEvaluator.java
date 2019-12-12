@@ -52,24 +52,24 @@ public class IsMimetypeEvaluator extends BaseEvaluator
             {
                 return false;
             }
-            else
+            String mimetype = (String) node.get("mimetype");
+            if (mimetype == null || !importFormats.containsKey(mimetype))
             {
-                String mimetype = (String) node.get("mimetype");
-                if (mimetype == null || !importFormats.containsKey(mimetype))
-                {
-                    log.debug("NodeRef: " + node.get(
-                        "nodeRef") + "; Mimetype not supported: " + mimetype);
-                    return false;
-                }
+                log.debug("NodeRef: " + node.get(
+                    "nodeRef") + "; Mimetype not supported: " + mimetype);
+                return false;
+            }
+            if (log.isDebugEnabled())
+            {
                 log.debug("NodeRef: " + node.get("nodeRef") + "; Mimetype supported: " + mimetype);
             }
+
+            return true;
         }
         catch (Exception e)
         {
             throw new AlfrescoRuntimeException(
                 "Failed to run action evaluator: " + e.getMessage());
         }
-
-        return true;
     }
 }

@@ -620,10 +620,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
             {
                 throw new GoogleDocsAuthenticationException("Token Refresh Failed.");
             }
-            else
-            {
-                throw new GoogleDocsServiceException(e.getMessage(), e.getStatusCode(), e);
-            }
+            throw new GoogleDocsServiceException(e.getMessage(), e.getStatusCode(), e);
         }
 
         if (!success)

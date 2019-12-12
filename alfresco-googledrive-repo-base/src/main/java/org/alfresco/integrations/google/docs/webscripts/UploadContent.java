@@ -110,133 +110,126 @@ public class UploadContent extends GoogleDocsWebScripts
     {
         getGoogleDocsServiceSubsystem();
 
+        if (!googledocsService.isEnabled())
+        {
+            throw new WebScriptException(SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
+        }
+
         Map<String, Object> model = new HashMap<>();
 
-        if (googledocsService.isEnabled())
+        String param_nodeRef = req.getParameter(PARAM_NODEREF);
+        NodeRef nodeRef = new NodeRef(param_nodeRef);
+
+        Map<String, Serializable> jsonParams = parseContent(req);
+
+        File file;
+        try
         {
+            Credential credential = googledocsService.getCredential();
 
-            String param_nodeRef = req.getParameter(PARAM_NODEREF);
-            NodeRef nodeRef = new NodeRef(param_nodeRef);
-
-            Map<String, Serializable> jsonParams = parseContent(req);
-
-            File file;
-            try
+            if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
             {
-                Credential credential = googledocsService.getCredential();
-
-                if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
+                // Check the doc exists in Google - it may have been removed accidentally
+                try
                 {
-                    // Check the doc exists in Google - it may have been removed accidentally
-                    try
-                    {
-                        file = googledocsService.getDriveFile(credential, nodeRef);
-                    }
-                    catch (GoogleDocsServiceException e)
-                    {
-                        file = googledocsService.uploadFile(credential, nodeRef);
-                        if (log.isDebugEnabled())
-                        {
-                            log.debug(nodeRef + " Uploaded to Google.");
-                        }
-                        // Re-apply the previous permissions, if they exist
-                        if (nodeService.getProperty(nodeRef, PROP_CURRENT_PERMISSIONS) != null)
-                        {
-                            googledocsService.addRemotePermissions(credential,
-                                file,
-                                googledocsService.getGooglePermissions(nodeRef,
-                                    PROP_CURRENT_PERMISSIONS)
-                            );
-                        }
-                    }
+                    file = googledocsService.getDriveFile(credential, nodeRef);
                 }
-                else
+                catch (GoogleDocsServiceException e)
                 {
                     file = googledocsService.uploadFile(credential, nodeRef);
                     if (log.isDebugEnabled())
                     {
                         log.debug(nodeRef + " Uploaded to Google.");
                     }
-                }
-
-                if (jsonParams.containsKey(PARAM_PERMISSIONS))
-                {
-                    if (log.isDebugEnabled())
+                    // Re-apply the previous permissions, if they exist
+                    if (nodeService.getProperty(nodeRef, PROP_CURRENT_PERMISSIONS) != null)
                     {
-                        log.debug("Adding permissions to remote object");
+                        googledocsService.addRemotePermissions(credential,
+                            file,
+                            googledocsService.getGooglePermissions(nodeRef,
+                                PROP_CURRENT_PERMISSIONS)
+                        );
                     }
-                    googledocsService.addRemotePermissions(credential,
-                        file,
-                        (List<GooglePermission>) jsonParams.get(PARAM_PERMISSIONS)
-                    );
                 }
-
-                // If this is a non-cloud instance of Alfresco, we need to make the
-                // node versionable before we start working on it. We want the the
-                // version component to be triggered on save. The versionable aspect
-                // is only added if this is existing content, not if it was just
-                // created where the document is the initial version when saved
-                if (!nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY)
-                    && !nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
-                {
-                    Map<String, Serializable> versionProperties = new HashMap<>();
-                    versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
-
-                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
-                    // autoVersionOnUpdateProps now set to false to follow Share upload scripts (fixes GOOGLEDOCS-111)
-                    nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, false);
-
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug("Version Node:" + nodeRef +
-                                  "; Version Properties: " + versionProperties);
-                    }
-                    versionService.createVersion(nodeRef, versionProperties);
-                }
-
-                if (googledocsService.isLockedByGoogleDocs(nodeRef))
-                {
-                    googledocsService.unlockNode(nodeRef);
-                }
-
-                // The alternateLink returned by an uploaded file directs the user to a preview. Need to get the alternateLink
-                // provided by a straight file get if we want to direct a user to an editor UI. Make the request with the known
-                // ID as it as not yet been set on the node yet
-                //file = googledocsService.getDriveFile(credential, file.getId());
-
-                googledocsService.decorateNode(nodeRef, file,
-                    googledocsService.getLatestRevision(credential, file),
-                    (List<GooglePermission>) jsonParams.get(PARAM_PERMISSIONS), false);
-                googledocsService.lockNode(nodeRef);
             }
-            catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
+            else
             {
-                throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage(), e);
-            }
-            catch (GoogleDocsServiceException e)
-            {
-                if (e.getPassedStatusCode() > -1)
+                file = googledocsService.uploadFile(credential, nodeRef);
+                if (log.isDebugEnabled())
                 {
-                    throw new WebScriptException(e.getPassedStatusCode(), e.getMessage(), e);
+                    log.debug(nodeRef + " Uploaded to Google.");
                 }
-                else
-                {
-                    throw new WebScriptException(e.getMessage());
-                }
-            }
-            catch (Exception e)
-            {
-                throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
             }
 
-            model.put(MODEL_NODEREF, nodeRef.toString());
-            model.put(MODEL_EDITOR_URL, file.getWebViewLink());
+            if (jsonParams.containsKey(PARAM_PERMISSIONS))
+            {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Adding permissions to remote object");
+                }
+                googledocsService.addRemotePermissions(credential,
+                    file,
+                    (List<GooglePermission>) jsonParams.get(PARAM_PERMISSIONS)
+                );
+            }
+
+            // If this is a non-cloud instance of Alfresco, we need to make the
+            // node versionable before we start working on it. We want the the
+            // version component to be triggered on save. The versionable aspect
+            // is only added if this is existing content, not if it was just
+            // created where the document is the initial version when saved
+            if (!nodeService.hasAspect(nodeRef, ASPECT_TEMPORARY)
+                && !nodeService.hasAspect(nodeRef, ASPECT_VERSIONABLE))
+            {
+                Map<String, Serializable> versionProperties = new HashMap<>();
+                versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
+
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION, true);
+                // autoVersionOnUpdateProps now set to false to follow Share upload scripts (fixes GOOGLEDOCS-111)
+                nodeService.setProperty(nodeRef, PROP_AUTO_VERSION_PROPS, false);
+
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Version Node:" + nodeRef +
+                              "; Version Properties: " + versionProperties);
+                }
+                versionService.createVersion(nodeRef, versionProperties);
+            }
+
+            if (googledocsService.isLockedByGoogleDocs(nodeRef))
+            {
+                googledocsService.unlockNode(nodeRef);
+            }
+
+            // The alternateLink returned by an uploaded file directs the user to a preview. Need to get the alternateLink
+            // provided by a straight file get if we want to direct a user to an editor UI. Make the request with the known
+            // ID as it as not yet been set on the node yet
+            //file = googledocsService.getDriveFile(credential, file.getId());
+
+            googledocsService.decorateNode(nodeRef, file,
+                googledocsService.getLatestRevision(credential, file),
+                (List<GooglePermission>) jsonParams.get(PARAM_PERMISSIONS), false);
+            googledocsService.lockNode(nodeRef);
         }
-        else
+        catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
-            throw new WebScriptException(SC_SERVICE_UNAVAILABLE, "Google Docs Disabled");
+            throw new WebScriptException(SC_BAD_GATEWAY, e.getMessage(), e);
+        }
+        catch (GoogleDocsServiceException e)
+        {
+            if (e.getPassedStatusCode() > -1)
+            {
+                throw new WebScriptException(e.getPassedStatusCode(), e.getMessage(), e);
+            }
+            throw new WebScriptException(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            throw new WebScriptException(SC_INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
 
+        model.put(MODEL_NODEREF, nodeRef.toString());
+        model.put(MODEL_EDITOR_URL, file.getWebViewLink());
         return model;
     }
 
@@ -285,16 +278,14 @@ public class UploadContent extends GoogleDocsWebScripts
                 {
                     JSONObject jsonPerm = jsonPerms.getJSONObject(i);
                     String authorityId, authorityType, roleName;
-                    if (jsonPerm.has(JSON_KEY_AUTHORITY_ID))
-                    {
-                        authorityId = jsonPerm.getString(JSON_KEY_AUTHORITY_ID);
-                    }
-                    else
+                    if (!jsonPerm.has(JSON_KEY_AUTHORITY_ID))
                     {
                         throw new WebScriptException(SC_BAD_REQUEST,
                             "Key " + JSON_KEY_AUTHORITY_ID + " is missing from JSON object: "
                             + jsonPerm.toString());
                     }
+                    authorityId = jsonPerm.getString(JSON_KEY_AUTHORITY_ID);
+
                     if (jsonPerm.has(JSON_KEY_AUTHORITY_TYPE))
                     {
                         authorityType = jsonPerm.getString(JSON_KEY_AUTHORITY_TYPE);
@@ -303,16 +294,15 @@ public class UploadContent extends GoogleDocsWebScripts
                     {
                         authorityType = JSON_VAL_AUTHORITY_TYPE_DEFAULT;
                     }
-                    if (jsonPerm.has(JSON_KEY_ROLE_NAME))
-                    {
-                        roleName = jsonPerm.getString(JSON_KEY_ROLE_NAME);
-                    }
-                    else
+
+                    if (!jsonPerm.has(JSON_KEY_ROLE_NAME))
                     {
                         throw new WebScriptException(SC_BAD_REQUEST,
                             "Key " + JSON_KEY_ROLE_NAME + " is missing from JSON object: "
                             + jsonPerm.toString());
                     }
+                    roleName = jsonPerm.getString(JSON_KEY_ROLE_NAME);
+
                     permissions.add(new GooglePermission(authorityId, authorityType, roleName));
                 }
                 result.put(PARAM_PERMISSIONS, permissions);

@@ -95,34 +95,31 @@ public class IsLatestRevision extends GoogleDocsWebScripts
         try
         {
             /* The node needs the editingInGoogle aspect if not then tell return 412 */
-            if (nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
-            {
-                Credential credential = googledocsService.getCredential();
-
-                /* get the nodes revision Id null if not found */
-                Serializable property = nodeService.getProperty(nodeRef, PROP_REVISION_ID);
-                currentRevision = property != null ? property.toString() : null;
-                log.debug("currentRevision: " + currentRevision);
-
-                /* get the latest revision Id null if not found */
-                Revision revision = googledocsService.getLatestRevision(credential, nodeRef);
-                latestRevision = revision != null ? revision.getId() : null;
-                log.debug("latestRevision: " + latestRevision);
-
-                /* compare the revision Ids */
-                if (currentRevision != null && latestRevision != null)
-                {
-
-                    isLatestRevision = currentRevision.equals(latestRevision);
-                }
-
-                model.put(MODEL_IS_LATEST_REVISION, isLatestRevision);
-            }
-            else
+            if (!nodeService.hasAspect(nodeRef, ASPECT_EDITING_IN_GOOGLE))
             {
                 throw new WebScriptException(SC_PRECONDITION_FAILED, "Node: " + nodeRef.toString()
                                                                      + " has no revision Ids.");
             }
+            Credential credential = googledocsService.getCredential();
+
+            /* get the nodes revision Id null if not found */
+            Serializable property = nodeService.getProperty(nodeRef, PROP_REVISION_ID);
+            currentRevision = property != null ? property.toString() : null;
+            log.debug("currentRevision: " + currentRevision);
+
+            /* get the latest revision Id null if not found */
+            Revision revision = googledocsService.getLatestRevision(credential, nodeRef);
+            latestRevision = revision != null ? revision.getId() : null;
+            log.debug("latestRevision: " + latestRevision);
+
+            /* compare the revision Ids */
+            if (currentRevision != null && latestRevision != null)
+            {
+
+                isLatestRevision = currentRevision.equals(latestRevision);
+            }
+
+            model.put(MODEL_IS_LATEST_REVISION, isLatestRevision);
         }
         catch (GoogleDocsAuthenticationException | GoogleDocsRefreshTokenException e)
         {
@@ -134,10 +131,7 @@ public class IsLatestRevision extends GoogleDocsWebScripts
             {
                 throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
             }
-            else
-            {
-                throw new WebScriptException(e.getMessage());
-            }
+            throw new WebScriptException(e.getMessage());
         }
         catch (IOException e)
         {

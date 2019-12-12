@@ -127,10 +127,7 @@ public class RemoveContent extends GoogleDocsWebScripts
                 {
                     throw new WebScriptException(e.getPassedStatusCode(), e.getMessage());
                 }
-                else
-                {
-                    throw new WebScriptException(e.getMessage());
-                }
+                throw new WebScriptException(e.getMessage());
             }
             catch (ConstraintException e)
             {
@@ -205,11 +202,8 @@ public class RemoveContent extends GoogleDocsWebScripts
                     "Key " + JSON_KEY_NODEREF + " is missing from JSON: "
                     + jsonStr);
             }
-            else
-            {
-                NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
-                result.put(JSON_KEY_NODEREF, nodeRef);
-            }
+            NodeRef nodeRef = new NodeRef(json.getString(JSON_KEY_NODEREF));
+            result.put(JSON_KEY_NODEREF, nodeRef);
 
             if (!json.has(JSON_KEY_FORCE))
             {

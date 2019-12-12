@@ -68,14 +68,11 @@ public class Exportable extends GoogleDocsWebScripts
 
         try
         {
-            if (googledocsService.isExportable(req.getParameter(PARAM_MIMETYPE)))
-            {
-                model.put(MODEL_EXPORT_ACION, ACTION_DEFAULT);
-            }
-            else
+            if (!googledocsService.isExportable(req.getParameter(PARAM_MIMETYPE)))
             {
                 throw new WebScriptException(SC_NOT_ACCEPTABLE, "Content not exportable");
             }
+            model.put(MODEL_EXPORT_ACION, ACTION_DEFAULT);
         }
         catch (MustUpgradeFormatException e)
         {
