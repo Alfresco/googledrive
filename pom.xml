@@ -3,7 +3,7 @@
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>3.2.0-EA1-SNAPSHOT</version>
+    <version>3.2.0-A1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -23,8 +23,8 @@
 
         <buildnumber>local</buildnumber>
 
-        <dependency.alfresco-repository.version>8.35</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>8.59</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>8.53</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>8.74</dependency.alfresco-data-model.version>
         <dependency.share.version>6.2.0</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
