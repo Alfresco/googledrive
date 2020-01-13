@@ -23,8 +23,8 @@
 
         <buildnumber>local</buildnumber>
 
-        <dependency.alfresco-repository.version>8.53</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>8.74</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>8.83</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>8.84</dependency.alfresco-data-model.version>
         <dependency.share.version>6.2.0</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
@@ -38,6 +38,23 @@
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.10</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <scope>provided</scope>
+                <version>2.10.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
