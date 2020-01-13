@@ -16,24 +16,12 @@
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-repository</artifactId>
             <version>${dependency.alfresco-repository.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-data-model</artifactId>
             <version>${dependency.alfresco-data-model.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>provided</scope>
         </dependency>
 
@@ -45,10 +33,6 @@
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava-jdk5</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>
@@ -64,7 +48,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
