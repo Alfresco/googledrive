@@ -10,9 +10,9 @@
     <name>Alfresco / Google Drive Enterprise AMP packaging</name>
     <artifactId>alfresco-googledrive-repo-enterprise</artifactId>
     <packaging>amp</packaging>
-    
+
     <properties>
-        <image.name>acs-gd</image.name>
+        <image.name>alfresco/alfresco-content-repository-gd</image.name>
         <image.tag>latest</image.tag>
     </properties>
 
@@ -118,7 +118,7 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <profiles>
         <profile>
             <!-- Builds local image for development & testing only -->

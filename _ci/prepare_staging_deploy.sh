@@ -16,7 +16,7 @@ if [ ! -d deploy_dir_community ]; then
     export VERSION=$(echo "${ARTIFACT_GD_SHARE}" | sed -e "s/^alfresco-googledrive-share-//" -e "s/\.amp$//")
 
     # Download the WhiteSource report
-    mvn org.alfresco:whitesource-downloader-plugin:inventoryReport \
+    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
         -N \
         "-Dorg.whitesource.product=Google Docs Integration" \
         -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
