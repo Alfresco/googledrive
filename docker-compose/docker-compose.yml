@@ -3,7 +3,7 @@ version: "2"
 
 services:
   alfresco:
-    image: acs-gd:latest
+    image: alfresco/alfresco-content-repository-gd:latest
     environment:
       JAVA_OPTS: "
         -Ddb.driver=org.postgresql.Driver
@@ -50,7 +50,7 @@ services:
       - alfresco-volume:/usr/local/tomcat/alf_data
 
   share:
-    image: share-gd:latest
+    image: alfresco/alfresco-share-gd:latest
     environment:
       REPO_HOST: "alfresco"
       REPO_PORT: "8080"
@@ -144,7 +144,7 @@ services:
       - shared-file-store-volume:/tmp/Alfresco/sfs
 
   postgres:
-    image: postgres:10.1
+    image: postgres:11.4
     environment:
       POSTGRES_PASSWORD: alfresco
       POSTGRES_USER: alfresco
@@ -174,7 +174,7 @@ services:
       - solr-volume:/opt/alfresco-search-services/data
 
   activemq:
-    image: alfresco/alfresco-activemq:5.15.6
+    image: alfresco/alfresco-activemq:5.15.8
     ports:
       - 8161:8161    # Web Console
       - 5672:5672    # AMQP

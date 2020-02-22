@@ -13,20 +13,20 @@ if [ ! -d deploy_dir_community ]; then
     export VERSION=$(git describe --abbrev=0 --tags)
 
     # Download the WhiteSource report
-    mvn org.alfresco:whitesource-downloader-plugin:inventoryReport \
+    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
         -N \
         "-Dorg.whitesource.product=Google Docs Integration" \
         -DsaveReportAs=deploy_dir/3rd-party.xlsx
     ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
 
     # Download the AMP artifacts
-    mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-community:${VERSION}:amp \
         -DoutputDirectory=deploy_dir_community
-    mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}:amp \
         -DoutputDirectory=deploy_dir_enterprise
-    mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-share:${VERSION}:amp \
         -DoutputDirectory=deploy_dir_community
     ln "deploy_dir_community/alfresco-googledrive-share-${VERSION}.amp" "deploy_dir_enterprise/alfresco-googledrive-share-${VERSION}.amp"

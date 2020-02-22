@@ -12,7 +12,7 @@
     </parent>
 
     <properties>
-        <image.name>share-gd</image.name>
+        <image.name>alfresco/alfresco-share-gd</image.name>
         <image.tag>latest</image.tag>
     </properties>
 
