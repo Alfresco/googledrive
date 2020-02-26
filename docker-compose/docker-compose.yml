@@ -5,6 +5,7 @@ services:
   alfresco:
     image: alfresco/alfresco-content-repository-gd:latest
     environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n"
       JAVA_OPTS: "
         -Ddb.driver=org.postgresql.Driver
         -Ddb.username=alfresco
@@ -45,7 +46,7 @@ services:
         -Xms1500m -Xmx1500m
           "
     ports:
-      - 5006:5006
+      - 5005:5005
     volumes:
       - alfresco-volume:/usr/local/tomcat/alf_data
 
@@ -54,6 +55,7 @@ services:
     environment:
       REPO_HOST: "alfresco"
       REPO_PORT: "8080"
+      CATALINA_OPTS: "-Dproxy.host=${HOST} -agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n"
       JAVA_OPTS: "
         -Xms500m
         -Xmx500m
@@ -62,6 +64,8 @@ services:
         -Dalfresco.context=alfresco
         -Dalfresco.protocol=http
         "
+    ports:
+      - 5006:5005
 
   transform-router:
     image: quay.io/alfresco/alfresco-transform-router:1.1.0
