@@ -2042,7 +2042,8 @@ public class GoogleDocsServiceImpl
 
                             // if there is no author -- the entry is the initial
                             // creation
-                            if (revision.getLastModifyingUser().getEmailAddress() != null)
+                            if (revision.getLastModifyingUser() != null &&
+                                revision.getLastModifyingUser().getEmailAddress() != null)
                             {
                                 if (revision.getLastModifyingUser().getEmailAddress().equals(emailAddress))
                                 {
@@ -2072,7 +2073,8 @@ public class GoogleDocsServiceImpl
 
                     // if the authors list is empty -- the author was the original
                     // creator and it is the initial copy
-                    if (revisions.get(0).getLastModifyingUser().getEmailAddress() != null)
+                    if (revisions.get(0).getLastModifyingUser() != null &&
+                        revisions.get(0).getLastModifyingUser().getEmailAddress() != null)
                     {
 
                         if (!revisions.get(0).getLastModifyingUser().getEmailAddress().equals(emailAddress))
