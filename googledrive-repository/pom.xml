@@ -15,6 +15,10 @@
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <alfresco-community.version>6.44</alfresco-community.version>
         <alfresco-enterprise.version>6.50</alfresco-enterprise.version>
+        <alfresco.version>7.26</alfresco.version> <!--TODO fixme - TEMP -->
+
+        <image.name>alfresco/alfresco-content-repository-gd</image.name>
+        <image.tag>latest</image.tag>
     </properties>
 
     <dependencies>
@@ -120,6 +124,31 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>fabric8-maven-plugin</artifactId>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>${image.name}:${image.tag}</name>
+                                <build>
+                                    <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <assembly>
+                                        <descriptor>target-assembly.xml</descriptor>
+                                    </assembly>
+                                    <buildOptions>
+                                        <squash>true</squash>
+                                    </buildOptions>
+                                </build>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
@@ -153,5 +182,28 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <profile>
+            <!-- Builds local image for development & testing only -->
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>fabric8-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
+
 </project>

@@ -43,6 +43,14 @@
                   <useReleaseProfile>false</useReleaseProfile>
                </configuration>
             </plugin>
+             <plugin>
+                 <groupId>io.fabric8</groupId>
+                 <artifactId>fabric8-maven-plugin</artifactId>
+                 <version>4.3.1</version>
+                 <configuration>
+                     <verbose>true</verbose>
+                 </configuration>
+             </plugin>
          </plugins>
       </pluginManagement>
    </build>

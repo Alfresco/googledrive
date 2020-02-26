@@ -8,6 +8,10 @@
     <properties>
         <alfresco-community.version>6.0.a</alfresco-community.version>
         <alfresco-enterprise.version>6.0.0-rc1</alfresco-enterprise.version>
+        <alfresco.version>6.0.c</alfresco.version> <!--TODO fixme - TEMP -->
+
+        <image.name>alfresco/alfresco-share-gd</image.name>
+        <image.tag>latest</image.tag>
     </properties>
 
     <parent>
@@ -110,9 +114,55 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>fabric8-maven-plugin</artifactId>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>${image.name}:${image.tag}</name>
+                                <build>
+                                    <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <assembly>
+                                        <descriptor>target-assembly.xml</descriptor>
+                                    </assembly>
+                                    <buildOptions>
+                                        <squash>true</squash>
+                                    </buildOptions>
+                                </build>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
+        <profile>
+            <!-- Builds local image for development & testing only -->
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>fabric8-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>enterprise</id>
             <properties>
