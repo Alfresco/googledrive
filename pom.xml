@@ -27,6 +27,7 @@
 
       <app.amp.folder>src/main/amp</app.amp.folder>
       <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
+      <app.filtering.enabled>true</app.filtering.enabled>
    </properties>
 
    <build>
@@ -49,16 +50,26 @@
                      <snapshotToTimestamp>true</snapshotToTimestamp>
                  </configuration>
              </plugin>
+             <plugin>
+                 <groupId>io.fabric8</groupId>
+                 <artifactId>fabric8-maven-plugin</artifactId>
+                 <version>4.3.1</version>
+                 <configuration>
+                     <verbose>true</verbose>
+                 </configuration>
+             </plugin>
          </plugins>
       </pluginManagement>
 
        <resources>
            <resource>
                <directory>src/main/resources</directory>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
            <resource>
                <directory>${app.amp.folder}</directory>
                <targetPath>${app.amp.output.folder}</targetPath>
+               <filtering>${app.filtering.enabled}</filtering>
            </resource>
        </resources>
    </build>
