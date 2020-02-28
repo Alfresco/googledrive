@@ -14,7 +14,7 @@
    </scm>
 
    <properties>
-      <buildnumber>SNAPSHOT</buildnumber>
+      <buildnumber>local</buildnumber>
       <alfresco.groupId>org.alfresco</alfresco.groupId>
       <alfresco-community.version>5.0.c</alfresco-community.version>
       <alfresco-enterprise.version>5.0</alfresco-enterprise.version>
@@ -28,6 +28,8 @@
       <java.version>1.7</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <env>local</env>
+      <app.amp.folder>src/main/amp</app.amp.folder>
+      <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
    </properties>
 
    <dependencyManagement>
