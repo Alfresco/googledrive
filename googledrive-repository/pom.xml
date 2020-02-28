@@ -131,20 +131,6 @@
                     <version>1.0.0</version>
                 </dependency>
             </dependencies>
-            <build>
-                <resources>
-                    <resource>
-                        <targetPath>${app.amp.output.folder}</targetPath>
-                        <filtering>true</filtering>
-                        <directory>src/main/amp</directory>
-                        <includes>
-                        </includes>
-                        <excludes>
-                            <exclude>config/alfresco/enterprise/**</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
-            </build>
         </profile>
         <profile>
             <id>5</id>

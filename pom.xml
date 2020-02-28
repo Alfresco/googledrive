@@ -65,10 +65,12 @@
       <resources>
          <resource>
             <directory>src/main/resources</directory>
+            <filtering>true</filtering>
          </resource>
          <resource>
             <directory>${app.amp.folder}</directory>
             <targetPath>${app.amp.output.folder}</targetPath>
+            <filtering>true</filtering>
          </resource>
       </resources>
    </build>
