@@ -16,15 +16,11 @@ Windows users must ensure that the following value is set in Docker Engine > Edi
 
 When building the amps (`mvn clean package`) you should also include a combination of the following profiles (`-P`). If not included, the defaults are applied.
 
-**Platform**
+**Docker images**
 
 'local' Build amps for local dev/test only
 
 'docker-end-to-end-setup' Build amps for future end-to-end tests
-
-**Version**
-
-`6` Build amps for version 6.x of Alfresco
 
 Example: `mvn clean package -Plocal`
 	
