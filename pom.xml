@@ -23,7 +23,7 @@
 
         <buildnumber>local</buildnumber>
 
-        <dependency.alfresco-repository.version>8.83</dependency.alfresco-repository.version>
+        <dependency.alfresco-repository.version>8.129</dependency.alfresco-repository.version>
         <dependency.alfresco-data-model.version>8.84</dependency.alfresco-data-model.version>
         <dependency.share.version>6.2.0</dependency.share.version>
 
