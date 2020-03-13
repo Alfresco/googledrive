@@ -12,6 +12,7 @@ The content of the generated file should be added to the appropriate `client_sec
 
 Building
 --------
+Windows users must ensure that the following value is set in Docker Engine > Edit JSON: “experimental: true”.
 
 When building the amps (`mvn clean package`) you should also include a combination of the following profiles (`-P`). If not include, the defaults are applied.
 

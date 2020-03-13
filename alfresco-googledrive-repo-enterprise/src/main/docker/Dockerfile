@@ -1,6 +1,6 @@
 FROM alfresco/alfresco-content-repository:6.2.0
 
-ARG THEUSERNAME=alfresco
+ARG USERNAME=alfresco
 ARG TOMCAT_DIR=/usr/local/tomcat
 
 # default user is alfresco (added on the base image alfresco/alfresco-content-repository:6.2.0)
@@ -19,4 +19,4 @@ RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
               $TOMCAT_DIR/amps $TOMCAT_DIR/webapps/alfresco -directory -nobackup
 
 
-USER ${THEUSERNAME}
+USER ${USERNAME}

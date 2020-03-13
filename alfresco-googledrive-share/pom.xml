@@ -119,6 +119,9 @@
                                     <assembly>
                                         <descriptor>target-assembly.xml</descriptor>
                                     </assembly>
+                                    <buildOptions>
+                                        <squash>true</squash>
+                                    </buildOptions>
                                 </build>
                             </image>
                         </images>
