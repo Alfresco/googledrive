@@ -14,19 +14,19 @@ Building
 --------
 Windows users must ensure that the following value is set in Docker Engine > Edit JSON: “experimental: true”.
 
-When building the amps (`mvn clean package`) you should also include a combination of the following profiles (`-P`). If not include, the defaults are applied.
+When building the amps (`mvn clean package`) you should also include a combination of the following profiles (`-P`). If not included, the defaults are applied.
 
 **Platform**
 
-`community` Build amps for Alfresco Community (default)
+'local' Build amps for local dev/test only
 
-`enterprise` Build amps for Alfresco Enterprise
+'docker-end-to-end-setup' Build amps for future end-to-end tests
 
 **Version**
 
 `6` Build amps for version 6.x of Alfresco
 
-Example: `mvn clean package -Penterprise`
+Example: `mvn clean package -Plocal`
 	
 ***Note:** Amps built from this source are not supported by Alfresco. They are built and used at your own risk. Supported releases of the enterprise amps can be found at the Alfresco Customer Portal.*
 
