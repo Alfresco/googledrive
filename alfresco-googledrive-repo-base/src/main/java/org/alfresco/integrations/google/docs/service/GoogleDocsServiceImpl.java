@@ -36,6 +36,9 @@ import static org.alfresco.integrations.google.docs.GoogleDocsConstants.CLIENT_S
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.DOCUMENT_MIMETYPE;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.FOLDER_MIMETYPE;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.GOOGLE_ERROR_UNMUTABLE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_DOCUMENT;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_PRESENTATION;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_SPREADSHEET;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_DOCUMENT_NAME;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_PRESENTATION_NAME;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.NEW_SPREADSHEET_NAME;
@@ -55,6 +58,7 @@ import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_PERMISS
 import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_RESOURCE_ID;
 import static org.alfresco.integrations.google.docs.GoogleDocsModel.PROP_REVISION_ID;
 import static org.alfresco.model.ContentModel.ASPECT_TEMPORARY;
+import static org.alfresco.model.ContentModel.PROP_CONTENT;
 import static org.alfresco.model.ContentModel.PROP_GOOGLEUSERNAME;
 import static org.alfresco.model.ContentModel.PROP_NAME;
 import static org.alfresco.model.ContentModel.PROP_VERSION_TYPE;
@@ -113,6 +117,7 @@ import org.alfresco.service.cmr.oauth2.OAuth2CredentialsStoreService;
 import org.alfresco.service.cmr.remotecredentials.OAuth2CredentialsInfo;
 import org.alfresco.service.cmr.remoteticket.NoSuchSystemException;
 import org.alfresco.service.cmr.repository.AspectMissingException;
+import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.MimetypeService;
@@ -1432,7 +1437,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
             aspectProperties.put(PROP_CURRENT_PERMISSIONS,
                 buildPermissionsPropertyValue(permissions));
             aspectProperties.put(PROP_RESOURCE_ID, file.getId());
-            aspectProperties.put(PROP_EDITORURL, file.getWebViewLink());
+            aspectProperties.put(PROP_EDITORURL, convertWebViewToEditUrl(nodeRef, file.getWebViewLink()));
             aspectProperties.put(PROP_DRIVE_WORKING_FOLDER, file.getParents().get(0));
             if (revision != null)
             {
@@ -1459,6 +1464,64 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
         {
             behaviourFilter.enableBehaviour(nodeRef);
         }
+    }
+
+    private final static String URL_SEGMEMT_FILE_D = "/file/d/";
+    private final static String URL_SEGMEMT_VIEW = "/view";
+    private final static String URL_SEGMEMT_EDIT = "/edit";
+
+    private final static String URL_DOCS_DOCUMENT     = "https://docs.google.com/document/d/";
+    private final static String URL_DOCS_SPREADSHEET  = "https://docs.google.com/spreadsheets/d/";
+    private final static String URL_DOCS_PRESENTATION = "https://docs.google.com/presentation/d/";
+
+    //
+    // Convert web view (preview) url to an edit url
+    //
+    // For example from:
+    //      https://drive.google.com/a/alfresco.com/file/d/1ARe2I4tC2k33PXItOJWKfVEQaetf_F91/view?usp=drivesdk
+    // to:
+    //      https://docs.google.com/spreadsheets/d/1flbjW8a9fI56dPUsgb6_CoiAyNJxliHmVrAuK7KnRM4/edit
+    //
+    // Note: this may need to be updated in future (eg. if URL format changes)
+    //
+    public String convertWebViewToEditUrl(NodeRef nodeRef, String url)
+    {
+        if (url != null)
+        {
+            int idx1 = url.indexOf(URL_SEGMEMT_FILE_D);
+            int idx2 = url.indexOf(URL_SEGMEMT_VIEW);
+
+            if ((idx1 != -1) && (idx2 != -1))
+            {
+                ContentData contentData = (ContentData)nodeService.getProperty(nodeRef, PROP_CONTENT);
+                String mimeType = contentData.getMimetype();
+
+                if (mimeType == null)
+                {
+                    throw new RuntimeException("Content Type is null");
+                }
+
+                // extract id
+                String docId = url.substring(idx1 + URL_SEGMEMT_FILE_D.length(), idx2);
+
+                switch (mimeType)
+                {
+                    case MIMETYPE_DOCUMENT:
+                        url = URL_DOCS_DOCUMENT + docId + URL_SEGMEMT_EDIT;
+                        break;
+                    case MIMETYPE_SPREADSHEET:
+                        url = URL_DOCS_SPREADSHEET + docId + URL_SEGMEMT_EDIT;
+                        break;
+                    case MIMETYPE_PRESENTATION:
+                        url = URL_DOCS_PRESENTATION + docId +URL_SEGMEMT_EDIT;
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown Content Type: " + mimeType);
+                }
+            }
+        }
+
+        return url;
     }
 
     /*
