@@ -1478,7 +1478,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
     // Convert web view (preview) url to an edit url
     //
     // For example from:
-    //      https://drive.google.com/a/alfresco.com/file/d/1ARe2I4tC2k33PXItOJWKfVEQaetf_F91/view?usp=drivesdk
+    //      https://drive.google.com/a/alfresco.com/file/d/1flbjW8a9fI56dPUsgb6_CoiAyNJxliHmVrAuK7KnRM4/view?usp=drivesdk
     // to:
     //      https://docs.google.com/spreadsheets/d/1flbjW8a9fI56dPUsgb6_CoiAyNJxliHmVrAuK7KnRM4/edit
     //
