@@ -35,6 +35,7 @@ import static org.alfresco.integrations.google.docs.GoogleDocsConstants.CLIENT_S
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.CLIENT_SECRET_WEB;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.DOCUMENT_MIMETYPE;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.FOLDER_MIMETYPE;
+import static org.alfresco.integrations.google.docs.GoogleDocsConstants.GDOCS_MIMETYPE_PREFIX;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.GOOGLE_ERROR_UNMUTABLE;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_DOCUMENT;
 import static org.alfresco.integrations.google.docs.GoogleDocsConstants.MIMETYPE_PRESENTATION;
@@ -1053,7 +1054,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
 
     private static boolean isGoogleDriveMimeType(final String mimeType)
     {
-        return mimeType != null && mimeType.startsWith("application/vnd.google-apps.");
+        return mimeType != null && mimeType.startsWith(GDOCS_MIMETYPE_PREFIX);
     }
 
     public void getSpreadSheet(Credential credential, NodeRef nodeRef, boolean removeFromDrive)
@@ -1169,6 +1170,19 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
             // Get the mimetype
             FileInfo fileInfo = fileFolderService.getFileInfo(nodeRef);
             String mimetype = fileInfo.getContentData().getMimetype();
+
+            //
+            // https://developers.google.com/drive/api/v2/v3versusv2
+            //
+            //    To import Google Docs formats, you set the appropriate target mimeType in the resource body.
+            //    In v2, you set ?convert=true.
+            //
+            String gdocsType = getImportType(mimetype);
+            if (gdocsType != null)
+            {
+                // note: gdocsType = document, spreadsheet or presentation
+                mimetype = GDOCS_MIMETYPE_PREFIX+gdocsType;
+            }
 
             // Create the working Directory
             File workingDir = createWorkingDirectory(credential, nodeRef);
