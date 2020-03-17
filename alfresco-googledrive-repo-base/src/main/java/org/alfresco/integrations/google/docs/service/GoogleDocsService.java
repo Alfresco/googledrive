@@ -453,6 +453,7 @@ public interface GoogleDocsService
 
     Serializable buildPermissionsPropertyValue(List<GooglePermission> permissions);
 
+    @Auditable(parameters = {"nodeRef", "url"})
     String convertWebViewToEditUrl(NodeRef nodeRef, String url);
 
     /**
