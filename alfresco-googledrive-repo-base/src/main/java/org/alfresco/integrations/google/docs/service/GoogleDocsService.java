@@ -453,6 +453,9 @@ public interface GoogleDocsService
 
     Serializable buildPermissionsPropertyValue(List<GooglePermission> permissions);
 
+    @Auditable(parameters = {"nodeRef", "url"})
+    String convertWebViewToEditUrl(NodeRef nodeRef, String url);
+
     /**
      * Represents a named authority and their role on a Google Docs object. This should be compatible across the document list and
      * the drive APIs.

@@ -58,10 +58,11 @@ public interface GoogleDocsConstants
     String SPREADSHEET_TYPE  = "spreadsheet";
 
     // Google Docs Mimetypes
-    String DOCUMENT_MIMETYPE     = "application/vnd.google-apps.document";
-    String SPREADSHEET_MIMETYPE  = "application/vnd.google-apps.spreadsheet";
-    String PRESENTATION_MIMETYPE = "application/vnd.google-apps.presentation";
-    String FOLDER_MIMETYPE       = "application/vnd.google-apps.folder";
+    String GDOCS_MIMETYPE_PREFIX = "application/vnd.google-apps.";
+    String DOCUMENT_MIMETYPE     = GDOCS_MIMETYPE_PREFIX+"document";
+    String SPREADSHEET_MIMETYPE  = GDOCS_MIMETYPE_PREFIX+"spreadsheet";
+    String PRESENTATION_MIMETYPE = GDOCS_MIMETYPE_PREFIX+"presentation";
+    String FOLDER_MIMETYPE       = GDOCS_MIMETYPE_PREFIX+"folder";
 
     // Google mimetypes
     String MIMETYPE_DOCUMENT     = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";

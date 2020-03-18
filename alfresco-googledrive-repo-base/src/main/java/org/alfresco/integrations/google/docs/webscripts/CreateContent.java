@@ -166,7 +166,7 @@ public class CreateContent extends GoogleDocsWebScripts
         googledocsService.lockNode(newNode);
 
         model.put(MODEL_NODEREF, newNode.toString());
-        model.put(MODEL_EDITOR_URL, file.getWebViewLink());
+        model.put(MODEL_EDITOR_URL, googledocsService.convertWebViewToEditUrl(newNode, file.getWebViewLink()));
 
         return model;
     }

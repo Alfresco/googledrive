@@ -229,7 +229,7 @@ public class UploadContent extends GoogleDocsWebScripts
         }
 
         model.put(MODEL_NODEREF, nodeRef.toString());
-        model.put(MODEL_EDITOR_URL, file.getWebViewLink());
+        model.put(MODEL_EDITOR_URL, googledocsService.convertWebViewToEditUrl(nodeRef, file.getWebViewLink()));
         return model;
     }
 
