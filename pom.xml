@@ -23,13 +23,13 @@
 
         <buildnumber>local</buildnumber>
 
-        <dependency.alfresco-repository.version>8.83</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>8.84</dependency.alfresco-data-model.version>
-        <dependency.share.version>6.2.0</dependency.share.version>
+        <dependency.alfresco-repository.version>7.154</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>8.50.5</dependency.alfresco-data-model.version>
+        <dependency.share.version>6.2.1-A4</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
-        <alfresco.min.version>6.0.0</alfresco.min.version>
+        <alfresco.min.version>6.2.0</alfresco.min.version>
         <alfresco.max.version>6.99.99</alfresco.max.version>
 
         <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
@@ -44,7 +44,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.12</version>
+                <version>4.5.11</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

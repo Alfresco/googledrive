@@ -1,4 +1,5 @@
-FROM alfresco/alfresco-share:6.2.0
+# TODO remove quay.io/ after share 6.2.1 image published to hub.docker.com/r/alfresco/alfresco-share
+FROM quay.io/alfresco/alfresco-share:6.2.1-A4
 
 ARG TOMCAT_DIR=/usr/local/tomcat
 
@@ -12,5 +13,5 @@ RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
 # Copy Dockerfile to avoid an error if no AMPs exist
 COPY maven/target/*.amp $TOMCAT_DIR/amps_share/
 RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
-              $TOMCAT_DIR/amps_share $TOMCAT_DIR/webapps/share -directory -nobackup
+              $TOMCAT_DIR/amps_share/alfresco-google*-share*.amp $TOMCAT_DIR/webapps/share -nobackup
 

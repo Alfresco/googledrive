@@ -1,4 +1,4 @@
-FROM alfresco/alfresco-content-repository:6.2.0
+FROM alfresco/alfresco-content-repository:6.2.1-A1
 
 ARG IMAGEUSERNAME=alfresco
 ARG TOMCAT_DIR=/usr/local/tomcat
@@ -16,7 +16,7 @@ RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
 # Copy Dockerfile to avoid an error if no AMPs exist
 COPY maven/target/*.amp $TOMCAT_DIR/amps/
 RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
-              $TOMCAT_DIR/amps $TOMCAT_DIR/webapps/alfresco -directory -nobackup
+              $TOMCAT_DIR/amps/alfresco-google*-repo*.amp $TOMCAT_DIR/webapps/alfresco -nobackup
 
 
 USER ${IMAGEUSERNAME}
