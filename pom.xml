@@ -30,7 +30,6 @@
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
         <alfresco.min.version>6.2.0</alfresco.min.version>
-        <alfresco.max.version>6.99.99</alfresco.max.version>
 
         <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
 
