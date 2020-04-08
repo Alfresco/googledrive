@@ -31,7 +31,7 @@
         </org.springframework.social-google-version>
         <alfresco.min.version>6.2.0</alfresco.min.version>
 
-        <alfresco.google.config.version>1.0.0</alfresco.google.config.version>
+        <alfresco.google.config.version>1.0.1</alfresco.google.config.version>
 
         <app.filtering.enabled>true</app.filtering.enabled>
         <app.amp.folder>src/main/amp</app.amp.folder>
