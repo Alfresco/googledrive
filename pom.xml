@@ -25,10 +25,10 @@
 
         <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
 
-        <dependency.alfresco-repository.version>7.164</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>8.50.9</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>7.171</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>8.50.11</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>6.2.1-A4</dependency.share.version>
+        <dependency.share.version>6.2.1-RC1</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
@@ -43,6 +43,9 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
+
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
