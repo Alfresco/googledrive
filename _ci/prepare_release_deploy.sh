@@ -16,7 +16,7 @@ if [ ! -d deploy_dir_community ]; then
     mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
         -N \
         "-Dorg.whitesource.product=Google Docs Integration" \
-        -DsaveReportAs=deploy_dir/3rd-party.xlsx
+        -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
     ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
 
     # Download the AMP artifacts
