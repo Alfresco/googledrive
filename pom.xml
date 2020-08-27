@@ -25,7 +25,7 @@
 
         <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
 
-        <dependency.alfresco-repository.version>7.171</dependency.alfresco-repository.version>
+        <dependency.alfresco-repository.version>8.300-TEST1</dependency.alfresco-repository.version>
         <dependency.alfresco-data-model.version>8.50.11</dependency.alfresco-data-model.version>
 
         <dependency.share.version>6.2.1-RC1</dependency.share.version>
