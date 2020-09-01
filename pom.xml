@@ -28,7 +28,7 @@
         <dependency.alfresco-repository.version>7.171</dependency.alfresco-repository.version>
         <dependency.alfresco-data-model.version>8.50.11</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>6.2.1-RC1</dependency.share.version>
+        <dependency.share.version>7.0.0-M2</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
