@@ -163,6 +163,7 @@ import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.RevisionList;
 import com.google.api.services.drive.model.User;
 import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Userinfo;
 import com.google.api.services.oauth2.model.Userinfoplus;
 
 /**
@@ -563,7 +564,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
         final Oauth2 userInfoService = new Oauth2.Builder(new NetHttpTransport(),
             new JacksonFactory(),
             credential).setApplicationName(APPLICATION_NAME).build();
-        final Userinfoplus userInfo;
+        final Userinfo userInfo;
         try
         {
             userInfo = userInfoService
