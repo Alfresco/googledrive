@@ -144,7 +144,7 @@ services:
       - shared-file-store-volume:/tmp/Alfresco/sfs
 
   postgres:
-    image: postgres:11.4
+    image: postgres:11.7
     environment:
       POSTGRES_PASSWORD: alfresco
       POSTGRES_USER: alfresco
