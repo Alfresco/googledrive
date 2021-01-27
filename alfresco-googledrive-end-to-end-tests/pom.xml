@@ -93,7 +93,7 @@
                                 </image>
                                 <image>
                                     <alias>postgres</alias>
-                                    <name>postgres:10.1</name>
+                                    <name>postgres:11.7</name>
                                     <run>
                                         <hostname>postgres</hostname>
                                         <network>
