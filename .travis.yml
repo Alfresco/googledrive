@@ -36,11 +36,10 @@ jobs:
       before_install: bash _ci/init.sh
       script: bash _ci/build.sh
 
-    - name: "WhiteSource"
-      stage: build
-      if: branch != company_release
+    - name: "Source Clear Scan (SCA)"  
       before_install: bash _ci/init.sh
-      script: bash _ci/whitesource.sh
+      # Run Veracode
+      script: travis_wait 30 bash _ci/source_clear.sh
 
     - name: "End-to-End Tests"
       stage: tests

@@ -22,7 +22,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -93,7 +93,7 @@
                                 </image>
                                 <image>
                                     <alias>postgres</alias>
-                                    <name>postgres:10.1</name>
+                                    <name>postgres:11.7</name>
                                     <run>
                                         <hostname>postgres</hostname>
                                         <network>
