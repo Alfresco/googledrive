@@ -13,11 +13,11 @@ if [ ! -d deploy_dir_community ]; then
     export VERSION=$(git describe --abbrev=0 --tags)
 
     # Download the WhiteSource report
-    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
-        -N \
-        "-Dorg.whitesource.product=Google Docs Integration" \
-        -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
-    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
+#    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
+#        -N \
+#        "-Dorg.whitesource.product=Google Docs Integration" \
+#        -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
+#    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
 
     # Download the AMP artifacts
     mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
