@@ -16,13 +16,13 @@ if [ ! -d deploy_dir_community ]; then
     export VERSION=$(echo "${ARTIFACT_GD_SHARE}" | sed -e "s/^alfresco-googledrive-share-//" -e "s/\.amp$//")
 
     # Download the WhiteSource report
-    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
-        -N \
-        "-Dorg.whitesource.product=Google Docs Integration" \
-        -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
+#    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
+#        -N \
+#        "-Dorg.whitesource.product=Google Docs Integration" \
+#        -DsaveReportAs=deploy_dir_community/3rd-party.xlsx
 
     # Hard-link the artifacts into deploy directories
-    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
+#    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
     ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
     ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
