@@ -174,7 +174,7 @@ services:
       - solr-volume:/opt/alfresco-search-services/data
 
   activemq:
-    image: alfresco/alfresco-activemq:5.15.8
+    image: alfresco/alfresco-activemq:5.16.1
     ports:
       - 8161:8161    # Web Console
       - 5672:5672    # AMQP
