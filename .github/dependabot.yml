@@ -9,6 +9,7 @@ updates:
     directory: "../"
     schedule:
       interval: "weekly"
+      day: "sunday"
       time: "09:00"
       # Use Romania Standard Time (UTC +02:00)
       timezone: "Europe/Bucharest"
