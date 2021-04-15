@@ -1,10 +1,10 @@
-Alfresco Google Docs Module
-===========================
+Alfresco Google Docs Integration / Module
+=========================================
 
 Description
 -----------
 
-This extension adds the ability to edit supported content items in Google Docs&trade; to the Alfresco repository and Share interface.
+This extension adds the ability to edit supported content items in Google Docs&trade; to the Alfresco repository and Share interface. See also the [Alfresco Google Docs Integration documentation](https://docs.alfresco.com/google-drive/latest/).
 
 When building from source you must include your own Google OAuth client secret json file. Instructions for creating it can be found at [Google Drive REST API - Authorizing requests with OAuth 2.0](https://developers.google.com/drive/v3/web/about-auth).
 
@@ -34,11 +34,11 @@ The following is a set of guidelines for contributing to this module. Most of th
 
 Ways to contribute would be by submitting pull requests, reporting issues and creating suggestions. In the case of a defect please provide steps to reproduce the issue, as well as the expected result and the actual one.
 
-You can report an issue in the [ALF](https://issues.alfresco.com/jira/projects/ALF/issues) jira project of the Alfresco issue tracker. Read instructions for a [good issue report](https://community.alfresco.com/docs/DOC-6263-reporting-an-issue). Please also set the component as "GoogleDocs".
+You can report an issue in the [ALF](https://alfresco.atlassian.net/projects/ALF/issues) jira project of the Alfresco issue tracker. Read instructions for a [good issue report](https://hub.alfresco.com/t5/alfresco-content-services-hub/reporting-an-issue/ba-p/289727). Please also set the component as "GoogleDocs".
 
-If you'd like a hand at trying to implement features yourself, please validate your changes by running the tests. Also pull requests should contain tests whenever possible. Please follow the [coding standards](https://community.alfresco.com/docs/DOC-4658-coding-standards).
+If you'd like a hand at trying to implement features yourself, please validate your changes by running the tests. Also pull requests should contain tests whenever possible. Please follow the [coding standards](https://hub.alfresco.com/t5/alfresco-content-services-hub/coding-standards-for-alfresco-content-services/ba-p/290457).
 
 As a contributor you must sign a contribution agreement, but please keep in mind that the contribution process includes a recorded acceptance step.
 
-* [Submitting Contributions](https://community.alfresco.com/docs/DOC-6269-submitting-contributions)
-* [Accepting the Contribution Agreement](https://community.alfresco.com/docs/DOC-7070-alfresco-contribution-agreement)
+* [Submitting Contributions](https://hub.alfresco.com/t5/alfresco-content-services-hub/submitting-contributions/ba-p/293325)
+* [Accepting the Contribution Agreement](https://hub.alfresco.com/t5/alfresco-content-services-hub/alfresco-contribution-agreement/ba-p/293276)
