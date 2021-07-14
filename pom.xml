@@ -14,6 +14,16 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <java.version>1.8</java.version>
@@ -25,10 +35,10 @@
 
         <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
 
-        <dependency.alfresco-repository.version>8.376</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>8.376</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>11.94</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>11.94</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>7.0.0-M3</dependency.share.version>
+        <dependency.share.version>11.40</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
@@ -197,14 +207,5 @@
         <module>alfresco-googledrive-end-to-end-tests</module>
     </modules>
 
-    <distributionManagement>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+
 </project>
