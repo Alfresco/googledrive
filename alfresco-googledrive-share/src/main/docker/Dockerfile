@@ -1,5 +1,5 @@
 # TODO remove quay.io/ after share 6.2.1 image published to hub.docker.com/r/alfresco/alfresco-share
-FROM quay.io/alfresco/alfresco-share:6.2.1-A4
+FROM quay.io/alfresco/alfresco-share:7.1.0-M2
 
 ARG TOMCAT_DIR=/usr/local/tomcat
 
