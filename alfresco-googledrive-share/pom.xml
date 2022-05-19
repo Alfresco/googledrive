@@ -82,6 +82,12 @@
                                 <include>**/custom-slingshot-googledocs-context.xml</include>
                             </includes>
                         </fileset>
+						 <fileset>
+                            <directory>src/main/amp/config/alfresco/web-extension/site-data/extensions</directory>
+                            <includes>
+                                <include>**/configurations.xml</include>
+                            </includes>
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -98,7 +104,9 @@
                         <configuration>
                             <tasks>
                                 <copy file="src/main/documentLibrary-config/withManagerCancel/custom-slingshot-googledocs-context.xml" tofile="src/main/amp/config/alfresco/web-extension/custom-slingshot-googledocs-context.xml" />
+								<copy file="src/main/documentLibrary-config/surfWebExtensions/configurations.xml" tofile="src/main/amp/config/alfresco/web-extension/site-data/extensions/configurations.xml" />
                             </tasks>
+
                         </configuration>
                     </execution>
                 </executions>
