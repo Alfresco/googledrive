@@ -1,9 +1,13 @@
 <extension>
     <modules>
         <module>
-            <id>GoogleDocs Extension</id>
+            <id>GoogleDocs Module Extension</id>
             <auto-deploy>true</auto-deploy>
-            <evaluator id="evaluator.doclib.google.docs.enabled"/>
+            <evaluator type="config.approval.evaluator">
+			<params>
+			<apply>true</apply>
+			</params>
+			</evaluator>
             <configurations>
                 <config evaluator="string-compare" condition="DocumentLibrary">
                     <create-content>
