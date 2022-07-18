@@ -164,7 +164,6 @@ import com.google.api.services.drive.model.RevisionList;
 import com.google.api.services.drive.model.User;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
-import com.google.api.services.oauth2.model.Userinfoplus;
 
 /**
  * @author Jared Ottley <jared.ottley@alfresco.com>
