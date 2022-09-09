@@ -4,10 +4,10 @@ FROM quay.io/alfresco/alfresco-share:7.3.0-A17
 ARG TOMCAT_DIR=/usr/local/tomcat
 
 # Remove old GoogleDocs AMP
-RUN rm -f $TOMCAT_DIR/amps_share/alfresco-google*-share*.amp
-RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
-              org.alfresco.integrations.share.google.docs \
-              $TOMCAT_DIR/webapps/share/
+#RUN rm -f $TOMCAT_DIR/amps_share/alfresco-google*-share*.amp
+#RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
+#              org.alfresco.integrations.share.google.docs \
+#              $TOMCAT_DIR/webapps/share/
 
 
 # Copy Dockerfile to avoid an error if no AMPs exist
