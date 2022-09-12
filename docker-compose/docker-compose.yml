@@ -19,7 +19,8 @@ services:
         -Ddb.url=jdbc:postgresql://postgres:5432/alfresco
         -Dsolr.host=solr6
         -Dsolr.port=8983
-        -Dsolr.secureComms=none
+        -Dsolr.secureComms=secret
+        -Dsolr.sharedSecret=secret
         -Dsolr.base.url=/solr
         -Dindex.subsystem.name=solr6
         -Dshare.host=127.0.0.1
@@ -158,7 +159,7 @@ services:
       - db-volume:/var/lib/postgresql/data
 
   solr6:
-    image: alfresco/alfresco-search-services:1.4.0
+    image: alfresco/alfresco-search-services:2.0.3
     environment:
       # Solr needs to know how to register itself with Alfresco
       SOLR_ALFRESCO_HOST: alfresco
@@ -169,6 +170,9 @@ services:
       # Create the default alfresco and archive cores
       SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco,archive
       SOLR_JAVA_MEM: "-Xms2g -Xmx2g"
+      ALFRESCO_SECURE_COMMS: "secret"
+      JAVA_TOOL_OPTIONS: "
+        -Dalfresco.secureComms.secret=secret"
     ports:
       - 8083:8983  # Browser port
     volumes:
