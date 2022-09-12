@@ -38,7 +38,7 @@
         <dependency.alfresco-repository.version>17.102</dependency.alfresco-repository.version>
         <dependency.alfresco-data-model.version>17.30</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>17.81</dependency.share.version>
+        <dependency.share.version>17.84</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
