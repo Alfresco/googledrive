@@ -210,7 +210,7 @@
 
                                 <image>
                                     <alias>solr6</alias>
-                                    <name>quay.io/alfresco/search-services:1.3.0.1</name>
+                                    <name>quay.io/alfresco/search-services:2.0.3</name>
                                     <run>
                                         <hostname>solr6</hostname>
                                         <network>
