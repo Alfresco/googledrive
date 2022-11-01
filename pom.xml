@@ -3,7 +3,7 @@
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>3.3.1-A1-SNAPSHOT</version>
+    <version>3.3.1-A1</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -11,7 +11,7 @@
         <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git
         </developerConnection>
         <url>https://github.com/Alfresco/googledrive</url>
-        <tag>HEAD</tag>
+        <tag>3.3.1-A1</tag>
     </scm>
 
     <distributionManagement>
