@@ -42,10 +42,6 @@
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.google.oauth-client</groupId>
-                    <artifactId>google-oauth-client</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -67,11 +63,6 @@
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.42.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client</artifactId>
-            <version>1.33.3</version>
         </dependency>
     </dependencies>
 </project>
