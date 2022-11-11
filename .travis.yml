@@ -42,11 +42,11 @@ jobs:
       # Run Veracode
       script: travis_wait 30 bash _ci/source_clear.sh
 
-    - name: "End-to-End Tests"
-      stage: tests
-      if: branch != company_release
-      before_install: bash _ci/init.sh
-      script: travis_wait 60 bash _ci/e2e_tests.sh
+#    - name: "End-to-End Tests"
+#      stage: tests
+#      if: branch != company_release
+#      before_install: bash _ci/init.sh
+#      script: travis_wait 60 bash _ci/e2e_tests.sh
 
     - name: "Release"
       stage: release
