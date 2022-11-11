@@ -21,6 +21,7 @@ branches:
     - /^HF\/.+$/
     - company_release
     - /^GOOGLEDOCS-.*$/
+    - /^dev-release\/.+$/
 
 stages:
   - build
@@ -49,31 +50,31 @@ jobs:
 
     - name: "Release"
       stage: release
-      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+)$/
-      before_install: bash _ci/init.sh
+      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+|dev-release\/.+)$/#
+#      before_install: bash _ci/init.sh
       script: bash _ci/release.sh
-      before_deploy: source _ci/prepare_staging_deploy.sh
-      deploy:
-        - provider: s3
-          access_key_id: "${STAGING_AWS_ACCESS_KEY}"
-          secret_access_key: "${STAGING_AWS_SECRET_KEY}"
-          bucket: "alfresco-artefacts-staging"
-          skip_cleanup: true
-          region: "eu-west-1"
-          local_dir: "deploy_dir_community"
-          upload-dir: "community/GoogleDocs/${VERSION}"
-          on:
-            all_branches: true
-        - provider: s3
-          access_key_id: "${STAGING_AWS_ACCESS_KEY}"
-          secret_access_key: "${STAGING_AWS_SECRET_KEY}"
-          bucket: "alfresco-artefacts-staging"
-          skip_cleanup: true
-          region: "eu-west-1"
-          local_dir: "deploy_dir_enterprise"
-          upload-dir: "enterprise/GoogleDocs/${VERSION}"
-          on:
-            all_branches: true
+#      before_deploy: source _ci/prepare_staging_deploy.sh
+#      deploy:
+#        - provider: s3
+#          access_key_id: "${STAGING_AWS_ACCESS_KEY}"
+#          secret_access_key: "${STAGING_AWS_SECRET_KEY}"
+#          bucket: "alfresco-artefacts-staging"
+#          skip_cleanup: true
+#          region: "eu-west-1"
+#          local_dir: "deploy_dir_community"
+#          upload-dir: "community/GoogleDocs/${VERSION}"
+#          on:
+#            all_branches: true
+#        - provider: s3
+#          access_key_id: "${STAGING_AWS_ACCESS_KEY}"
+#          secret_access_key: "${STAGING_AWS_SECRET_KEY}"
+#          bucket: "alfresco-artefacts-staging"
+#          skip_cleanup: true
+#          region: "eu-west-1"
+#          local_dir: "deploy_dir_enterprise"
+#          upload-dir: "enterprise/GoogleDocs/${VERSION}"
+#          on:
+#            all_branches: true
 
     - name: "Company Release"
       stage: company_release
