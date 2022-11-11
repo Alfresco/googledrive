@@ -50,7 +50,7 @@ jobs:
 
     - name: "Release"
       stage: release
-      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+|dev-release\/.+)$/#
+      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+|dev-release\/.+)$/
 #      before_install: bash _ci/init.sh
       script: bash _ci/release.sh
 #      before_deploy: source _ci/prepare_staging_deploy.sh
