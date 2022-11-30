@@ -158,7 +158,7 @@ jobs:
           DESTINATION="s3://eu.dl.alfresco.com/release/community/GoogleDocs/${VERSION}"
           aws s3 cp --acl private  "${SOURCE}" "${DESTINATION}" --recursive
 
-      - name: "Release to enterprise version to S3 Staging Bucket"
+      - name: "Release to enterprise version to S3 Bucket"
         run: |
           SOURCE="s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}"
           DESTINATION="s3://eu.dl.alfresco.com/release/enterprise/GoogleDocs/${VERSION}"
