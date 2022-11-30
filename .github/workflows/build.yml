@@ -1,0 +1,165 @@
+name: google drive
+
+on:
+  push:
+    branches:
+      - master
+      - 'fix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      commitMessage:
+        description: Enter the Commit Message
+        required: true
+env:
+  SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+
+jobs:
+  Run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stage: [ build , source_clear, e2e_tests ]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 17
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Setup maven
+        shell: bash
+        run: |
+          [ -d ${HOME}/.m2/ ] || mkdir -p ${HOME}/.m2/
+          cp -v settings.xml ${HOME}/.m2/ || cp -v .travis.settings.xml ${HOME}/.m2/settings.xml
+
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: "Login to Quay.io"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Run ${{ matrix.stage }}
+        run: |
+           bash _ci/init.sh
+           bash _ci/${{ matrix.stage }}.sh
+
+  Release:
+    if: ${{ ( startsWith(github.ref_name, 'HF/')  || startsWith(github.ref_name, 'SP/') || github.ref_name == 'master' )  &&
+        contains(github.event.head_commit.message, '[trigger release]') || inputs.commitMessage == '[trigger release]'  &&
+        github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 17
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: "Login to Quay.io"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: "Configure AWS credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_STAGING_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET_KEY }}
+          aws-region: eu-west-1
+
+      - name: Run Script
+        run: |
+          bash _ci/init.sh
+          source _ci/prepare_staging_deploy.sh
+
+      - name: "Release to S3 Staging Bucket"
+        run: | 
+           aws s3 cp --recursive ./deploy_dir_community s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}
+           aws s3 cp --recursive ./deploy_dir_enterprise s3://alfresco-artefacts-staging/release/enterprise/GoogleDocs/${VERSION}
+
+  Company-Release:
+    if: github.ref_name == 'company_release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 17
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: "Login to Quay.io"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: "Configure AWS credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_STAGING_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET_KEY }}
+          aws-region: eu-west-1
+
+      - name: Run Script
+        run: |
+          bash _ci/init.sh
+          source _ci/prepare_release_deploy.sh
+
+      - name: "Release to Community version to S3 Staging Bucket"
+        run: |
+          SOURCE="s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}"
+          DESTINATION="s3://eu.dl.alfresco.com/release/community/GoogleDocs/${VERSION}"
+          aws s3 cp --acl private  "${SOURCE}" "${DESTINATION}" --recursive
+
+      - name: "Release to enterprise version to S3 Staging Bucket"
+        run: |
+          SOURCE="s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}"
+          DESTINATION="s3://eu.dl.alfresco.com/release/enterprise/GoogleDocs/${VERSION}"
+          aws s3 cp --acl private  "${SOURCE}" "${DESTINATION}" --recursive
