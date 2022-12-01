@@ -6,7 +6,7 @@ set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
 
-mvn -B -U -Dbuildnumber=${{ github.run_number }} clean install
+mvn -B -U -Dbuildnumber=$GITHUB.RUN_NUMBER clean install
 
 
 popd
