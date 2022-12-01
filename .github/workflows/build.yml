@@ -23,6 +23,7 @@ jobs:
     strategy:
       matrix:
         stage: [ build , source_clear, e2e_tests ]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v3
         with:
