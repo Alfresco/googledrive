@@ -9,14 +9,14 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 [ "${TRAVIS_PULL_REQUEST}" = "false" ] && DRY_RUN="" || DRY_RUN="-DdryRun"
 
 # Travis CI runner work on DETACHED HEAD, so we need to checkout the release branch
-git checkout -B "${{ github.ref_name }}"
+git checkout -B "$GITHUB_RUN_NUMBER"
 
 git config user.email "build@alfresco.com"
 
 # Run the release plugin - with "[skip ci]" in the release commit message
 mvn -B \
     ${DRY_RUN} \
-    "-Darguments=-DskipTests -DbuildNumber=${{ github.run_number }}" \
+    "-Darguments=-DskipTests -DbuildNumber=$GITHUB_RUN_NUMBER" \
     release:clean release:prepare release:perform \
     -DscmCommentPrefix="[maven-release-plugin][skip ci] " \
     -Dusername=alfresco-build \
