@@ -16,6 +16,8 @@ on:
         required: true
 env:
   SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+  MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+  MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
 jobs:
   Run:
