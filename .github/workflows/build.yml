@@ -18,6 +18,7 @@ env:
   SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+  QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
 
 jobs:
   Run:
