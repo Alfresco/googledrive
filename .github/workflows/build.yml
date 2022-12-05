@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - master
-      - 'fix/**'
-      - 'feature/**'
+      - 'SP/**'
+      - 'HF/**'
+      - company_release
+      - 'GOOGLEDOCS**'
   pull_request:
     branches:
       - master
@@ -19,6 +21,7 @@ env:
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
+  GIT_PASSWORD:   ${{ secrets.GIT_PASSWORD }}
 
 jobs:
   Run:
