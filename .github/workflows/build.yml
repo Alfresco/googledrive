@@ -8,6 +8,7 @@ on:
       - 'HF/**'
       - company_release
       - 'GOOGLEDOCS**'
+      - 'feature/**'
   pull_request:
     branches:
       - master
