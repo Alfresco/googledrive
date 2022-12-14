@@ -24,6 +24,7 @@ env:
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
   GIT_PASSWORD: ${{ secrets.BOT_GITHUB_TOKEN }}
   GITHUB_EVENT: ${{ github.event_name }}
+  BRANCH_NAME: ${{ github.ref_name }}
 
 jobs:
   Run:

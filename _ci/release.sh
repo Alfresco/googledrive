@@ -9,7 +9,7 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 [ "$GITHUB_EVENT" != "pull_request" ] && DRY_RUN="" || DRY_RUN="-DdryRun"
 
 # Travis CI runner work on DETACHED HEAD, so we need to checkout the release branch
-git checkout -B "$GITHUB_RUN_NUMBER"
+git checkout -B "$BRANCH_NAME"
 
 git config user.email "build@alfresco.com"
 
