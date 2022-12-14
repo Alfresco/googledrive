@@ -22,7 +22,8 @@ env:
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
-  GIT_PASSWORD:   ${{ secrets.GIT_PASSWORD }}
+  GIT_PASSWORD: ${{ secrets.BOT_GITHUB_TOKEN }}
+  GITHUB_EVENT: ${{ github.event_name }}
 
 jobs:
   Run:
@@ -57,14 +58,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: "Login to Quay.io"
-        uses: docker/login-action@v1
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_PASSWORD }}
-
       - name: Run ${{ matrix.stage }}
+        if: github.ref_name != 'company_release'
         run: |
            bash _ci/init.sh
            bash _ci/${{ matrix.stage }}.sh
@@ -104,19 +99,20 @@ jobs:
       - name: "Configure AWS credentials"
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_STAGING_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_S3_RELEASE_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_RELEASE_SECRET_KEY }}
           aws-region: eu-west-1
 
-      - name: Run Script
+      - name: Run Script Release to nexus
         run: |
           bash _ci/init.sh
+          bash _ci/release.sh
           source _ci/prepare_staging_deploy.sh
 
       - name: "Release to S3 Staging Bucket"
         run: | 
-           aws s3 cp --recursive ./deploy_dir_community s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}
-           aws s3 cp --recursive ./deploy_dir_enterprise s3://alfresco-artefacts-staging/release/enterprise/GoogleDocs/${VERSION}
+           aws s3 cp --recursive ./deploy_dir_community s3://alfresco-artefacts-staging/community/GoogleDocs/${VERSION}
+           aws s3 cp --recursive ./deploy_dir_enterprise s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}
 
   Company-Release:
     if: github.ref_name == 'company_release'
@@ -151,8 +147,8 @@ jobs:
       - name: "Configure AWS credentials"
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_STAGING_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_S3_RELEASE_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_RELEASE_SECRET_KEY }}
           aws-region: eu-west-1
 
       - name: Run Script
@@ -162,12 +158,8 @@ jobs:
 
       - name: "Release to Community version to S3 Staging Bucket"
         run: |
-          SOURCE="s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}"
-          DESTINATION="s3://eu.dl.alfresco.com/release/community/GoogleDocs/${VERSION}"
-          aws s3 cp --acl private  "${SOURCE}" "${DESTINATION}" --recursive
+          aws s3 cp --recursive ./deploy_dir_community s3://eu.dl.alfresco.com/release/community/GoogleDocs/${VERSION}
 
       - name: "Release to enterprise version to S3 Bucket"
         run: |
-          SOURCE="s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}"
-          DESTINATION="s3://eu.dl.alfresco.com/release/enterprise/GoogleDocs/${VERSION}"
-          aws s3 cp --acl private  "${SOURCE}" "${DESTINATION}" --recursive
+          aws s3 cp --recursive ./deploy_dir_enterprise s3://eu.dl.alfresco.com/release/enterprise/GoogleDocs/${VERSION}
