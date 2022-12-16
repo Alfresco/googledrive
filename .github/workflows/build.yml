@@ -66,8 +66,7 @@ jobs:
 
   Release:
     if: ${{ ( startsWith(github.ref_name, 'HF/')  || startsWith(github.ref_name, 'SP/') || github.ref_name == 'master' )  &&
-        contains(github.event.head_commit.message, '[trigger release]') || inputs.commitMessage == '[trigger release]'  &&
-        github.event_name != 'pull_request' }}
+        contains(github.event.head_commit.message, '[trigger release]') || inputs.commitMessage == '[trigger release]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
