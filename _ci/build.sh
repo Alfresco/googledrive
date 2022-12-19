@@ -6,7 +6,7 @@ set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
 
-mvn -B -U -Dbuildnumber=${TRAVIS_BUILD_NUMBER} clean install
+mvn -B -U -Dbuildnumber=$GITHUB_RUN_NUMBER clean install
 
 
 popd

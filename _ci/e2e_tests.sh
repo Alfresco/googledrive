@@ -7,7 +7,7 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
 
 mvn -B -U clean install -Plocal \
- -DbuildNumber=${TRAVIS_BUILD_NUMBER} \
+ -DbuildNumber=$GITHUB_RUN_NUMBER \
  -DskipTests
 
 mvn -B -U clean verify -Pdocker-end-to-end-setup -pl 'alfresco-googledrive-end-to-end-tests'
