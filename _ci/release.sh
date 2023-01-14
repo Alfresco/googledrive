@@ -9,9 +9,10 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 [ "$GITHUB_EVENT" = "pull_request" ] && DRY_RUN="" || DRY_RUN="-DdryRun"
 
 # Travis CI runner work on DETACHED HEAD, so we need to checkout the release branch
-git checkout -B "$BRANCH_NAME"
+git checkout -B "${BRANCH_NAME}"
 
-git config user.email "build@alfresco.com"
+git config user.email "${GIT_EMAIL}"
+git config user.name "${GIT_USERNAME}"
 
 # Run the release plugin - with "[skip ci]" in the release commit message
 mvn -B \
