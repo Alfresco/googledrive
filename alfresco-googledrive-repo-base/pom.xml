@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>alfresco-googledrive-repo-base</artifactId>
-    <version>3.4.0-A2-SNAPSHOT</version>
+    <version>3.4.0-A2</version>
     <packaging>jar</packaging>
     <name>Alfresco / Google Drive Repo Base Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-googledrive</artifactId>
-        <version>3.4.0-A2-SNAPSHOT</version>
+        <version>3.4.0-A2</version>
     </parent>
 
     <dependencies>
