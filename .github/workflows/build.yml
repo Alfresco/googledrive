@@ -60,7 +60,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Setup tmate session Debug mode
+      - name: Setup tmates session Debug mode
         uses: mxschmitt/action-tmate@v3
 
       - name: Run ${{ matrix.stage }}
