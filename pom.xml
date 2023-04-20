@@ -35,10 +35,10 @@
 
         <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
 
-        <dependency.alfresco-repository.version>20.61</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>20.34</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>20.133</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>20.150</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>20.43</dependency.share.version>
+        <dependency.share.version>20.146</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
