@@ -88,6 +88,8 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.33.0
+
       - name: Setup maven
         shell: bash
         run: |
@@ -100,6 +102,19 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+
+      - name: "Login to Docker Hub"
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
+
+      - name: "Login to Quay.io"
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: quay.io
+          username: ${{ env.QUAY_USERNAME }}
+          password: ${{ env.QUAY_PASSWORD }}
 
       - name: Run ${{ matrix.stage }}
         if: ${{ ( matrix.stage != 'source_clear' && github.ref_name != 'company_release') || matrix.stage == 'source_clear'  }}
