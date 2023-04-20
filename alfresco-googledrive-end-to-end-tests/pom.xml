@@ -79,7 +79,7 @@
                             <images>
                                 <image>
                                     <alias>selenium</alias>
-                                    <name>selenium/standalone-chrome</name>
+                                    <name>selenium/standalone-chrome:102.0</name>
                                     <run>
                                         <hostname>selenium</hostname>
                                         <network>
