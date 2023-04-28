@@ -1,4 +1,4 @@
-FROM quay.io/alfresco/alfresco-content-repository:7.4.0-A4
+FROM quay.io/alfresco/alfresco-content-repository:7.4.0-A34
 
 ARG IMAGEUSERNAME=alfresco
 ARG TOMCAT_DIR=/usr/local/tomcat
