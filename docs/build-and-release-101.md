@@ -1,6 +1,6 @@
 # Build
-The `google-drive` project uses _Travis CI_. \
-The `.travis.yml` config file can be found in the root of the repository.
+The `google-drive` project uses _Github Actions CI_. \
+The `settings.xml` config file can be found in the `_ci` directory of the repository.
 
 
 ## Stages and Jobs
@@ -11,7 +11,7 @@ The `.travis.yml` config file can be found in the root of the repository.
 
 
 ## Branches
-Travis CI builds differ by branch:
+Github Actions CI builds differ by branch:
 * `master` / `SP/*` / `HF/*` branches:
   - regular builds which include the _Build_ and _Tests_ stages;
   - if the commit message contains the `[trigger release]` tag, the builds will also 
