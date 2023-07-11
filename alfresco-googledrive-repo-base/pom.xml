@@ -64,6 +64,7 @@
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.42.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
