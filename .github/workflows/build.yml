@@ -145,12 +145,14 @@ jobs:
           username: ${{ env.GIT_USERNAME }}
           email: ${{ env.GIT_EMAIL }}
           global: true
-
       - name: Run Script Release to nexus
         run: |
           bash _ci/init.sh
           bash _ci/release.sh
           source _ci/prepare_staging_deploy.sh
+          git clone --depth=1 https://github.com/Alfresco/third-party-license-overrides.git
+          python3 ./third-party-license-overrides/thirdPartyLicenseCSVCreator.py --project "${GITHUB_WORKSPACE}" --version "${RELEASE_VERSION}" --combined --output "deploy_dir_enterprise"
+          rm -rf third-party-license-overrides
 
       - name: "Release to S3 Staging Bucket"
         run: | 
