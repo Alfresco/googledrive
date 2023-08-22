@@ -180,7 +180,7 @@ services:
       - solr-volume:/opt/alfresco-search-services/data
 
   activemq:
-    image: alfresco/alfresco-activemq:5.17.4-jre17-rockylinux8
+    image: alfresco/alfresco-activemq:5.18.2-jre17-rockylinux8
     ports:
       - 8161:8161    # Web Console
       - 5672:5672    # AMQP
