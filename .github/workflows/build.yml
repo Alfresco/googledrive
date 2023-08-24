@@ -6,6 +6,7 @@ on:
       - master
       - 'SP/**'
       - 'HF/**'
+      - 'feature/**'
       - company_release
       - 'GOOGLEDOCS**'
   pull_request:
@@ -77,6 +78,16 @@ jobs:
           registry: quay.io
           username: ${{ env.QUAY_USERNAME }}
           password: ${{ env.QUAY_PASSWORD }}
+
+      - name: "Configure AWS credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_STAGING_ACCESS_KEY }}
+          aws-secret-access-key:  ${{ secrets.AWS_S3_STAGING_SECRET_KEY }}
+          aws-region: eu-west-1
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Run ${{ matrix.stage }}
         if: ${{ ( matrix.stage != 'source_clear' && github.ref_name != 'company_release') || matrix.stage == 'source_clear'  }}
