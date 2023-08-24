@@ -79,16 +79,6 @@ jobs:
           username: ${{ env.QUAY_USERNAME }}
           password: ${{ env.QUAY_PASSWORD }}
 
-      - name: "Configure AWS credentials"
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_STAGING_ACCESS_KEY }}
-          aws-secret-access-key:  ${{ secrets.AWS_S3_STAGING_SECRET_KEY }}
-          aws-region: eu-west-1
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: Run ${{ matrix.stage }}
         if: ${{ ( matrix.stage != 'source_clear' && github.ref_name != 'company_release') || matrix.stage == 'source_clear'  }}
         run: |
@@ -161,9 +151,6 @@ jobs:
           bash _ci/init.sh
           bash _ci/release.sh
           source _ci/prepare_staging_deploy.sh
-          git clone --depth=1 https://github.com/Alfresco/third-party-license-overrides.git
-          python3 ./third-party-license-overrides/thirdPartyLicenseCSVCreator.py --project "${GITHUB_WORKSPACE}" --version "${RELEASE_VERSION}" --combined --output "deploy_dir_enterprise"
-          rm -rf third-party-license-overrides
 
       - name: "Release to S3 Staging Bucket"
         run: | 
