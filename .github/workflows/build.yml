@@ -6,7 +6,6 @@ on:
       - master
       - 'SP/**'
       - 'HF/**'
-      - 'feature/**'
       - company_release
       - 'GOOGLEDOCS**'
   pull_request:
