@@ -28,6 +28,8 @@ if [ ! -d deploy_dir_community ]; then
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_enterprise/${ARTIFACT_GD_SHARE}"
 
+git clone --depth=1 https://github.com/Alfresco/third-party-license-overrides.git
+python3 ./third-party-license-overrides/thirdPartyLicenseCSVCreator.py --project "${GITHUB_WORKSPACE}" --version "${VERSION}" --combined --output "deploy_dir_enterprise"
     echo "Local deploy_dir_community content:"
     ls -lA deploy_dir_community
     echo ""
