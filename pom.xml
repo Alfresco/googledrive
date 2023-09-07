@@ -3,7 +3,7 @@
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>3.4.0</version>
+    <version>3.4.2-A6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -11,7 +11,7 @@
         <developerConnection>scm:git:https://github.com/Alfresco/googledrive.git
         </developerConnection>
         <url>https://github.com/Alfresco/googledrive</url>
-        <tag>3.4.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
@@ -35,10 +35,10 @@
 
         <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
 
-        <dependency.alfresco-repository.version>20.157</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>20.157</dependency.alfresco-data-model.version>
+        <dependency.alfresco-repository.version>21.15</dependency.alfresco-repository.version>
+        <dependency.alfresco-data-model.version>21.15</dependency.alfresco-data-model.version>
 
-        <dependency.share.version>20.156</dependency.share.version>
+        <dependency.share.version>21.17</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
