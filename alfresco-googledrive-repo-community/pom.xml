@@ -3,7 +3,7 @@
     <parent>
         <artifactId>alfresco-googledrive</artifactId>
         <groupId>org.alfresco.integrations</groupId>
-        <version>4.0.0-M2-SNAPSHOT</version>
+        <version>4.0.0-A2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
             <artifactId>alfresco-googledrive-repo-base</artifactId>
-            <version>4.0.0-M2-SNAPSHOT</version>
+            <version>4.0.0-A2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
