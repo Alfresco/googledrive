@@ -84,9 +84,9 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <copy file="src/main/customResponseContextFiles/registerSlingshotCustomResponse/google-customResponse-context.xml" tofile="src/main/amp/config/alfresco/subsystems/googledocs/drive/google-customResponse-context.xml" />
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
