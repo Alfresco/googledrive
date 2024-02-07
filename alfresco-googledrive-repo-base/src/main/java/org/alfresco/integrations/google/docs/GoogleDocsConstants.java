@@ -42,10 +42,8 @@ public interface GoogleDocsConstants
     String CLIENT_SECRET_REDIRECT_URIS = "redirect_uris";
 
     // Google OAuth2 Scopes
-    String       SCOPE  = "https://docs.google.com/feeds/ https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
     List<String> SCOPES = Collections.unmodifiableList(
-        Arrays.asList("https://docs.google.com/feeds/",
-            "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive",
+        Arrays.asList("https://www.googleapis.com/auth/drive.file",
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://www.googleapis.com/auth/userinfo.email"));
 
