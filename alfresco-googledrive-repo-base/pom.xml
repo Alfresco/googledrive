@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-oauth2</artifactId>
-            <version>v2-rev20200213-1.32.1</version>
+            <version>v2-rev157-1.25.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -48,7 +48,7 @@
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
             <version>v3-rev20220709-1.32.1</version>
-                    </dependency>
+        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -64,8 +64,5 @@
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.42.2</version>
         </dependency>
-
-
-
     </dependencies>
 </project>
