@@ -192,6 +192,10 @@ services:
 
   proxy:
     image: alfresco/alfresco-acs-nginx:3.4.2
+    environment:
+        DISABLE_CONTROL_CENTER: true
+        DISABLE_SYNCSERVICE: true
+        DISABLE_PROMETHEUS: true
     depends_on:
       - alfresco
       - digital-workspace
