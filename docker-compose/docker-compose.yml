@@ -191,7 +191,7 @@ services:
     image: quay.io/alfresco/alfresco-digital-workspace:1.4.0
 
   proxy:
-    image: quay.io/alfresco/alfresco-acs-nginx:3.0.0
+    image: alfresco/alfresco-acs-nginx:3.4.2
     depends_on:
       - alfresco
       - digital-workspace
