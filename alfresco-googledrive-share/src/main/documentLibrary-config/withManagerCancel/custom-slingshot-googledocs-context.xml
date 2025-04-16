@@ -93,14 +93,31 @@
       </property>
    </bean>
 
-    <bean id="evaluator.doclib.google.docs.cancel.manager" parent="evaluator.doclib.action.chainedMatchAll">
-        <property name="evaluators">
-            <list>
-                <ref bean="evaluator.doclib.google.docs.aspect" />
-                <ref bean="evaluator.doclib.action.isSiteManager" />
-            </list>
-        </property>
-    </bean>
+   <bean id="evaluator.doclib.google.docs.cancel.manager" parent="evaluator.doclib.action.chainedMatchAll">
+      <property name="evaluators">
+         <list>
+            <ref bean="evaluator.doclib.google.docs.aspect" />
+            <ref bean="evaluator.doclib.google.docs.cancel.managerOrAdmin" />
+         </list>
+      </property>
+   </bean>
+
+   <bean id="evaluator.doclib.google.docs.cancel.managerOrAdmin" parent="evaluator.doclib.action.chainedMatchOne">
+      <property name="evaluators">
+         <list>
+            <ref bean="evaluator.doclib.action.isSiteManager" />
+            <ref bean="evaluator.doclib.google.docs.isAdmin" />
+         </list>
+      </property>
+   </bean>
+   <bean id="evaluator.doclib.google.docs.isAdmin" parent="evaluator.doclib.action.groupMembership">
+      <property name="groups">
+         <list>
+            <value>GROUP_ALFRESCO_ADMINISTRATORS</value>
+            <value>GROUP_ALFRESCO_SYSTEM_ADMINISTRATORS</value>
+         </list>
+      </property>
+   </bean>
 
     <bean id="evaluator.doclib.google.docs.cancel" parent="evaluator.doclib.action.chainedMatchOne">
         <property name="evaluators">
