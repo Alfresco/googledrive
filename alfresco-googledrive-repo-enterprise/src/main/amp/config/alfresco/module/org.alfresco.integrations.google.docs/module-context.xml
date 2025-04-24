@@ -91,6 +91,7 @@
         <property name="transactionService" ref="transactionService"/>
         <property name="siteService" ref="SiteService"/>
         <property name="fileNameUtil" ref="fileNameUtil"/>
+        <property name="authorityService" ref="authorityService"/>
     </bean>
 
     <bean id="webscript.org.alfresco.integrations.google.docs.UserProfile.get"

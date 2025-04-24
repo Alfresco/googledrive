@@ -52,6 +52,7 @@ import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.cmr.repository.InvalidNodeRefException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.transaction.TransactionService;
@@ -79,10 +80,17 @@ public class DiscardContent extends GoogleDocsWebScripts
     private SiteService        siteService;
     private FileNameUtil       fileNameUtil;
 
+    private AuthorityService authorityService;
+
     private static final String JSON_KEY_NODEREF  = "nodeRef";
     private static final String JSON_KEY_OVERRIDE = "override";
 
     private static final String MODEL_SUCCESS = "success";
+
+    public void setAuthorityService(AuthorityService authorityService)
+    {
+        this.authorityService = authorityService;
+    }
 
     public void setGoogledocsService(GoogleDocsService googledocsService)
     {
@@ -167,7 +175,7 @@ public class DiscardContent extends GoogleDocsWebScripts
                 deleted = delete(credential, nodeRef);
             }
             else if (googledocsService.isSiteManager(nodeRef,
-                AuthenticationUtil.getFullyAuthenticatedUser()))
+                AuthenticationUtil.getFullyAuthenticatedUser()) || authorityService.hasAdminAuthority())
             {
                 final String lockOwner = googledocsService.getGoogleDocsLockOwner(nodeRef);
 
