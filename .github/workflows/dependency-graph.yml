@@ -22,9 +22,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: Alfresco/alfresco-build-tools/.github/actions/maven-dependency-scan@v17.0.0
         with:
-          java-version: '21'
+          java-version: '17'
           maven-version: '3.9.9'
           maven-args: -Dscopes=compile,runtime
           maven-username: ${{ secrets.NEXUS_USERNAME }}
           maven-password: ${{ secrets.NEXUS_PASSWORD }}
-          maven-settings-path: ".ci.settings.xml"
+          maven-settings-path: "_ci/settings.xml"
