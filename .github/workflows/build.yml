@@ -17,7 +17,6 @@ on:
         description: Enter the Commit Message
         required: true
 env:
-  SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
@@ -35,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stage: [ build , source_clear, e2e_tests ]
+        stage: [ build , e2e_tests ]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +78,7 @@ jobs:
           password: ${{ env.QUAY_PASSWORD }}
 
       - name: Run ${{ matrix.stage }}
-        if: ${{ ( matrix.stage != 'source_clear' && github.ref_name != 'company_release') || matrix.stage == 'source_clear'  }}
+        if: ${{ github.ref_name != 'company_release' }}
         run: |
            bash _ci/init.sh
            bash _ci/${{ matrix.stage }}.sh
