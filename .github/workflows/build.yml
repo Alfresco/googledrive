@@ -101,6 +101,8 @@ jobs:
           classpath-enable: "false"
 
   Release:
+    permissions:
+      contents: write  # needed for tag creation and commit push
     if: ${{ ( startsWith(github.ref_name, 'HF/')  || startsWith(github.ref_name, 'SP/') || github.ref_name == 'master' )  &&
         contains(github.event.head_commit.message, '[trigger release]') || contains(inputs.commitMessage, '[trigger release]') }}
     runs-on: ubuntu-latest
@@ -108,6 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: 0
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
 
@@ -116,8 +119,8 @@ jobs:
         with:
           distribution: adopt
           java-version: 17
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          server-username: ${{ secrets.MAVEN_USERNAME }}
+          server-password: ${{ secrets.MAVEN_PASSWORD }}
 
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v4
@@ -159,20 +162,23 @@ jobs:
            aws s3 cp --recursive ./deploy_dir_enterprise s3://alfresco-artefacts-staging/enterprise/GoogleDocs/${VERSION}
 
   Company-Release:
+    permissions:
+      contents: write  # needed for tag creation and commit push
     if: github.ref_name == 'company_release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: 'false'
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: adopt
           java-version: 17
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          server-username: ${{ secrets.MAVEN_USERNAME }}
+          server-password: ${{ secrets.MAVEN_PASSWORD }}
 
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@v4
