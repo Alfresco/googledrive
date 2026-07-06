@@ -89,6 +89,12 @@
                                         <ports>
                                             <port>4444:4444</port>
                                         </ports>
+                                        <!-- Give Chrome a large /dev/shm to avoid "tab crashed" failures. -->
+                                        <volumes>
+                                            <bind>
+                                                <volume>/dev/shm:/dev/shm</volume>
+                                            </bind>
+                                        </volumes>
                                     </run>
                                 </image>
                                 <image>
