@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: adopt
-          java-version: 17
+          java-version: 21
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
@@ -118,7 +118,7 @@ jobs:
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: adopt
-          java-version: 17
+          java-version: 21
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
@@ -176,7 +176,7 @@ jobs:
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: adopt
-          java-version: 17
+          java-version: 21
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
