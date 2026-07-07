@@ -45,7 +45,12 @@ public class GoogleDocsIT
     @Before
     public void setup() throws Exception
     {
-        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), new ChromeOptions());
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), options);
         wait = new WebDriverWait(driver, 30);
     }
 
