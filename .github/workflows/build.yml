@@ -205,6 +205,7 @@ jobs:
         run: |
           bash _ci/init.sh
           source _ci/prepare_release_deploy.sh
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
 
       - name: "Release to Community version to S3 Staging Bucket"
         run: |
