@@ -102,10 +102,16 @@
             </dependency>
 
             <!--
-              Imported last so the explicit jackson-core version above wins over the BOM's newer one,
-              while every shared Google artifact (google-http-client, google-api-client,
-              google-oauth-client, opencensus, ...) is pulled from the 2.x generation. google-oauth-client
-              is now managed here (1.39.0) instead of the previous hardcoded 1.33.3.
+              Google Cloud libraries BOM. Aligns the shared Google plumbing
+              (google-http-client, google-api-client, google-oauth-client, opencensus, ...)
+              to the 2.x generation so Google Drive matches the versions used by the GCS
+              connector and the repository WAR. This replaces the single google-oauth-client
+              version that used to be hard-coded here.
+
+              The explicit "provided" entries declared above (jackson-core, guava, ...) keep
+              those specific libraries at the versions the ACS WAR ships: a dependency managed
+              directly in this POM takes precedence over the same artifact coming from an
+              imported BOM, so those pins win regardless of where this import is placed.
             -->
             <dependency>
                 <groupId>com.google.cloud</groupId>
