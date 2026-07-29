@@ -230,7 +230,7 @@
                         <goals>
                             <goal>add-third-party</goal>
                         </goals>
-                        <phase>none</phase>
+                        <phase>generate-resources</phase>
                         <configuration>
                             <failOnMissing>true</failOnMissing>
                             <excludedScopes>provided,test</excludedScopes>
