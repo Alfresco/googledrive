@@ -12,20 +12,20 @@
     </parent>
 
     <dependencies>
-        <!-- alfresco-repository / alfresco-data-model are reactor modules of alfresco-community-repo (this
-             reactor's parent), referenced there via ${project.version} rather than dependencyManagement, so
-             no managed version is inherited. Pinned to acs.platform.version, defined once in the reactor
-             pom (kept in sync with the <parent> version). -->
+        <!-- alfresco-repository / alfresco-data-model are reactor modules of alfresco-community-repo,
+             referenced there via ${project.version} rather than dependencyManagement, so no managed version
+             is inherited from the imported community-repo BOM. Pinned to dependency.community.repo.version,
+             defined once in the reactor pom. -->
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-repository</artifactId>
-            <version>${acs.platform.version}</version>
+            <version>${dependency.community.repo.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-data-model</artifactId>
-            <version>${acs.platform.version}</version>
+            <version>${dependency.community.repo.version}</version>
             <scope>provided</scope>
         </dependency>
 

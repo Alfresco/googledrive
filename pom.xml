@@ -1,18 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.alfresco</groupId>
-        <artifactId>alfresco-community-repo</artifactId>
-        <!-- Owns the Google Drive SDK, jackson and shared-library versions (bundled in the
-             content-services WARs) so these AMPs inherit them and add no third-party jars of their own.
-             Maven requires the parent version to be a literal (it is resolved before local properties), so
-             keep it in sync with the acs.platform.version property below - that property drives the
-             alfresco-repository / alfresco-data-model versions the AMPs compile against. -->
-        <version>26.3.0.9-SNAPSHOT</version>
-        <relativePath>../alfresco-community-repo/pom.xml</relativePath>
-    </parent>
-
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
@@ -39,21 +27,22 @@
     </distributionManagement>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <buildnumber>local</buildnumber>
 
-        <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
-
-        <!-- The ACS platform version the AMPs compile against: drives the alfresco-repository /
-             alfresco-data-model versions in the repo-base module. Keep in sync with the <parent> version
-             above (Maven requires that one to be a literal). -->
-        <acs.platform.version>26.3.0.9-SNAPSHOT</acs.platform.version>
-
-        <dependency.share.version>26.2.0.65</dependency.share.version>
+        <!-- The ACS platform version, and the single source of truth for every platform-owned version
+             in this build. It is imported below as the alfresco-community-repo BOM (scope=import), which
+             transitively brings jackson-bom + libraries-bom and the pinned Google Drive SDK / opencensus
+             versions, so the AMPs inherit them and add no third-party jars of their own. It also drives the
+             alfresco-repository / alfresco-data-model versions the AMPs compile against (repo-base module).
+             A BOM import version accepts a property (unlike a <parent> version, which Maven resolves before
+             local properties), so the platform version now lives here once. -->
+        <dependency.community.repo.version>26.3.0.9-SNAPSHOT</dependency.community.repo.version>
+        <dependency.share.version>26.3.0.6-SNAPSHOT</dependency.share.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE
         </org.springframework.social-google-version>
@@ -65,6 +54,39 @@
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
     </properties>
+
+    <!-- Import the platform's dependencyManagement instead of inheriting it via a <parent>. scope=import
+         pulls only the <dependencyManagement> section (versions), so this reactor keeps ownership of its own
+         build/pluginManagement. The version is a property, giving a single source of truth for the platform
+         version (see dependency.community.repo.version above). -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.alfresco</groupId>
+                <artifactId>alfresco-community-repo</artifactId>
+                <version>${dependency.community.repo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- Alfresco Nexus - the source for alfresco-repository / data-model, the Google Drive SDK mirror,
+         share artifacts and the Alfresco-flavoured build plugins. Previously inherited through the
+         alfresco-community-repo parent (via alfresco-super-pom); declared here now that there is no parent. -->
+    <repositories>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -195,6 +217,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <goals>
