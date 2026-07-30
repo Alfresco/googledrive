@@ -44,8 +44,7 @@
         <dependency.community.repo.version>26.3.0.9-SNAPSHOT</dependency.community.repo.version>
         <dependency.share.version>26.3.0.6-SNAPSHOT</dependency.share.version>
 
-        <org.springframework.social-google-version>1.0.0.RELEASE
-        </org.springframework.social-google-version>
+        <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <alfresco.min.version>6.2.0</alfresco.min.version>
 
         <alfresco.google.config.version>1.0.1</alfresco.google.config.version>
