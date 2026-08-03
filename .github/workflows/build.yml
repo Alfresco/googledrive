@@ -41,12 +41,15 @@ jobs:
         # The `e2e_tests` stage builds the -gd/-share-gd images FROM the given ACS platform base and
         # runs the E2E suite against it. The default (zero-dependency) AMP is tested against `latest`
         # (the SDK-carrying platform); the bundled AMP is tested against ACS lines that do not ship the
-        # SDK (25.4.1, 26.2.1).
+        # SDK (23.7.0, 25.4.1, 26.2.1).
         include:
           - stage: build
           - stage: e2e_tests
             variant: default
             acs_version: "latest"
+          - stage: e2e_tests
+            variant: bundled
+            acs_version: "23.7.0"
           - stage: e2e_tests
             variant: bundled
             acs_version: "25.4.1"
