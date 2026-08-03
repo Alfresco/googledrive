@@ -26,6 +26,13 @@ if [ ! -d deploy_dir_community ]; then
     mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}:amp \
         -DoutputDirectory=deploy_dir_enterprise
+    # Bundled (self-contained) AMP variants, published under "${VERSION}+bundled"
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+        -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-community:${VERSION}+bundled:amp \
+        -DoutputDirectory=deploy_dir_community
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+        -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}+bundled:amp \
+        -DoutputDirectory=deploy_dir_enterprise
     mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-share:${VERSION}:amp \
         -DoutputDirectory=deploy_dir_community

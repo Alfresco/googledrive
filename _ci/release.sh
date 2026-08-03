@@ -30,6 +30,42 @@ mvn -B \
     -Dusername="${GIT_USERNAME}" \
     -Dpassword="${GIT_PASSWORD}"
 
+# release:perform produces the standard zero-dependency AMPs (SDK 'provided'). Additionally build and
+# publish the self-contained "+bundled" AMP variants (SDK bundled) for ACS versions that do not ship
+# the SDK, mirroring alfresco-s3-connector. Built from the freshly tagged sources in target/checkout.
+RELEASE_CHECKOUT_DIR="target/checkout"
+RELEASE_VERSION="$(git describe --tags --abbrev=0)"
+
+mvn -B -f "${RELEASE_CHECKOUT_DIR}/pom.xml" \
+    -pl alfresco-googledrive-repo-community,alfresco-googledrive-repo-enterprise -am \
+    -Pbundled -DskipTests -DbuildNumber=$GITHUB_RUN_NUMBER \
+    clean package
+
+COMMUNITY_BUNDLED_AMP="alfresco-googledrive-repo-community-${RELEASE_VERSION}+bundled.amp"
+ENTERPRISE_BUNDLED_AMP="alfresco-googledrive-repo-enterprise-${RELEASE_VERSION}+bundled.amp"
+
+mvn -B deploy:deploy-file \
+    -DgroupId=org.alfresco.integrations \
+    -DartifactId=alfresco-googledrive-repo-community \
+    -Dversion="${RELEASE_VERSION}+bundled" \
+    -Dpackaging=amp \
+    -Dfile="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-community/target/${COMMUNITY_BUNDLED_AMP}" \
+    -DrepositoryId=alfresco-public \
+    -Durl=https://artifacts.alfresco.com/nexus/content/repositories/releases
+
+mvn -B deploy:deploy-file \
+    -DgroupId=org.alfresco.integrations \
+    -DartifactId=alfresco-googledrive-repo-enterprise \
+    -Dversion="${RELEASE_VERSION}+bundled" \
+    -Dpackaging=amp \
+    -Dfile="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-enterprise/target/${ENTERPRISE_BUNDLED_AMP}" \
+    -DrepositoryId=alfresco-enterprise-releases \
+    -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases
+
+# Expose the bundled AMPs in the module target dirs so the staging (S3) upload picks them up
+cp "${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-community/target/${COMMUNITY_BUNDLED_AMP}"   "alfresco-googledrive-repo-community/target/"
+cp "${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-enterprise/target/${ENTERPRISE_BUNDLED_AMP}" "alfresco-googledrive-repo-enterprise/target/"
+
 popd
 set +vex
 echo "=========================== Finishing Release Script =========================="
