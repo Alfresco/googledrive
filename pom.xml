@@ -36,8 +36,17 @@
 
         <buildnumber>local</buildnumber>
         
-        <dependency.community.repo.version>26.3.0.9-SNAPSHOT</dependency.community.repo.version>
-        <dependency.share.version>26.3.0.6-SNAPSHOT</dependency.share.version>
+        <!-- TEMPORARY (ACS-12297 transition): pinned to RELEASED ACS artifacts so gdrive builds in CI
+             before the SDK-move ACS is published. END STATE after the SDK-carrying ACS is released:
+             bump this to that release, DELETE the libraries-bom bridge below + the explicit
+             google-api-services-* versions in repo-base, and let ACS manage ALL SDK versions (the
+             goal of this ticket - ACS as the single source of truth). -->
+        <dependency.community.repo.version>26.3.0.11</dependency.community.repo.version>
+        <dependency.share.version>26.3.0.5</dependency.share.version>
+        <!-- TEMPORARY bridge - remove once the SDK-carrying ACS release manages the Drive SDK. Until
+             then released ACS does not manage it, so gdrive supplies the versions here (aligned with
+             the version the SDK-carrying platform / GCS connector use). -->
+        <google-cloud-libraries-bom.version>26.84.0</google-cloud-libraries-bom.version>
 
         <!-- Single source of truth for the ACS platform base-image tag the -gd / -share-gd images
              are built FROM (and therefore the ACS version E2E runs against). -->
@@ -65,6 +74,17 @@
                 <groupId>org.alfresco</groupId>
                 <artifactId>alfresco-community-repo</artifactId>
                 <version>${dependency.community.repo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- TEMPORARY bridge (ACS-12297): released ACS does not yet manage the Drive SDK, so this
+                 supplies those versions. Imported AFTER the ACS BOM so platform libraries (guava,
+                 jackson, httpclient, ...) keep the ACS-managed versions. DELETE once the SDK-carrying
+                 ACS release manages the SDK -> then ACS is the single source of truth. -->
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>${google-cloud-libraries-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

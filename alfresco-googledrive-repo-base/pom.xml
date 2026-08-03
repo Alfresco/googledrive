@@ -24,9 +24,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TEMPORARY (ACS-12297): explicit versions because released ACS does not yet manage these
+             versioned artifacts and they are in no BOM. Remove once the SDK-carrying ACS manages them. -->
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-oauth2</artifactId>
+            <version>v2-rev20200213-2.0.0</version>
             <scope>${googledrive.bundled.dependency.scope}</scope>
             <exclusions>
                 <exclusion>
@@ -46,6 +49,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev20250511-2.0.0</version>
             <scope>${googledrive.bundled.dependency.scope}</scope>
         </dependency>
         <dependency>
