@@ -10,6 +10,13 @@
         <version>5.0.0-A1-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <!-- Local runs tear the stack down after the tests. CI sets this to true (-De2e.skip.teardown=true)
+             so the containers survive 'mvn verify', letting the workflow dump their logs on failure before
+             a final teardown step removes them. -->
+        <e2e.skip.teardown>false</e2e.skip.teardown>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -263,6 +270,9 @@
                                     <goal>stop</goal>
                                     <goal>volume-remove</goal>
                                 </goals>
+                                <configuration>
+                                    <skip>${e2e.skip.teardown}</skip>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -16,7 +16,7 @@ mvn -B -U clean install -P${BUILD_PROFILES} \
  ${ACS_VERSION:+-Dacs.version=$ACS_VERSION} \
  -DskipTests
 
-mvn -B -U clean verify -Pdocker-end-to-end-setup -pl 'alfresco-googledrive-end-to-end-tests'
+mvn -B -U clean verify -Pdocker-end-to-end-setup -pl 'alfresco-googledrive-end-to-end-tests' -De2e.skip.teardown=true
 
 popd
 set +vex

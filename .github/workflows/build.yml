@@ -103,6 +103,14 @@ jobs:
         run: |
            bash _ci/init.sh
            bash _ci/${{ matrix.stage }}.sh
+
+      - name: "Dump all Docker containers logs"
+        if: ${{ failure() && matrix.stage == 'e2e_tests' }}
+        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@v18.19.1
+
+      - name: "Tear down the E2E stack"
+        if: ${{ always() && matrix.stage == 'e2e_tests' }}
+        run: docker ps -aq | xargs -r docker rm -f
   pmd_scan:
     name: "PMD Scan"
     runs-on: ubuntu-latest
