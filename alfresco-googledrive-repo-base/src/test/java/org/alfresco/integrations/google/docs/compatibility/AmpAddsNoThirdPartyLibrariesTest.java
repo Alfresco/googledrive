@@ -23,7 +23,6 @@
 package org.alfresco.integrations.google.docs.compatibility;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -57,10 +56,6 @@ public class AmpAddsNoThirdPartyLibrariesTest
     @Test
     public void ampBundlesNoThirdPartyLibraries() throws IOException
     {
-        // Guard only applies to the default build; the bundled profile ships the SDK on purpose.
-        assumeFalse("Skipped for the bundled AMP variant (it is meant to ship the SDK)",
-                "compile".equals(System.getProperty("googledrive.bundled.dependency.scope")));
-
         List<String> bundled = listBundledJars();
         System.out.println("[AMP] repo-base contributes " + bundled.size() + " third-party library jar(s): " + bundled);
 

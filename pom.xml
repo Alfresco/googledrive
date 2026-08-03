@@ -200,10 +200,6 @@
                     <configuration>
                         <forkCount>1</forkCount>
                         <reuseForks>true</reuseForks>
-                        <systemPropertyVariables>
-                            <!-- Read by AmpAddsNoThirdPartyLibrariesTest to skip the guard in bundled builds. -->
-                            <googledrive.bundled.dependency.scope>${googledrive.bundled.dependency.scope}</googledrive.bundled.dependency.scope>
-                        </systemPropertyVariables>
                     </configuration>
                     <executions>
                         <execution>
@@ -314,6 +310,21 @@
                 <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
                 <acs.version>26.2.1</acs.version>
             </properties>
+            <build>
+                <plugins>
+                    <!-- The zero-dependency guard asserts the AMP bundles nothing; it must not run for the
+                         bundled variant, which ships the SDK on purpose. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/AmpAddsNoThirdPartyLibrariesTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

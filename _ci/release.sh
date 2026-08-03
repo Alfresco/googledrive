@@ -22,10 +22,13 @@ git pull
 git config user.email "${GIT_EMAIL}"
 git config user.name "${GIT_USERNAME}"
 
-# Run the release plugin - with "[skip ci]" in the release commit message
+# Run the release plugin - with "[skip ci]" in the release commit message.
 mvn -B \
     "-Darguments=-DskipTests -DbuildNumber=$GITHUB_RUN_NUMBER" \
     release:clean release:prepare release:perform \
+    -DreleaseVersion="${RELEASE_VERSION}" \
+    -DdevelopmentVersion="${DEVELOPMENT_VERSION}" \
+    -DautoVersionSubmodules=true \
     -DscmCommentPrefix="[maven-release-plugin][skip ci] " \
     -Dusername="${GIT_USERNAME}" \
     -Dpassword="${GIT_PASSWORD}"
@@ -34,7 +37,6 @@ mvn -B \
 # publish the self-contained "+bundled" AMP variants (SDK bundled) for ACS versions that do not ship
 # the SDK, mirroring alfresco-s3-connector. Built from the freshly tagged sources in target/checkout.
 RELEASE_CHECKOUT_DIR="target/checkout"
-RELEASE_VERSION="$(git describe --tags --abbrev=0)"
 
 mvn -B -f "${RELEASE_CHECKOUT_DIR}/pom.xml" \
     -pl alfresco-googledrive-repo-community,alfresco-googledrive-repo-enterprise -am \

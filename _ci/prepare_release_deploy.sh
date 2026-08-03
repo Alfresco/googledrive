@@ -9,8 +9,8 @@ if [ ! -d deploy_dir_community ]; then
 
     mkdir -p deploy_dir_community deploy_dir_enterprise
 
-    # Identify latest annotated tag (latest version)
-    export VERSION=$(git describe --abbrev=0 --tags)
+    # Version to publish - taken from the workflow env (RELEASE_VERSION), same value used by release.sh.
+    export VERSION="${RELEASE_VERSION}"
 
     # Download the WhiteSource report
 #    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \

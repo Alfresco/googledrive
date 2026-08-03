@@ -27,8 +27,9 @@ if [ ! -d deploy_dir_community ]; then
 #    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
     ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
     ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
-    ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"
-    ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}"
+    # Bundled variants are optional (only present when the -Pbundled build ran); guard so 'set -e' does not abort staging.
+    [ -n "${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}" ]  && ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"
+    [ -n "${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" ] && ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_enterprise/${ARTIFACT_GD_SHARE}"
 
