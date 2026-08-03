@@ -5,9 +5,15 @@ PS4="\[\e[35m\]+ \[\e[m\]"
 set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
+# VARIANT=bundled builds the self-contained AMP (adds the -Pbundled profile); default is zero-dependency.
+BUILD_PROFILES="local"
+if [ "$VARIANT" = "bundled" ]; then
+  BUILD_PROFILES="bundled,local"
+fi
 
-mvn -B -U clean install -Plocal \
+mvn -B -U clean install -P${BUILD_PROFILES} \
  -DbuildNumber=$GITHUB_RUN_NUMBER \
+ ${ACS_VERSION:+-Dacs.version=$ACS_VERSION} \
  -DskipTests
 
 mvn -B -U clean verify -Pdocker-end-to-end-setup -pl 'alfresco-googledrive-end-to-end-tests'

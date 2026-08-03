@@ -25,7 +25,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}${amp.classifier}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>

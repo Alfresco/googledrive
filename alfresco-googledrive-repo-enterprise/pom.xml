@@ -41,7 +41,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}${amp.classifier}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>
@@ -104,7 +104,10 @@
                             <image>
                                 <name>${image.name}:${image.tag}</name>
                                 <build>
-                                    <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <dockerFile>${project.basedir}/src/main/docker/${gdrive.repo.dockerfile}</dockerFile>
+                                    <args>
+                                        <ACS_VERSION>${acs.version}</ACS_VERSION>
+                                    </args>
                                     <assembly>
                                         <descriptor>target-assembly.xml</descriptor>
                                     </assembly>

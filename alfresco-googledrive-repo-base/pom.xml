@@ -11,10 +11,6 @@
     </parent>
 
     <dependencies>
-        <!-- alfresco-repository / alfresco-data-model are reactor modules of alfresco-community-repo,
-             referenced there via ${project.version} rather than dependencyManagement, so no managed version
-             is inherited from the imported community-repo BOM. Pinned to dependency.community.repo.version,
-             defined once in the reactor pom. -->
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-repository</artifactId>
@@ -31,7 +27,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-oauth2</artifactId>
-            <scope>provided</scope>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -50,7 +46,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
-            <scope>provided</scope>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -65,7 +61,7 @@
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <scope>provided</scope>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>

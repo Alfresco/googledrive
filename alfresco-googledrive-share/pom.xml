@@ -132,6 +132,9 @@
                                 <name>${image.name}:${image.tag}</name>
                                 <build>
                                     <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <args>
+                                        <ACS_VERSION>${acs.version}</ACS_VERSION>
+                                    </args>
                                     <assembly>
                                         <descriptor>target-assembly.xml</descriptor>
                                     </assembly>

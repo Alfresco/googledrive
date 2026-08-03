@@ -1,22 +1,21 @@
-ARG ACS_VERSION=latest
+# Test image for the self-contained ("+bundled") Google Drive AMP: installs onto ACS versions that do
+# not provide the Drive SDK. Uninstalls any legacy integration first, then installs with -force.
+
+ARG ACS_VERSION=26.3.0-A.2
 FROM quay.io/alfresco/alfresco-content-repository:${ACS_VERSION}
 
 ARG IMAGEUSERNAME=alfresco
 ARG TOMCAT_DIR=/usr/local/tomcat
 
-# default user is alfresco (added on the base image alfresco/alfresco-content-repository:6.2.0)
-# change to root user to be able to install the amps
 USER root
 
-# Remove old GoogleDocs AMP
 RUN rm -f $TOMCAT_DIR/amps/alfresco-google*-repo*.amp
 RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt-*.jar uninstall \
               org.alfresco.integrations.google.docs \
               $TOMCAT_DIR/webapps/alfresco/
 
-# Copy Dockerfile to avoid an error if no AMPs exist
-COPY maven/target/*.amp $TOMCAT_DIR/amps/
+COPY maven/target/*+bundled.amp $TOMCAT_DIR/amps/
 RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
-             $TOMCAT_DIR/amps/alfresco-google*-repo*.amp $TOMCAT_DIR/webapps/alfresco -nobackup
+             $TOMCAT_DIR/amps/alfresco-google*-repo*+bundled.amp $TOMCAT_DIR/webapps/alfresco -nobackup -force
 
 USER ${IMAGEUSERNAME}
