@@ -37,11 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # The `build` stage is ACS-version independent (compiles + unit tests + packages the AMPs).
-        # The `e2e_tests` stage builds the -gd/-share-gd images FROM the given ACS platform base and
-        # runs the E2E suite against it. The default (zero-dependency) AMP is tested against `latest`
-        # (the SDK-carrying platform); the bundled AMP is tested against ACS lines that do not ship the
-        # SDK (23.7.0, 25.4.1, 26.2.1).
         include:
           - stage: build
           - stage: e2e_tests

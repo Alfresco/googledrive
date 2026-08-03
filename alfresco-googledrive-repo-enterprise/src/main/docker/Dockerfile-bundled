@@ -1,7 +1,7 @@
 # Test image for the self-contained ("+bundled") Google Drive AMP: installs onto ACS versions that do
 # not provide the Drive SDK. Uninstalls any legacy integration first, then installs with -force.
 
-ARG ACS_VERSION=26.3.0-A.2
+ARG ACS_VERSION=26.2.1
 FROM quay.io/alfresco/alfresco-content-repository:${ACS_VERSION}
 
 ARG IMAGEUSERNAME=alfresco

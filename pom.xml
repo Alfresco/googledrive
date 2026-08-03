@@ -40,12 +40,7 @@
         <dependency.share.version>26.3.0.6-SNAPSHOT</dependency.share.version>
 
         <!-- Single source of truth for the ACS platform base-image tag the -gd / -share-gd images
-             are built FROM (and therefore the ACS version E2E runs against). Passed to the image
-             Dockerfiles as the ACS_VERSION build-arg. Override per run with -Dacs.version=... ; the
-             CI E2E matrix drives it across every supported ACS version (26.3 + 25.5).
-             Default `latest` = the locally-built 26.3 platform image that ships the Google SDK.
-             TODO: replace `latest` with the published 26.3 quay tag once the com/ent 26.3 alpha
-             is released (e.g. 26.3.0-A.x), before merging the Google Drive changes. -->
+             are built FROM (and therefore the ACS version E2E runs against). -->
         <acs.version>latest</acs.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
@@ -57,8 +52,8 @@
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
 
-        <!-- Dual-AMP build (mirrors alfresco-s3-connector): default AMPs leave the SDK "provided"
-             (shipped by ACS); the "bundled" profile flips this to "compile" to self-contain the SDK. -->
+        <!-- Dual-AMP build; default AMPs leave the SDK "provided"(shipped by ACS); 
+        the "bundled" profile flips this to "compile" to self-contain the SDK. -->
         <googledrive.bundled.dependency.scope>provided</googledrive.bundled.dependency.scope>
         <amp.classifier />
         <gdrive.repo.dockerfile>Dockerfile</gdrive.repo.dockerfile>
@@ -297,7 +292,7 @@
                 <googledrive.bundled.dependency.scope>compile</googledrive.bundled.dependency.scope>
                 <amp.classifier>+bundled</amp.classifier>
                 <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
-                <acs.version>26.3.0-A.2</acs.version>
+                <acs.version>26.2.1</acs.version>
             </properties>
         </profile>
     </profiles>
