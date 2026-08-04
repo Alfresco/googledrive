@@ -5,6 +5,10 @@ PS4="\[\e[35m\]+ \[\e[m\]"
 set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
+# Fail fast if the release version is missing (it comes from the workflow env). Without it the artifact
+# downloads and the 'git checkout tags/${VERSION}' below would fail in non-obvious ways.
+: "${RELEASE_VERSION:?RELEASE_VERSION must be set (see .github/workflows/build.yml env)}"
+
 if [ ! -d deploy_dir_community ]; then
 
     mkdir -p deploy_dir_community deploy_dir_enterprise

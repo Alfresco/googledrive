@@ -106,7 +106,7 @@ jobs:
 
       - name: "Dump all Docker containers logs"
         if: ${{ failure() && matrix.stage == 'e2e_tests' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@v18.19.1
+        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@52ecc401030ed0a6480e701444848ac123ae5a99 # v18.19.1
 
       - name: "Tear down the E2E stack"
         if: ${{ always() && matrix.stage == 'e2e_tests' }}

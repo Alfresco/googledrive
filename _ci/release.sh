@@ -5,6 +5,11 @@ PS4="\[\e[35m\]+ \[\e[m\]"
 set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
+# Fail fast if the release/next-dev versions are missing (they come from the workflow env). Without them the
+# release plugin would derive confusing versions/tags or fail deep into the run.
+: "${RELEASE_VERSION:?RELEASE_VERSION must be set (see .github/workflows/build.yml env)}"
+: "${DEVELOPMENT_VERSION:?DEVELOPMENT_VERSION must be set (see .github/workflows/build.yml env)}"
+
 # Github Actions CI runner work on DETACHED HEAD, so we need to checkout the release branch
 git checkout -B "${BRANCH_NAME}"
 

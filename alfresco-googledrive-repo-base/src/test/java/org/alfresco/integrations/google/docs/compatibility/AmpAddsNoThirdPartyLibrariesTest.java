@@ -36,20 +36,11 @@ import org.junit.Test;
 
 /**
  * Guards the single guarantee the Google Drive AMPs must uphold: they add NO third-party libraries to the
- * ACS runtime classpath. This repo-base module is where every third-party library the integration needs -
- * the Google Drive/OAuth2 SDK, google-http-client, jackson, httpclient and their transitives - enters the
- * reactor. Each is declared {@code provided} and {@code optional}, so the content-services WARs (built in
- * {@code alfresco-community-repo} / {@code alfresco-enterprise-repo}) ship them and neither the community
- * nor the enterprise AMP bundles any of them.
+ * ACS runtime classpath. It asserts that the runtime-scoped jars this module would contribute to an AMP -
+ * staged under {@code target/mmt-analysis/amp-libs} by {@code maven-dependency-plugin} - are empty.
  *
- * <p>Binary compatibility between that bundled SDK and the platform libraries (jackson, guava,
- * httpclient, ...) is owned by {@code alfresco-community-repo}, which manages every version there; it is
- * verified by {@code DriveSdkPlatformCompatibilityTest} alongside the WAR, not here.</p>
- *
- * <p>{@code maven-dependency-plugin} stages the jars this module would contribute to an AMP (its
- * runtime-scoped dependencies) under {@code target/mmt-analysis/amp-libs} in the
- * {@code process-test-resources} phase. With every third-party dependency {@code provided} that set is
- * empty - the directory may not even be created.</p>
+ * <p>Dependency scopes live in {@code alfresco-googledrive-repo-base/pom.xml}; SDK/platform binary
+ * compatibility is owned and verified by {@code alfresco-community-repo}.</p>
  */
 public class AmpAddsNoThirdPartyLibrariesTest
 {
