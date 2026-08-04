@@ -26,9 +26,7 @@
     </distributionManagement>
 
     <properties>
-        <!-- Target Java 17 so the bundled AMP runs on ACS 23.7 (Java 17); Java 17 bytecode also runs
-             on ACS 26.3 (Java 21). Build MUST use JDK 21+: the 26.3 platform jars are Java 21 bytecode,
-             unreadable by a JDK 17 compiler. -->
+        <!-- Target Java 21 so the AMP also runs on the ACS 25.x family(JRE 17). Switch to 21 once 25.x support ends. -->
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
