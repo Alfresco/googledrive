@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2026 Alfresco Software Limited
+ * %%
+ * This file is part of the Alfresco software.
+ * -
+ * If the software was purchased under a paid Alfresco license, the terms of
+ * the paid license agreement will prevail.  Otherwise, the software is
+ * provided under the following open source license terms:
+ * -
+ * Alfresco is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * -
+ * Alfresco is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * -
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.alfresco.integrations.google.docs.compatibility;
+
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+/**
+ * Guards the single guarantee the Google Drive AMPs must uphold: they add NO third-party libraries to the
+ * ACS runtime classpath. It asserts that the runtime-scoped jars this module would contribute to an AMP -
+ * staged under {@code target/mmt-analysis/amp-libs} by {@code maven-dependency-plugin} - are empty.
+ *
+ * <p>Dependency scopes live in {@code alfresco-googledrive-repo-base/pom.xml}; SDK/platform binary
+ * compatibility is owned and verified by {@code alfresco-community-repo}.</p>
+ */
+public class AmpAddsNoThirdPartyLibrariesTest
+{
+    @Test
+    public void ampBundlesNoThirdPartyLibraries() throws IOException
+    {
+        List<String> bundled = listBundledJars();
+        System.out.println("[AMP] repo-base contributes " + bundled.size() + " third-party library jar(s): " + bundled);
+
+        assertTrue("The Google Drive AMP must not add third-party libraries to the ACS classpath, but these "
+                + "jars would be bundled: " + bundled + ". Every third-party dependency must be 'provided' "
+                + "(shipped by the content-services WAR).", bundled.isEmpty());
+    }
+
+    private static List<String> listBundledJars() throws IOException
+    {
+        Path ampLibs = Paths.get("target", "mmt-analysis", "amp-libs");
+        List<String> jars = new ArrayList<>();
+        if (Files.isDirectory(ampLibs))
+        {
+            try (DirectoryStream<Path> jarFiles = Files.newDirectoryStream(ampLibs, "*.jar"))
+            {
+                jarFiles.forEach(jar -> jars.add(jar.getFileName().toString()));
+            }
+        }
+        return jars;
+    }
+}

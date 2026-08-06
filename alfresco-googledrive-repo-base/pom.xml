@@ -1,34 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>alfresco-googledrive-repo-base</artifactId>
-    <version>4.1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Alfresco / Google Drive Repo Base Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-googledrive</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>5.0.0-A1-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-repository</artifactId>
-            <version>${dependency.alfresco-repository.version}</version>
+            <version>${dependency.community.repo.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-data-model</artifactId>
-            <version>${dependency.alfresco-data-model.version}</version>
+            <version>${dependency.community.repo.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- TEMPORARY (ACS-12297): explicit versions because released ACS does not yet manage these
+             versioned artifacts and they are in no BOM. Remove once the SDK-carrying ACS manages them. -->
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-oauth2</artifactId>
-            <version>v2-rev20200213-1.32.1</version>
+            <version>v2-rev20200213-2.0.0</version>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -47,21 +49,13 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
-            <version>v3-rev20220709-1.32.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
+            <version>v3-rev20250511-2.0.0</version>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.42.2</version>
+            <scope>${googledrive.bundled.dependency.scope}</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>
@@ -69,5 +63,37 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Stages this module's runtime-scoped dependencies (the jars an AMP would bundle) so
+                 AmpAddsNoThirdPartyLibrariesTest can assert none exist. With every third-party dependency
+                 'provided' the staged set is empty. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>stage-amp-libraries</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/mmt-analysis/amp-libs</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -17,6 +17,8 @@ on:
         description: Enter the Commit Message
         required: true
 env:
+  DEVELOPMENT_VERSION: "5.0.0-A2-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
+  RELEASE_VERSION: "5.0.0-A1" # The version of the release (tag)
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
@@ -37,7 +39,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stage: [ build , e2e_tests ]
+        include:
+          - stage: build
+          # TEMPORARY (ACS-12297): the default (zero-dependency) e2e runs against 'latest', which does not
+          # yet ship the Drive SDK, so the googledocs subsystem cannot start and this job fails. Re-enable
+          # once the SDK-carrying ACS (26.3 / 25.5) image is published as 'latest'.
+          # - stage: e2e_tests
+          #   variant: default
+          #   acs_version: "latest"
+          - stage: e2e_tests
+            variant: bundled
+            acs_version: "23.7.1"
+          - stage: e2e_tests
+            variant: bundled
+            acs_version: "25.4.1"
+          - stage: e2e_tests
+            variant: bundled
+            acs_version: "26.2.1"
       fail-fast: false
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -80,11 +98,22 @@ jobs:
           username: ${{ env.QUAY_USERNAME }}
           password: ${{ env.QUAY_PASSWORD }}
 
-      - name: Run ${{ matrix.stage }}
+      - name: Run ${{ matrix.stage }} ${{ matrix.variant }} ${{ matrix.acs_version }}
         if: ${{ github.ref_name != 'company_release' }}
+        env:
+          ACS_VERSION: ${{ matrix.acs_version }}
+          VARIANT: ${{ matrix.variant }}
         run: |
            bash _ci/init.sh
            bash _ci/${{ matrix.stage }}.sh
+
+      - name: "Dump all Docker containers logs"
+        if: ${{ failure() && matrix.stage == 'e2e_tests' }}
+        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@52ecc401030ed0a6480e701444848ac123ae5a99 # v18.19.1
+
+      - name: "Tear down the E2E stack"
+        if: ${{ always() && matrix.stage == 'e2e_tests' }}
+        run: docker ps -aq | xargs -r docker rm -f
   pmd_scan:
     name: "PMD Scan"
     runs-on: ubuntu-latest

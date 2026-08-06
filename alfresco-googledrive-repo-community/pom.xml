@@ -3,7 +3,7 @@
     <parent>
         <artifactId>alfresco-googledrive</artifactId>
         <groupId>org.alfresco.integrations</groupId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>5.0.0-A1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
             <artifactId>alfresco-googledrive-repo-base</artifactId>
-            <version>4.1.2-SNAPSHOT</version>
+            <version>5.0.0-A1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
@@ -25,7 +25,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}${amp.classifier}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>

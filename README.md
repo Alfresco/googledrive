@@ -23,6 +23,16 @@ When building the amps (`mvn clean package`) you should also include a combinati
 'docker-end-to-end-setup' Build amps for future end-to-end tests
 
 Example: `mvn clean package -Plocal`
+
+**AMP variants**
+
+Two AMPs can be built from the same source (the module is Java 17; build with JDK 21):
+
+- Default (zero-dependency): `mvn clean package`. The Google Drive SDK and its libraries are declared `provided`, so the AMP bundles no third-party jars at all — it adds nothing to the ACS runtime classpath and relies on the platform to supply the SDK. Use on the ACS versions that ship the SDK: **26.3** and **25.5** (and later). These versions moved the SDK into the platform WARs, so the zero-dependency AMP must be used there.
+- Bundled (`-Pbundled`): `mvn clean package -Pbundled`. Packages the SDK inside the AMP (named `...+bundled.amp`) so it is self-contained. Use on any ACS version that does not ship the SDK. Platform libraries (guava, jackson, httpclient, ...) stay `provided`, as those are always supplied by ACS.
+
+The `-Plocal` / `-Pbundled` profiles can be combined (`-Pbundled,local`); the bundled test image installs onto `${acs.version}` (default `26.2.1`, the latest 26.x GA without the SDK; override with `-Dacs.version=...`).
+
 	
 ***Note:** Amps built from this source are not supported by Alfresco. They are built and used at your own risk. Supported releases of the enterprise amps can be found at the Alfresco Customer Portal.*
 

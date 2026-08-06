@@ -1,14 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>alfresco-googledrive-share</artifactId>
-    <version>4.1.2-SNAPSHOT</version>
     <packaging>amp</packaging>
     <name>Alfresco / Google Drive Share Module</name>
 
     <parent>
         <groupId>org.alfresco.integrations</groupId>
         <artifactId>alfresco-googledrive</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>5.0.0-A1-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -133,6 +132,9 @@
                                 <name>${image.name}:${image.tag}</name>
                                 <build>
                                     <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                                    <args>
+                                        <ACS_VERSION>${acs.version}</ACS_VERSION>
+                                    </args>
                                     <assembly>
                                         <descriptor>target-assembly.xml</descriptor>
                                     </assembly>

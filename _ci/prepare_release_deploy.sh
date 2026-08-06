@@ -5,12 +5,16 @@ PS4="\[\e[35m\]+ \[\e[m\]"
 set -vex
 pushd "$(dirname "${BASH_SOURCE[0]}")/../"
 
+# Fail fast if the release version is missing (it comes from the workflow env). Without it the artifact
+# downloads and the 'git checkout tags/${VERSION}' below would fail in non-obvious ways.
+: "${RELEASE_VERSION:?RELEASE_VERSION must be set (see .github/workflows/build.yml env)}"
+
 if [ ! -d deploy_dir_community ]; then
 
     mkdir -p deploy_dir_community deploy_dir_enterprise
 
-    # Identify latest annotated tag (latest version)
-    export VERSION=$(git describe --abbrev=0 --tags)
+    # Version to publish - taken from the workflow env (RELEASE_VERSION), same value used by release.sh.
+    export VERSION="${RELEASE_VERSION}"
 
     # Download the WhiteSource report
 #    mvn -B org.alfresco:whitesource-downloader-plugin:inventoryReport \
@@ -25,6 +29,13 @@ if [ ! -d deploy_dir_community ]; then
         -DoutputDirectory=deploy_dir_community
     mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}:amp \
+        -DoutputDirectory=deploy_dir_enterprise
+    # Bundled (self-contained) AMP variants, published under "${VERSION}+bundled"
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+        -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-community:${VERSION}+bundled:amp \
+        -DoutputDirectory=deploy_dir_community
+    mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
+        -Dartifact=org.alfresco.integrations:alfresco-googledrive-repo-enterprise:${VERSION}+bundled:amp \
         -DoutputDirectory=deploy_dir_enterprise
     mvn -B org.apache.maven.plugins:maven-dependency-plugin:3.1.1:copy \
         -Dartifact=org.alfresco.integrations:alfresco-googledrive-share:${VERSION}:amp \

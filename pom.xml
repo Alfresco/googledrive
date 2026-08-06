@@ -3,7 +3,7 @@
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>4.1.2-SNAPSHOT</version>
+    <version>5.0.0-A1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -26,22 +26,31 @@
     </distributionManagement>
 
     <properties>
+        <!-- Target Java 21 so the AMP also runs on the ACS 25.x family(JRE 17). Switch to 21 once 25.x support ends. -->
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <buildnumber>local</buildnumber>
+        
+        <!-- TEMPORARY (ACS-12297 transition): pinned to RELEASED ACS artifacts so gdrive builds in CI
+             before the SDK-move ACS is published. END STATE after the SDK-carrying ACS is released:
+             bump this to that release, DELETE the libraries-bom bridge below + the explicit
+             google-api-services-* versions in repo-base, and let ACS manage ALL SDK versions (the
+             goal of this ticket - ACS as the single source of truth). -->
+        <dependency.community.repo.version>26.3.0.11</dependency.community.repo.version>
+        <dependency.share.version>26.3.0.5</dependency.share.version>
+        <!-- TEMPORARY bridge - remove once the SDK-carrying ACS release manages the Drive SDK. Until
+             then released ACS does not manage it, so gdrive supplies the versions here (aligned with
+             the version the SDK-carrying platform / GCS connector use). -->
+        <google-cloud-libraries-bom.version>26.84.0</google-cloud-libraries-bom.version>
 
-        <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
+        <!-- Single source of truth for the ACS platform base-image tag the -gd / -share-gd images
+             are built FROM (and therefore the ACS version E2E runs against). -->
+        <acs.version>latest</acs.version>
 
-        <dependency.alfresco-repository.version>26.2.0.83</dependency.alfresco-repository.version>
-        <dependency.alfresco-data-model.version>26.2.0.83</dependency.alfresco-data-model.version>
-
-        <dependency.share.version>26.2.0.65</dependency.share.version>
-
-        <org.springframework.social-google-version>1.0.0.RELEASE
-        </org.springframework.social-google-version>
+        <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <alfresco.min.version>6.2.0</alfresco.min.version>
 
         <alfresco.google.config.version>1.0.1</alfresco.google.config.version>
@@ -49,56 +58,95 @@
         <app.filtering.enabled>true</app.filtering.enabled>
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
-    </properties>
 
+        <!-- Dual-AMP build; default AMPs leave the SDK "provided"(shipped by ACS); 
+        the "bundled" profile flips this to "compile" to self-contain the SDK. -->
+        <googledrive.bundled.dependency.scope>provided</googledrive.bundled.dependency.scope>
+        <amp.classifier />
+        <gdrive.repo.dockerfile>Dockerfile</gdrive.repo.dockerfile>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
-
-            <!--note: x-check against equivalent ACS tagged versions of pom.xml in acs-packaging, alfresco-repository, share ... -->
-
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.5.13</version>
-                <scope>provided</scope>
+                <groupId>org.alfresco</groupId>
+                <artifactId>alfresco-community-repo</artifactId>
+                <version>${dependency.community.repo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
+            <!-- TEMPORARY bridge (ACS-12297): released ACS does not yet manage the Drive SDK, so this
+                 supplies those versions. Imported AFTER the ACS BOM so platform libraries (guava,
+                 jackson, httpclient, ...) keep the ACS-managed versions. DELETE once the SDK-carrying
+                 ACS release manages the SDK -> then ACS is the single source of truth. -->
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore</artifactId>
-                <version>4.4.13</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <scope>provided</scope>
-                <version>2.12.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <scope>provided</scope>
-                <version>1.15</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <scope>provided</scope>
-                <version>28.2-jre</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.j2objc</groupId>
-                <artifactId>j2objc-annotations</artifactId>
-                <scope>provided</scope>
-                <version>1.3</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.oauth-client</groupId>
-                <artifactId>google-oauth-client</artifactId>
-                <version>1.33.3</version>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>${google-cloud-libraries-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- Platform libraries ACS always ships, kept 'provided' reactor-wide. In the 'bundled' build the
+         SDK turns 'compile', so these direct 'provided' declarations (inherited by the packaging
+         modules) stop the SDK's transitive copies being bundled. Versions come from the community-repo
+         BOM above. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Explicit versions: not managed by the community-repo BOM. -->
+        <dependency>
+            <groupId>com.google.j2objc</groupId>
+            <artifactId>j2objc-annotations</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>2.28.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
+    <repositories>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -133,7 +181,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.43.4</version>
+                    <version>0.48.1</version>
                     <configuration>
                         <!--<verbose>true</verbose>-->
                     </configuration>
@@ -229,6 +277,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -248,5 +297,33 @@
         <module>alfresco-googledrive-end-to-end-tests</module>
     </modules>
 
+    <profiles>
+        <!-- Builds the self-contained AMPs (SDK bundled, named "+bundled") for ACS versions that do
+             not ship the Drive SDK. -->
+        <profile>
+            <id>bundled</id>
+            <properties>
+                <googledrive.bundled.dependency.scope>compile</googledrive.bundled.dependency.scope>
+                <amp.classifier>+bundled</amp.classifier>
+                <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
+                <acs.version>26.2.1</acs.version>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- The zero-dependency guard asserts the AMP bundles nothing; it must not run for the
+                         bundled variant, which ships the SDK on purpose. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/AmpAddsNoThirdPartyLibrariesTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

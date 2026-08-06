@@ -9,8 +9,10 @@ if [ ! -d deploy_dir_community ]; then
 
     mkdir -p deploy_dir_community deploy_dir_enterprise
 
-    ARTIFACT_GD_REPO_COMMUNITY=$(find . -name "alfresco-googledrive-repo-community-*.amp" -printf "%f\n" | head -1)
-    ARTIFACT_GD_REPO_ENTERPRISE=$(find . -name "alfresco-googledrive-repo-enterprise-*.amp" -printf "%f\n" | head -1)
+    ARTIFACT_GD_REPO_COMMUNITY=$(find . -name "alfresco-googledrive-repo-community-*.amp" ! -name "*+bundled.amp" -printf "%f\n" | head -1)
+    ARTIFACT_GD_REPO_ENTERPRISE=$(find . -name "alfresco-googledrive-repo-enterprise-*.amp" ! -name "*+bundled.amp" -printf "%f\n" | head -1)
+    ARTIFACT_GD_REPO_COMMUNITY_BUNDLED=$(find . -name "alfresco-googledrive-repo-community-*+bundled.amp" -printf "%f\n" | head -1)
+    ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED=$(find . -name "alfresco-googledrive-repo-enterprise-*+bundled.amp" -printf "%f\n" | head -1)
     ARTIFACT_GD_SHARE=$(find . -name "alfresco-googledrive-share-*.amp" -printf "%f\n" | head -1)
 
     export VERSION=$(echo "${ARTIFACT_GD_SHARE}" | sed -e "s/^alfresco-googledrive-share-//" -e "s/\.amp$//")
@@ -25,6 +27,9 @@ if [ ! -d deploy_dir_community ]; then
 #    ln "deploy_dir_community/3rd-party.xlsx" "deploy_dir_enterprise/3rd-party.xlsx"
     ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
     ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
+    # Bundled variants are optional (only present when the -Pbundled build ran); guard so 'set -e' does not abort staging.
+    [ -n "${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}" ]  && ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"
+    [ -n "${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" ] && ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
     ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_enterprise/${ARTIFACT_GD_SHARE}"
 

@@ -640,8 +640,7 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
         {
             if (credential.getExpirationTimeMilliseconds() > 0L)
             {
-                expiresIn = new Date(
-                    new Date().getTime() + credential.getExpirationTimeMilliseconds());
+                expiresIn = new Date(credential.getExpirationTimeMilliseconds());
             }
         }
 
@@ -770,9 +769,15 @@ public class GoogleDocsServiceImpl implements GoogleDocsService
                 }
             }
 
+            // getExpiresInSeconds() is the number of seconds until the access token expires, so
+            // it must be added to the current time to obtain the absolute expiry timestamp.
+            Long expiresInSeconds = response.getExpiresInSeconds();
+            Date expiresAt = (expiresInSeconds == null) ? null
+                : new Date(System.currentTimeMillis() + expiresInSeconds * 1000L);
+
             oauth2CredentialsStoreService.storePersonalOAuth2Credentials(REMOTE_SYSTEM,
                 response.getAccessToken(), response.getRefreshToken(),
-                new Date(response.getExpiresInSeconds()), new Date());
+                expiresAt, new Date());
 
             log.debug("Authentication Complete: " + true);
             return true;

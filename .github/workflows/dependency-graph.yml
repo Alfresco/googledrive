@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: Alfresco/alfresco-build-tools/.github/actions/maven-dependency-scan@499eb5d58f3f82a4efa4eaedab26dbecff18328c # v18.15.1
         with:
-          java-version: '17'
+          java-version: '21'
           maven-version: '3.9.9'
           maven-args: -Dscopes=compile,runtime
           maven-username: ${{ secrets.NEXUS_USERNAME }}
