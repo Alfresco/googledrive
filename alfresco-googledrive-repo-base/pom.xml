@@ -34,9 +34,8 @@
 
     <build>
         <plugins>
-            <!-- Stages this module's runtime-scoped dependencies (the jars an AMP would bundle) so
-                 AmpAddsNoThirdPartyLibrariesTest can assert none exist. In the default build the SDK is
-                 inherited transitively as 'provided', so the staged runtime set is empty. -->
+            <!-- Stages runtime-scoped deps so AmpAddsNoThirdPartyLibrariesTest can assert the default AMP
+                 bundles nothing (empty, since the SDK is inherited as 'provided'). -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -58,7 +57,7 @@
     </build>
 
     <profiles>
-        <!-- Builds amps with sdk bundled into the AMP for ACS versions that do not ship it. -->
+        <!-- Bundled variant: re-declares the SDK at 'compile' so it is packaged. See README ("AMP variants"). -->
         <profile>
             <id>bundled</id>
             <dependencies>

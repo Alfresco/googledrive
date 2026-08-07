@@ -63,10 +63,8 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- The default (zero-dependency) AMP declares no platform libraries: it inherits the Drive SDK and
-         all its transitive libraries as 'provided' from alfresco-repository, so nothing is bundled. The
-         'bundled' profile (below) re-declares those platform libraries as 'provided' to keep the SDK's
-         transitive copies out of the self-contained AMP. -->
+    <!-- Default (zero-dependency) AMP: declares no platform libraries; the Drive SDK is inherited as
+         'provided' from alfresco-repository so nothing is bundled. See README ("AMP variants"). -->
 
     <repositories>
         <repository>
@@ -232,8 +230,7 @@
     </modules>
 
     <profiles>
-        <!-- Builds the self-contained AMPs (SDK bundled, named "+bundled") for ACS versions that do
-             not ship the Drive SDK. -->
+        <!-- Bundled AMP variant: self-contained SDK for ACS versions that do not ship it. See README. -->
         <profile>
             <id>bundled</id>
             <properties>
@@ -241,12 +238,9 @@
                 <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
                 <acs.version>26.2.1</acs.version>
             </properties>
-            <!-- Platform libraries ACS always ships, declared 'provided' so that when the SDK is bundled
-                 (compile scope, in the repo-base 'bundled' profile) its transitive copies of these libraries
-                 are NOT bundled into the self-contained AMP. Inherited by the packaging modules, which is
-                 where the AMP is assembled. Only needed for this variant; the default AMP inherits them as
-                 'provided' from alfresco-repository. Versions come from the community-repo BOM (except the
-                 two annotation jars, which that BOM does not manage). -->
+            <!-- Kept 'provided' so their transitive copies are not bundled alongside the 'compile' SDK
+                 (ACS always ships these). Versions come from the community-repo BOM except the two
+                 annotation jars, which it does not manage. -->
             <dependencies>
                 <dependency>
                     <groupId>com.google.guava</groupId>
@@ -288,8 +282,7 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- The zero-dependency guard asserts the AMP bundles nothing; it must not run for the
-                         bundled variant, which ships the SDK on purpose. -->
+                    <!-- Bundled variant ships the SDK on purpose, so skip the zero-dependency guard test. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
