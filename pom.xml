@@ -34,20 +34,8 @@
 
         <buildnumber>local</buildnumber>
         
-        <!-- TEMPORARY (ACS-12297 transition): pinned to RELEASED ACS artifacts so gdrive builds in CI
-             before the SDK-move ACS is published. END STATE after the SDK-carrying ACS is released:
-             bump this to that release, DELETE the libraries-bom bridge below + the explicit
-             google-api-services-* versions in repo-base, and let ACS manage ALL SDK versions (the
-             goal of this ticket - ACS as the single source of truth). -->
-        <dependency.community.repo.version>26.3.0.11</dependency.community.repo.version>
+        <dependency.community.repo.version>26.3.0.12-SNAPSHOT</dependency.community.repo.version>
         <dependency.share.version>26.3.0.5</dependency.share.version>
-        <!-- TEMPORARY bridge - remove once the SDK-carrying ACS release manages the Drive SDK. Until
-             then released ACS does not manage it, so gdrive supplies the versions here (aligned with
-             the version the SDK-carrying platform / GCS connector use). -->
-        <google-cloud-libraries-bom.version>26.84.0</google-cloud-libraries-bom.version>
-
-        <!-- Single source of truth for the ACS platform base-image tag the -gd / -share-gd images
-             are built FROM (and therefore the ACS version E2E runs against). -->
         <acs.version>latest</acs.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
@@ -59,9 +47,6 @@
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
 
-        <!-- Dual-AMP build; default AMPs leave the SDK "provided"(shipped by ACS); 
-        the "bundled" profile flips this to "compile" to self-contain the SDK. -->
-        <googledrive.bundled.dependency.scope>provided</googledrive.bundled.dependency.scope>
         <amp.classifier />
         <gdrive.repo.dockerfile>Dockerfile</gdrive.repo.dockerfile>
     </properties>
@@ -75,65 +60,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- TEMPORARY bridge (ACS-12297): released ACS does not yet manage the Drive SDK, so this
-                 supplies those versions. Imported AFTER the ACS BOM so platform libraries (guava,
-                 jackson, httpclient, ...) keep the ACS-managed versions. DELETE once the SDK-carrying
-                 ACS release manages the SDK -> then ACS is the single source of truth. -->
-            <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>libraries-bom</artifactId>
-                <version>${google-cloud-libraries-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <!-- Platform libraries ACS always ships, kept 'provided' reactor-wide. In the 'bundled' build the
-         SDK turns 'compile', so these direct 'provided' declarations (inherited by the packaging
-         modules) stop the SDK's transitive copies being bundled. Versions come from the community-repo
-         BOM above. -->
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Explicit versions: not managed by the community-repo BOM. -->
-        <dependency>
-            <groupId>com.google.j2objc</groupId>
-            <artifactId>j2objc-annotations</artifactId>
-            <version>3.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_annotations</artifactId>
-            <version>2.28.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-    
+    <!-- The default (zero-dependency) AMP declares no platform libraries: it inherits the Drive SDK and
+         all its transitive libraries as 'provided' from alfresco-repository, so nothing is bundled. The
+         'bundled' profile (below) re-declares those platform libraries as 'provided' to keep the SDK's
+         transitive copies out of the self-contained AMP. -->
+
     <repositories>
         <repository>
             <id>alfresco-public</id>
@@ -303,11 +237,55 @@
         <profile>
             <id>bundled</id>
             <properties>
-                <googledrive.bundled.dependency.scope>compile</googledrive.bundled.dependency.scope>
                 <amp.classifier>+bundled</amp.classifier>
                 <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
                 <acs.version>26.2.1</acs.version>
             </properties>
+            <!-- Platform libraries ACS always ships, declared 'provided' so that when the SDK is bundled
+                 (compile scope, in the repo-base 'bundled' profile) its transitive copies of these libraries
+                 are NOT bundled into the self-contained AMP. Inherited by the packaging modules, which is
+                 where the AMP is assembled. Only needed for this variant; the default AMP inherits them as
+                 'provided' from alfresco-repository. Versions come from the community-repo BOM (except the
+                 two annotation jars, which that BOM does not manage). -->
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.j2objc</groupId>
+                    <artifactId>j2objc-annotations</artifactId>
+                    <version>3.0.0</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                    <version>2.28.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <!-- The zero-dependency guard asserts the AMP bundles nothing; it must not run for the

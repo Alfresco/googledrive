@@ -24,46 +24,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TEMPORARY (ACS-12297): explicit versions because released ACS does not yet manage these
-             versioned artifacts and they are in no BOM. Remove once the SDK-carrying ACS manages them. -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-oauth2</artifactId>
-            <version>v2-rev20200213-2.0.0</version>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava-jdk5</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-drive</artifactId>
-            <version>v3-rev20250511-2.0.0</version>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client-jackson2</artifactId>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -75,8 +35,8 @@
     <build>
         <plugins>
             <!-- Stages this module's runtime-scoped dependencies (the jars an AMP would bundle) so
-                 AmpAddsNoThirdPartyLibrariesTest can assert none exist. With every third-party dependency
-                 'provided' the staged set is empty. -->
+                 AmpAddsNoThirdPartyLibrariesTest can assert none exist. In the default build the SDK is
+                 inherited transitively as 'provided', so the staged runtime set is empty. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -96,4 +56,48 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Builds amps with sdk bundled into the AMP for ACS versions that do not ship it. -->
+        <profile>
+            <id>bundled</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.apis</groupId>
+                    <artifactId>google-api-services-oauth2</artifactId>
+                    <scope>compile</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>guava-jdk5</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.code.gson</groupId>
+                            <artifactId>gson</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.apis</groupId>
+                    <artifactId>google-api-services-drive</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.http-client</groupId>
+                    <artifactId>google-http-client-jackson2</artifactId>
+                    <scope>compile</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
