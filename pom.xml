@@ -34,7 +34,7 @@
 
         <buildnumber>local</buildnumber>
         
-        <dependency.community.repo.version>26.3.0.12-SNAPSHOT</dependency.community.repo.version>
+        <dependency.community.repo.version>26.3.0.19</dependency.community.repo.version>
         <dependency.share.version>26.3.0.5</dependency.share.version>
         <acs.version>latest</acs.version>
 
