@@ -26,7 +26,8 @@
     </distributionManagement>
 
     <properties>
-        <!-- Target Java 21 so the AMP also runs on the ACS 25.x family(JRE 17). Switch to 21 once 25.x support ends. -->
+        <!-- Override the Java 21 inherited from the ACS parent so the AMP also runs on the ACS 25.x family
+             (JRE 17). Switch to 21 once 25.x support ends. -->
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -34,20 +35,8 @@
 
         <buildnumber>local</buildnumber>
         
-        <!-- TEMPORARY (ACS-12297 transition): pinned to RELEASED ACS artifacts so gdrive builds in CI
-             before the SDK-move ACS is published. END STATE after the SDK-carrying ACS is released:
-             bump this to that release, DELETE the libraries-bom bridge below + the explicit
-             google-api-services-* versions in repo-base, and let ACS manage ALL SDK versions (the
-             goal of this ticket - ACS as the single source of truth). -->
-        <dependency.community.repo.version>26.3.0.11</dependency.community.repo.version>
-        <dependency.share.version>26.3.0.5</dependency.share.version>
-        <!-- TEMPORARY bridge - remove once the SDK-carrying ACS release manages the Drive SDK. Until
-             then released ACS does not manage it, so gdrive supplies the versions here (aligned with
-             the version the SDK-carrying platform / GCS connector use). -->
-        <google-cloud-libraries-bom.version>26.84.0</google-cloud-libraries-bom.version>
-
-        <!-- Single source of truth for the ACS platform base-image tag the -gd / -share-gd images
-             are built FROM (and therefore the ACS version E2E runs against). -->
+        <dependency.community.repo.version>26.3.0.19</dependency.community.repo.version>
+        <dependency.share.version>26.3.0.17</dependency.share.version>
         <acs.version>latest</acs.version>
 
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
@@ -59,9 +48,6 @@
         <app.amp.folder>src/main/amp</app.amp.folder>
         <app.amp.output.folder>../${project.build.finalName}</app.amp.output.folder>
 
-        <!-- Dual-AMP build; default AMPs leave the SDK "provided"(shipped by ACS); 
-        the "bundled" profile flips this to "compile" to self-contain the SDK. -->
-        <googledrive.bundled.dependency.scope>provided</googledrive.bundled.dependency.scope>
         <amp.classifier />
         <gdrive.repo.dockerfile>Dockerfile</gdrive.repo.dockerfile>
     </properties>
@@ -75,65 +61,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- TEMPORARY bridge (ACS-12297): released ACS does not yet manage the Drive SDK, so this
-                 supplies those versions. Imported AFTER the ACS BOM so platform libraries (guava,
-                 jackson, httpclient, ...) keep the ACS-managed versions. DELETE once the SDK-carrying
-                 ACS release manages the SDK -> then ACS is the single source of truth. -->
-            <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>libraries-bom</artifactId>
-                <version>${google-cloud-libraries-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <!-- Platform libraries ACS always ships, kept 'provided' reactor-wide. In the 'bundled' build the
-         SDK turns 'compile', so these direct 'provided' declarations (inherited by the packaging
-         modules) stop the SDK's transitive copies being bundled. Versions come from the community-repo
-         BOM above. -->
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Explicit versions: not managed by the community-repo BOM. -->
-        <dependency>
-            <groupId>com.google.j2objc</groupId>
-            <artifactId>j2objc-annotations</artifactId>
-            <version>3.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_annotations</artifactId>
-            <version>2.28.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-    
+    <!-- Default (zero-dependency) AMP: declares no platform libraries; the Drive SDK is inherited as
+         'provided' from alfresco-repository so nothing is bundled. See README ("AMP variants"). -->
+
     <repositories>
         <repository>
             <id>alfresco-public</id>
@@ -298,20 +231,58 @@
     </modules>
 
     <profiles>
-        <!-- Builds the self-contained AMPs (SDK bundled, named "+bundled") for ACS versions that do
-             not ship the Drive SDK. -->
+        <!-- Bundled AMP variant: self-contained SDK for ACS versions that do not ship it. See README. -->
         <profile>
             <id>bundled</id>
             <properties>
-                <googledrive.bundled.dependency.scope>compile</googledrive.bundled.dependency.scope>
                 <amp.classifier>+bundled</amp.classifier>
                 <gdrive.repo.dockerfile>Dockerfile-bundled</gdrive.repo.dockerfile>
                 <acs.version>26.2.1</acs.version>
             </properties>
+            <!-- Kept 'provided' so their transitive copies are not bundled alongside the 'compile' SDK.
+                 Versions come from the community-repo BOM except the annotation jars, which it omits. -->
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.j2objc</groupId>
+                    <artifactId>j2objc-annotations</artifactId>
+                    <version>3.0.0</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                    <version>2.28.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
-                    <!-- The zero-dependency guard asserts the AMP bundles nothing; it must not run for the
-                         bundled variant, which ships the SDK on purpose. -->
+                    <!-- Bundled variant ships the SDK on purpose, so skip the zero-dependency guard test. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>

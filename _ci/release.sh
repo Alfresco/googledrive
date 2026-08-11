@@ -38,9 +38,9 @@ mvn -B \
     -Dusername="${GIT_USERNAME}" \
     -Dpassword="${GIT_PASSWORD}"
 
-# release:perform produces the standard zero-dependency AMPs (SDK 'provided'). Additionally build and
-# publish the self-contained "+bundled" AMP variants (SDK bundled) for ACS versions that do not ship
-# the SDK, mirroring alfresco-s3-connector. Built from the freshly tagged sources in target/checkout.
+# release:perform produces the standard zero-dependency AMPs (SDK 'provided'), with sources. Additionally
+# build and publish the self-contained "+bundled" AMP variants (SDK bundled) for ACS versions that do not
+# ship the SDK. Built from the freshly tagged sources in target/checkout.
 RELEASE_CHECKOUT_DIR="target/checkout"
 
 mvn -B -f "${RELEASE_CHECKOUT_DIR}/pom.xml" \
@@ -51,12 +51,18 @@ mvn -B -f "${RELEASE_CHECKOUT_DIR}/pom.xml" \
 COMMUNITY_BUNDLED_AMP="alfresco-googledrive-repo-community-${RELEASE_VERSION}+bundled.amp"
 ENTERPRISE_BUNDLED_AMP="alfresco-googledrive-repo-enterprise-${RELEASE_VERSION}+bundled.amp"
 
+# The release plugin's deploy handles sources for the default AMPs but never runs for these variants, so
+# attach the "+bundled" sources jar (produced by the package build above) here via -Dsources.
+COMMUNITY_BUNDLED_SOURCES="alfresco-googledrive-repo-community-${RELEASE_VERSION}+bundled-sources.jar"
+ENTERPRISE_BUNDLED_SOURCES="alfresco-googledrive-repo-enterprise-${RELEASE_VERSION}+bundled-sources.jar"
+
 mvn -B deploy:deploy-file \
     -DgroupId=org.alfresco.integrations \
     -DartifactId=alfresco-googledrive-repo-community \
     -Dversion="${RELEASE_VERSION}+bundled" \
     -Dpackaging=amp \
     -Dfile="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-community/target/${COMMUNITY_BUNDLED_AMP}" \
+    -Dsources="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-community/target/${COMMUNITY_BUNDLED_SOURCES}" \
     -DrepositoryId=alfresco-public \
     -Durl=https://artifacts.alfresco.com/nexus/content/repositories/releases
 
@@ -66,6 +72,7 @@ mvn -B deploy:deploy-file \
     -Dversion="${RELEASE_VERSION}+bundled" \
     -Dpackaging=amp \
     -Dfile="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-enterprise/target/${ENTERPRISE_BUNDLED_AMP}" \
+    -Dsources="${RELEASE_CHECKOUT_DIR}/alfresco-googledrive-repo-enterprise/target/${ENTERPRISE_BUNDLED_SOURCES}" \
     -DrepositoryId=alfresco-enterprise-releases \
     -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases
 
