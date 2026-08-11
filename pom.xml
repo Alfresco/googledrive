@@ -26,7 +26,8 @@
     </distributionManagement>
 
     <properties>
-        <!-- Target Java 21 so the AMP also runs on the ACS 25.x family(JRE 17). Switch to 21 once 25.x support ends. -->
+        <!-- Override the Java 21 inherited from the ACS parent so the AMP also runs on the ACS 25.x family
+             (JRE 17). Switch to 21 once 25.x support ends. -->
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
