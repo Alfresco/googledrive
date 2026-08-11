@@ -41,12 +41,9 @@ jobs:
       matrix:
         include:
           - stage: build
-          # TEMPORARY (ACS-12297): the default (zero-dependency) e2e runs against 'latest', which does not
-          # yet ship the Drive SDK, so the googledocs subsystem cannot start and this job fails. Re-enable
-          # once the SDK-carrying ACS (26.3 / 25.5) image is published as 'latest'.
-          # - stage: e2e_tests
-          #   variant: default
-          #   acs_version: "latest"
+          - stage: e2e_tests
+            variant: default
+            acs_version: "26.3.0-A.6"
           - stage: e2e_tests
             variant: bundled
             acs_version: "23.7.1"

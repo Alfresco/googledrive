@@ -24,45 +24,9 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TEMPORARY (ACS-12297): explicit versions because released ACS does not yet manage these
-             versioned artifacts and they are in no BOM. Remove once the SDK-carrying ACS manages them. -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-oauth2</artifactId>
-            <version>v2-rev20200213-2.0.0</version>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava-jdk5</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-drive</artifactId>
-            <version>v3-rev20250511-2.0.0</version>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client-jackson2</artifactId>
-            <scope>${googledrive.bundled.dependency.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!-- The Google Drive SDK is inherited transitively as 'provided' from alfresco-repository (which
+             manages and ships it), so the default AMP declares and bundles nothing. The 'bundled' profile
+             below re-declares the SDK at 'compile' scope to self-contain it for ACS versions lacking it. -->
 
         <!-- Test -->
         <dependency>
@@ -96,4 +60,49 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Re-declares the SDK at 'compile' so it is bundled into the community/enterprise AMPs; versions
+             still come from the ACS BOM (parent). Excludes platform jars the parent keeps 'provided'. -->
+        <profile>
+            <id>bundled</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.apis</groupId>
+                    <artifactId>google-api-services-oauth2</artifactId>
+                    <scope>compile</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>guava-jdk5</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.code.gson</groupId>
+                            <artifactId>gson</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.apis</groupId>
+                    <artifactId>google-api-services-drive</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.http-client</groupId>
+                    <artifactId>google-http-client-jackson2</artifactId>
+                    <scope>compile</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
