@@ -17,6 +17,8 @@ ARTIFACT_GD_SHARE=$(find . -name "alfresco-googledrive-share-*.amp" -printf "%f\
 
 ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY}"
 ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE}"
+# Bundled variants are optional (only present when release.sh ran the -Pbundled build); guard so
+# 'set -e' does not abort staging. NOTE: this also means a broken bundled build ships silently.
 [ -n "${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}" ]  && ln "alfresco-googledrive-repo-community/target/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"   "deploy_dir_community/${ARTIFACT_GD_REPO_COMMUNITY_BUNDLED}"
 [ -n "${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" ] && ln "alfresco-googledrive-repo-enterprise/target/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}" "deploy_dir_enterprise/${ARTIFACT_GD_REPO_ENTERPRISE_BUNDLED}"
 ln "alfresco-googledrive-share/target/${ARTIFACT_GD_SHARE}"                     "deploy_dir_community/${ARTIFACT_GD_SHARE}"
