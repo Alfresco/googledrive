@@ -19,12 +19,14 @@ ENTERPRISE_MODULE="alfresco-googledrive-repo-enterprise"
 # does not depend on where the tag landed.
 mvn -B -ntp versions:set -DnewVersion="${RELEASE_VERSION}" -DgenerateBackupPoms=false
 
-# The bundled build below runs 'clean' over these two modules, which would delete the plain AMPs
-# that maven-release-slim just built and that prepare_staging_deploy.sh links into the S3 payload.
-# Park them and put them back afterwards. (The old flow avoided this by building in target/checkout,
-# a separate tree that release:perform created; maven-release-slim builds in place.)
-PLAIN_AMP_STASH="target/plain-amps"
-mkdir -p "${PLAIN_AMP_STASH}"
+# The bundled build below runs 'clean', which would delete the plain AMPs that maven-release-slim
+# just built and that prepare_staging_deploy.sh links into the S3 payload. Park them and put them
+# back afterwards. (The old flow avoided this by building in target/checkout, a separate tree that
+# release:perform created; maven-release-slim builds in place.)
+#
+# The stash MUST live outside the project: '-am' pulls the parent POMs into the reactor, and the
+# root project sorts first, so its 'clean' wipes <root>/target before the restore below runs.
+PLAIN_AMP_STASH="$(mktemp -d)"
 cp "${COMMUNITY_MODULE}/target/${COMMUNITY_MODULE}-${RELEASE_VERSION}.amp"   "${PLAIN_AMP_STASH}/"
 cp "${ENTERPRISE_MODULE}/target/${ENTERPRISE_MODULE}-${RELEASE_VERSION}.amp" "${PLAIN_AMP_STASH}/"
 
