@@ -215,7 +215,7 @@ jobs:
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
           s3-bucket: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_BUCKET }}
-          s3-path: alfresco-artefacts-staging/community/GoogleDocs/${{ env.RELEASE_VERSION }}
+          s3-path: community/GoogleDocs/${{ env.RELEASE_VERSION }}
           deploy-dir: ./deploy_dir_community
 
       - name: "Deploy Enterprise artifacts to S3 Staging Bucket"
@@ -224,7 +224,7 @@ jobs:
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
           s3-bucket: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_BUCKET }}
-          s3-path: alfresco-artefacts-staging/enterprise/GoogleDocs/${{ env.RELEASE_VERSION }}
+          s3-path: enterprise/GoogleDocs/${{ env.RELEASE_VERSION }}
           deploy-dir: ./deploy_dir_enterprise
 
   Company-Release:
