@@ -45,6 +45,9 @@ jobs:
             variant: default
             acs_version: "26.3.0-A.6"
           - stage: e2e_tests
+            variant: default
+            acs_version: "25.5.0-A.6"
+          - stage: e2e_tests
             variant: bundled
             acs_version: "23.7.1"
           - stage: e2e_tests
