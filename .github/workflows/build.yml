@@ -180,19 +180,10 @@ jobs:
           role-to-assume: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
 
-      - name: "Release"
-        timeout-minutes: 60
-        uses: Alfresco/alfresco-build-tools/.github/actions/maven-release-slim@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          release-version: ${{ env.RELEASE_VERSION }}
-          development-version: ${{ env.DEVELOPMENT_VERSION }}
-          commit-message-prefix: "[maven-release-plugin][skip ci]"
-          maven-args: -DskipTests -Dadditionalparam=-Xdoclint:none
-
       - name: "Prepare staging deploy"
         run: |
           bash _ci/init.sh
+          bash _ci/release.sh
           bash _ci/prepare_staging_deploy.sh
 
       - name: "Deploy Community artifacts to S3 Staging Bucket"
