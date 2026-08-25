@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - master
-      - 'SP/**'
-      - 'HF/**'
-      - company_release
-      - 'GOOGLEDOCS**'
+      - release/**
+      - feature/**
+      - fix/**
   pull_request:
     branches:
       - master
+      - release/**
+      - feature/**
+      - fix/**
   workflow_dispatch:
     inputs:
       commitMessage:
@@ -131,7 +133,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    if: ${{ ( startsWith(github.ref_name, 'HF/')  || startsWith(github.ref_name, 'SP/') || github.ref_name == 'master' )  &&
+    if: ${{ ( startsWith(github.ref_name, 'release/') || github.ref_name == 'master' )  &&
         contains(github.event.head_commit.message, '[trigger release]') || contains(inputs.commitMessage, '[trigger release]') }}
     runs-on: ubuntu-latest
     needs: Run
@@ -195,7 +197,6 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           release-version: ${{ env.RELEASE_VERSION }}
           development-version: ${{ env.DEVELOPMENT_VERSION }}
-          commit-message-prefix: "[maven-release-plugin][skip ci]"
           maven-args: -DskipTests -Dadditionalparam=-Xdoclint:none
 
       # The release above only publishes the default AMPs; the "+bundled" variants are built and
@@ -231,7 +232,8 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    if: github.ref_name == 'company_release'
+    if: (github.ref_name == 'master' || startsWith(github.ref_name, 'release/')) &&
+      contains(github.event.head_commit.message, '[publish]')
     runs-on: ubuntu-latest
     steps:
       - name: "Generate GitHub App Token"
