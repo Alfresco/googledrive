@@ -26,7 +26,6 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   GITHUB_EVENT: ${{ github.event_name }}
-  BRANCH_NAME: ${{ github.ref_name }}
 
 permissions:
   contents: read
