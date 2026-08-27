@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: Alfresco/alfresco-build-tools/.github/actions/maven-dependency-scan@499eb5d58f3f82a4efa4eaedab26dbecff18328c # v18.15.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/maven-dependency-scan@21bf54d131a99eaea590867434e6eccdd8654569 # v18.25.0
         with:
           java-version: '21'
           maven-version: '3.9.9'
