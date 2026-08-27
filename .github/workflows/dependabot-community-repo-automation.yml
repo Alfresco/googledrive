@@ -1,0 +1,23 @@
+name: Dependabot alfresco-community-repo automation
+
+on:
+  workflow_run:
+    workflows: ["google drive"]
+    types: [completed]
+    branches:
+      - "dependabot/maven/alfresco-community-repo-**"
+
+permissions:
+  pull-requests: read
+
+jobs:
+  automate:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Alfresco/alfresco-build-tools/.github/actions/dependabot-workflow-run-automation@d2981070adf1a68c3ddcbf0ebba193467261c9b3 # v18.26.0
+        with:
+          app-client-id: ${{ vars.GH_APP_ENGINEERING_CONTRIB_CLIENT_ID }}
+          app-private-key: ${{ secrets.GH_APP_ENGINEERING_CONTRIB_PRIVATE_KEY }}
