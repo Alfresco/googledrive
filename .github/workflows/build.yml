@@ -17,8 +17,8 @@ on:
         description: Enter the Commit Message
         required: true
 env:
-  DEVELOPMENT_VERSION: "5.0.0-A3-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
-  RELEASE_VERSION: "5.0.0-A2" # The version of the release (tag)
+  DEVELOPMENT_VERSION: "5.0.1-A.1-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
+  RELEASE_VERSION: "5.0.0" # The version of the release (tag)
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD:  ${{ secrets.QUAY_PASSWORD }}
