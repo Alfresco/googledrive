@@ -287,6 +287,14 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- Activated by the maven-release-slim action (its default release-profile). Intentionally
+             empty: the standard 'mvn deploy' already publishes the default AMPs and sources; the
+             '+bundled' variants are handled separately by _ci/release.sh. Kept so '-P release'
+             activates an existing profile instead of failing on newer Maven. -->
+        <profile>
+            <id>release</id>
+        </profile>
     </profiles>
 
 </project>
