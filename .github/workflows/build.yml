@@ -54,19 +54,19 @@ jobs:
             acs_version: "26.2.1"
       fail-fast: false
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Java
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: adopt
           java-version: 21
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
 
       - name: Setup maven
         shell: bash
@@ -82,13 +82,13 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: "Login to Docker Hub"
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_PASSWORD }}
 
       - name: "Login to Quay.io"
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: quay.io
           username: ${{ env.QUAY_USERNAME }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: "Dump all Docker containers logs"
         if: ${{ failure() && matrix.stage == 'e2e_tests' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/docker-dump-containers-logs@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
 
       - name: "Tear down the E2E stack"
         if: ${{ always() && matrix.stage == 'e2e_tests' }}
@@ -143,15 +143,15 @@ jobs:
 
       # Credentials are intentionally persisted here: maven-release-slim runs
       # 'git push origin <tag>', which needs them in .git/config.
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
 
       - name: Set up Java
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: adopt
           java-version: 21
@@ -166,14 +166,14 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: "Login to Quay.io"
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
       - name: "Configure AWS credentials"
-        uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b # v6.2.1
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
@@ -188,7 +188,7 @@ jobs:
 
       - name: "Release"
         timeout-minutes: 60
-        uses: Alfresco/alfresco-build-tools/.github/actions/maven-release-slim@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/maven-release-slim@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
         with:
           token: ${{ steps.app-token.outputs.token }}
           release-version: ${{ env.RELEASE_VERSION }}
@@ -207,7 +207,7 @@ jobs:
           bash _ci/prepare_staging_deploy.sh
 
       - name: "Deploy Community artifacts to S3 Staging Bucket"
-        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
         with:
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
@@ -216,7 +216,7 @@ jobs:
           deploy-dir: ./deploy_dir_community
 
       - name: "Deploy Enterprise artifacts to S3 Staging Bucket"
-        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
         with:
           aws-region: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_STAGING_ARTIFACT_UPLOAD_ROLE_ARN }}
@@ -239,16 +239,16 @@ jobs:
           client-id: ${{ vars.GH_APP_ENGINEERING_CONTRIB_CLIENT_ID }}
           private-key: ${{ secrets.GH_APP_ENGINEERING_CONTRIB_PRIVATE_KEY }}
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
 
       - name: Set up Java
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: adopt
           java-version: 21
@@ -263,14 +263,14 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: "Login to Quay.io"
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
       - name: "Configure AWS credentials"
-        uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b # v6.2.1
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_ROLE_ARN }}
           aws-region: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_REGION }}
@@ -282,7 +282,7 @@ jobs:
           echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
 
       - name: "Deploy Community artifacts to S3 Release Bucket"
-        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
         with:
           aws-region: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_ROLE_ARN }}
@@ -291,7 +291,7 @@ jobs:
           deploy-dir: ./deploy_dir_community
 
       - name: "Deploy Enterprise artifacts to S3 Release Bucket"
-        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@98bcfbe06aafffdc0e9a790f352602316f82303b # v18.23.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/s3-upload@567a9393acca033008ce34eafcb200469e4ea2f5 # v18.27.0
         with:
           aws-region: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_REGION }}
           aws-role-arn: ${{ vars.AWS_RELEASE_ARTIFACT_UPLOAD_ROLE_ARN }}
