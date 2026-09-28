@@ -36,7 +36,7 @@ COMMUNITY_BUNDLED_AMP="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled.amp"
 ENTERPRISE_BUNDLED_AMP="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled.amp"
 
 # "+bundled" is a finalName suffix (see the modules' <finalName>), not a Maven classifier, so these
-# are published under a distinct version -- which is what prepare_release_deploy.sh later resolves.
+# are published to Nexus under a distinct version.
 # The main deploy never runs for these variants, so attach their sources jar explicitly.
 COMMUNITY_BUNDLED_SOURCES="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
 ENTERPRISE_BUNDLED_SOURCES="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
