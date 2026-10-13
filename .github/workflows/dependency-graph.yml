@@ -18,8 +18,14 @@ jobs:
   scan-dependencies:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/cloudsmith-auth@v19.1.1
+        with:
+          oidc-namespace: ${{ vars.CLOUDSMITH_NAMESPACE }}
       - uses: Alfresco/alfresco-build-tools/.github/actions/maven-dependency-scan@499eb5d58f3f82a4efa4eaedab26dbecff18328c # v18.15.1
         with:
           java-version: '21'

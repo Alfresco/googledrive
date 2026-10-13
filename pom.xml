@@ -67,19 +67,6 @@
     <!-- Default (zero-dependency) AMP: declares no platform libraries; the Drive SDK is inherited as
          'provided' from alfresco-repository so nothing is bundled. See README ("AMP variants"). -->
 
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <pluginManagement>
