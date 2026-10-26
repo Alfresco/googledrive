@@ -67,19 +67,6 @@
     <!-- Default (zero-dependency) AMP: declares no platform libraries; the Drive SDK is inherited as
          'provided' from alfresco-repository so nothing is bundled. See README ("AMP variants"). -->
 
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -102,6 +89,20 @@
                     <configuration>
                         <snapshotToTimestamp>true</snapshotToTimestamp>
                     </configuration>
+                    <dependencies>
+                        <!-- only amp packaging is used, drop the unused Clojars-hosted validation tree -->
+                        <dependency>
+                            <groupId>org.alfrescolabs.alfresco-technical-validation</groupId>
+                            <artifactId>org.alfrescolabs.alfresco-technical-validation</artifactId>
+                            <version>0.4.0</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>*</groupId>
+                                    <artifactId>*</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>

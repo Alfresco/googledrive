@@ -1,24 +1,19 @@
 <settings>
+    <mirrors>
+        <mirror>
+            <id>alfresco-internal</id>
+            <name>Alfresco Cloudsmith Internal</name>
+            <url>https://artifacts.hyland.dev/basic/alfresco-internal/maven/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
+
     <profiles>
         <profile>
-            <id>alfresco-internal</id>
+            <id>default</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <repositories>
-                <repository>
-                    <id>alfresco-internal</id>
-                    <name>Alfresco Internal Repository</name>
-                    <url>https://artifacts.alfresco.com/nexus/content/groups/internal</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>alfresco-internal</id>
-                    <name>Alfresco Internal Repository</name>
-                    <url>https://artifacts.alfresco.com/nexus/content/groups/internal</url>
-                </pluginRepository>
-            </pluginRepositories>
             <properties>
                 <!-- WhiteSource token -->
                 <org.whitesource.orgToken>${env.WHITESOURCE_TOKEN}</org.whitesource.orgToken>
@@ -27,23 +22,13 @@
     </profiles>
 
     <servers>
-        <!-- Credential for private Nexus repository groups -->
         <server>
             <id>alfresco-internal</id>
-            <username>${MAVEN_USERNAME}</username>
-            <password>${MAVEN_PASSWORD}</password>
+            <username>${env.CLOUDSMITH_USERNAME}</username>
+            <password>${env.CLOUDSMITH_API_KEY}</password>
         </server>
-        <!-- Credential for private Nexus repositories -->
-        <server>
-            <id>alfresco-internal-snapshots</id>
-            <username>${MAVEN_USERNAME}</username>
-            <password>${MAVEN_PASSWORD}</password>
-        </server>
-        <server>
-            <id>alfresco-internal-releases</id>
-            <username>${MAVEN_USERNAME}</username>
-            <password>${MAVEN_PASSWORD}</password>
-        </server>
+
+        <!-- deploys still go to Nexus -->
         <server>
             <id>alfresco-enterprise-snapshots</id>
             <username>${MAVEN_USERNAME}</username>
@@ -61,11 +46,6 @@
         </server>
         <server>
             <id>alfresco-public</id>
-            <username>${MAVEN_USERNAME}</username>
-            <password>${MAVEN_PASSWORD}</password>
-        </server>
-        <server>
-            <id>alfresco-thirdparty</id>
             <username>${MAVEN_USERNAME}</username>
             <password>${MAVEN_PASSWORD}</password>
         </server>
