@@ -6,7 +6,7 @@ The `settings.xml` config file can be found in the `_ci` directory of the reposi
 ## Stages and Jobs
 1. **Build**: Java Build with Unit Tests, WhiteSource
 2. **Tests**: Executes the E2E tests in `alfresco-mm-test-endtoend`
-3. **Release**: Release and Deployment by publishing to Nexus and the AWS Staging bucket.
+3. **Release**: Release and Deployment by publishing to the Maven repository and the AWS Staging bucket.
 4. **Company Release**: Publishes the released `distribution` to the AWS Releases bucket.
 
 
