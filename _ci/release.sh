@@ -36,10 +36,19 @@ COMMUNITY_BUNDLED_AMP="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled.amp"
 ENTERPRISE_BUNDLED_AMP="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled.amp"
 
 # "+bundled" is a finalName suffix (see the modules' <finalName>), not a Maven classifier, so these
-# are published to Nexus under a distinct version.
+# are published under a distinct version. -A versions go to internal releases, like the main deploy.
 # The main deploy never runs for these variants, so attach their sources jar explicitly.
 COMMUNITY_BUNDLED_SOURCES="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
 ENTERPRISE_BUNDLED_SOURCES="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
+
+CLOUDSMITH_MAVEN="https://maven.cloudsmith.io/hyland"
+if [[ "${RELEASE_VERSION}" == *-A* ]]; then
+    COMMUNITY_REPO="${CLOUDSMITH_MAVEN}/alfresco-internal-releases/"
+    ENTERPRISE_REPO="${CLOUDSMITH_MAVEN}/alfresco-internal-releases/"
+else
+    COMMUNITY_REPO="${CLOUDSMITH_MAVEN}/alfresco-community-releases/"
+    ENTERPRISE_REPO="${CLOUDSMITH_MAVEN}/alfresco-enterprise-releases/"
+fi
 
 mvn -B deploy:deploy-file \
     -DgroupId=org.alfresco.integrations \
@@ -48,8 +57,8 @@ mvn -B deploy:deploy-file \
     -Dpackaging=amp \
     -Dfile="${COMMUNITY_MODULE}/target/${COMMUNITY_BUNDLED_AMP}" \
     -Dsources="${COMMUNITY_MODULE}/target/${COMMUNITY_BUNDLED_SOURCES}" \
-    -DrepositoryId=alfresco-public \
-    -Durl=https://artifacts.alfresco.com/nexus/content/repositories/releases
+    -DrepositoryId=alfresco-releases \
+    -Durl="${COMMUNITY_REPO}"
 
 mvn -B deploy:deploy-file \
     -DgroupId=org.alfresco.integrations \
@@ -58,8 +67,8 @@ mvn -B deploy:deploy-file \
     -Dpackaging=amp \
     -Dfile="${ENTERPRISE_MODULE}/target/${ENTERPRISE_BUNDLED_AMP}" \
     -Dsources="${ENTERPRISE_MODULE}/target/${ENTERPRISE_BUNDLED_SOURCES}" \
-    -DrepositoryId=alfresco-enterprise-releases \
-    -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases
+    -DrepositoryId=alfresco-releases \
+    -Durl="${ENTERPRISE_REPO}"
 
 # Put the plain AMPs back so prepare_staging_deploy.sh sees both variants side by side.
 cp "${PLAIN_AMP_STASH}/${COMMUNITY_MODULE}-${RELEASE_VERSION}.amp"   "${COMMUNITY_MODULE}/target/"
