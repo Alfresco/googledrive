@@ -17,8 +17,8 @@ on:
         required: true
 
 env:
-  DEVELOPMENT_VERSION: "5.0.1-A3-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
-  RELEASE_VERSION: "5.0.1-A2" # The version of the release (tag)
+  DEVELOPMENT_VERSION: "5.0.1-A4-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
+  RELEASE_VERSION: "5.0.1-A3" # The version of the release (tag)
   QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
   QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
   DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
