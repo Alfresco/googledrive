@@ -19,8 +19,6 @@ on:
 env:
   DEVELOPMENT_VERSION: "5.0.1-A3-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
   RELEASE_VERSION: "5.0.1-A2" # The version of the release (tag)
-  MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-  MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
   QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
   DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -70,8 +68,6 @@ jobs:
         with:
           distribution: adopt
           java-version: 21
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
 
       - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@a297ff6c5bf20c667047db658dd23f60241b270a # v18.28.0
 
@@ -164,8 +160,6 @@ jobs:
         with:
           distribution: adopt
           java-version: 21
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
 
       - name: Cache the Maven packages to speed up build
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -181,8 +175,7 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
-      # Must precede the release: _ci/settings.xml carries the <server> credentials for
-      # alfresco-public and alfresco-enterprise-releases, which the Nexus upload needs.
+      # Must precede the release: _ci/settings.xml carries the alfresco-releases <server> the Maven upload needs.
       - name: Setup maven
         shell: bash
         run: |
@@ -191,12 +184,15 @@ jobs:
 
       - name: "Release"
         timeout-minutes: 60
-        uses: Alfresco/alfresco-build-tools/.github/actions/maven-release-slim@a297ff6c5bf20c667047db658dd23f60241b270a # v18.28.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/maven-release-slim@080221fd2e8016826418a3d6c350ac6571681912 # v19.8.0
         with:
           token: ${{ steps.app-token.outputs.token }}
           release-version: ${{ env.RELEASE_VERSION }}
           development-version: ${{ env.DEVELOPMENT_VERSION }}
           maven-args: -DskipTests -Dadditionalparam=-Xdoclint:none
+          prerelease-profile: prerelease
+          # alpha versions here look like 5.0.1-A2 (no dot after A)
+          prerelease-version-marker: -A
 
       # The release above only publishes the default AMPs; the "+bundled" variants are built and
       # deployed separately. Must run before prepare_staging_deploy.sh, which links both into S3.

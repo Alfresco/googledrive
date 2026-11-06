@@ -18,13 +18,11 @@
 
     <distributionManagement>
         <repository>
-            <id>alfresco-enterprise-releases</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases</url>
+            <id>alfresco-releases</id>
+            <name>Alfresco Enterprise Releases</name>
+            <!-- TODO: switch to maven.artifacts.hyland.dev once its DNS record exists -->
+            <url>https://maven.cloudsmith.io/hyland/alfresco-enterprise-releases/</url>
         </repository>
-        <snapshotRepository>
-            <id>alfresco-enterprise-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/enterprise-snapshots</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <dependencies>
@@ -124,6 +122,18 @@
     </build>
 
     <profiles>
+        <!-- Repeated here: this module's own distributionManagement would override the parent's profile -->
+        <profile>
+            <id>prerelease</id>
+            <distributionManagement>
+                <repository>
+                    <id>alfresco-releases</id>
+                    <name>Alfresco Internal Releases</name>
+                    <!-- TODO: switch to maven.artifacts.hyland.dev once its DNS record exists -->
+                    <url>https://maven.cloudsmith.io/hyland/alfresco-internal-releases/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
         <profile>
             <!-- Builds local image for development & testing only -->
             <id>local</id>
