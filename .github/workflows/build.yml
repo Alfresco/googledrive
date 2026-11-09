@@ -190,9 +190,6 @@ jobs:
           release-version: ${{ env.RELEASE_VERSION }}
           development-version: ${{ env.DEVELOPMENT_VERSION }}
           maven-args: -DskipTests -Dadditionalparam=-Xdoclint:none
-          prerelease-profile: prerelease
-          # alpha versions here look like 5.0.1-A2 (no dot after A)
-          prerelease-version-marker: -A
 
       # The release above only publishes the default AMPs; the "+bundled" variants are built and
       # deployed separately. Must run before prepare_staging_deploy.sh, which links both into S3.

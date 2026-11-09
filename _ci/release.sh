@@ -36,20 +36,15 @@ COMMUNITY_BUNDLED_AMP="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled.amp"
 ENTERPRISE_BUNDLED_AMP="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled.amp"
 
 # "+bundled" is a finalName suffix (see the modules' <finalName>), not a Maven classifier, so these
-# are published under a distinct version. -A versions go to internal releases, like the main deploy.
+# are published under a distinct version, to the same repositories as the main deploy.
 # The main deploy never runs for these variants, so attach their sources jar explicitly.
 COMMUNITY_BUNDLED_SOURCES="${COMMUNITY_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
 ENTERPRISE_BUNDLED_SOURCES="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled-sources.jar"
 
 # TODO: switch to maven.artifacts.hyland.dev once its DNS record exists
 MAVEN_UPLOAD_URL="https://maven.cloudsmith.io/hyland"
-if [[ "${RELEASE_VERSION}" == *-A* ]]; then
-    COMMUNITY_REPO="${MAVEN_UPLOAD_URL}/alfresco-internal-releases/"
-    ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-internal-releases/"
-else
-    COMMUNITY_REPO="${MAVEN_UPLOAD_URL}/alfresco-community-releases/"
-    ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-enterprise-releases/"
-fi
+COMMUNITY_REPO="${MAVEN_UPLOAD_URL}/alfresco-community-releases/"
+ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-enterprise-releases/"
 
 mvn -B deploy:deploy-file \
     -DgroupId=org.alfresco.integrations \
