@@ -1,10 +1,10 @@
 <settings>
     <mirrors>
         <mirror>
-            <id>cic-ext-pull-through</id>
-            <name>Maven Central</name>
-            <url>https://artifacts.hyland.dev/basic/cic-ext-pull-through/maven/</url>
-            <mirrorOf>central</mirrorOf>
+            <id>alfresco-internal</id>
+            <name>Alfresco Internal</name>
+            <url>https://artifacts.hyland.dev/basic/alfresco-internal/maven/</url>
+            <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
 
@@ -23,7 +23,7 @@
 
     <servers>
         <server>
-            <id>cic-ext-pull-through</id>
+            <id>alfresco-internal</id>
             <username>${env.CLOUDSMITH_USERNAME}</username>
             <password>${env.CLOUDSMITH_API_KEY}</password>
         </server>
