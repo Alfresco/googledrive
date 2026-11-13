@@ -3,7 +3,7 @@
     <groupId>org.alfresco.integrations</groupId>
     <artifactId>alfresco-googledrive</artifactId>
     <name>Alfresco / Google Drive Parent</name>
-    <version>5.0.1-A3-SNAPSHOT</version>
+    <version>5.0.1-A.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -22,6 +22,44 @@
             <url>https://maven.cloudsmith.io/hyland/alfresco-community-releases/</url>
         </repository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>alfresco-public</id>
+            <name>Alfresco Public Repository</name>
+            <url>https://artifacts.hyland.dev/public/alfresco-public/maven/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>alfresco-public</id>
+            <name>Alfresco Public Repository</name>
+            <url>https://artifacts.hyland.dev/public/alfresco-public/maven/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <!-- Override the Java 21 inherited from the ACS parent so the AMP also runs on the ACS 25.x family
@@ -293,19 +331,6 @@
              activates an existing profile instead of failing on newer Maven. -->
         <profile>
             <id>release</id>
-        </profile>
-
-        <!-- maven-release-slim enables it for -A versions via prerelease-profile -->
-        <profile>
-            <id>prerelease</id>
-            <distributionManagement>
-                <repository>
-                    <id>alfresco-releases</id>
-                    <name>Alfresco Internal Releases</name>
-                    <!-- TODO: switch to maven.artifacts.hyland.dev once its DNS record exists -->
-                    <url>https://maven.cloudsmith.io/hyland/alfresco-internal-releases/</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 

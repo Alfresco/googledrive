@@ -2,6 +2,12 @@
 The `google-drive` project uses _Github Actions CI_. \
 The `settings.xml` config file can be found in the `_ci` directory of the repository.
 
+The POMs declare Maven Central and `alfresco-public` for dependency and plugin resolution.
+As a DevOps-approved exception for this mixed community/enterprise project, CI resolves
+through the authenticated `alfresco-internal` mirror. This also proxies Maven Central.
+Community builds without these CI settings still require the community configuration
+dependency to be available publicly; enterprise builds require authenticated access.
+
 
 ## Stages and Jobs
 1. **Build**: Java Build with Unit Tests, WhiteSource
@@ -29,6 +35,15 @@ All other branches are ignored.
 
 
 ## Release process steps & info
+The parent and community modules publish all releases, including `-A.x` alphas, to
+`alfresco-community-releases`. The enterprise AMP publishes GA and milestone releases to
+`alfresco-enterprise-releases`, and `-A.x` alphas to `alfresco-internal-releases` through its
+module-local `prerelease` profile. The root POM has no `prerelease` profile. These destinations
+also apply to the `+bundled` AMP variants.
+
+Alpha versions use the `-A.x` format, for example `5.0.1-A.2`; development versions use
+`5.0.1-A.3-SNAPSHOT`. The workflow uses the release action's default `-A.` marker.
+
 Prerequisites:
  - the `master` / `SP/*` / `HF/*` branch is green and it contains all the changes that should be
  included in the next release.

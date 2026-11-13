@@ -3,7 +3,7 @@
     <parent>
         <artifactId>alfresco-googledrive</artifactId>
         <groupId>org.alfresco.integrations</groupId>
-        <version>5.0.1-A3-SNAPSHOT</version>
+        <version>5.0.1-A.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
             <artifactId>alfresco-googledrive-repo-base</artifactId>
-            <version>5.0.1-A3-SNAPSHOT</version>
+            <version>5.0.1-A.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
@@ -122,7 +122,6 @@
     </build>
 
     <profiles>
-        <!-- Repeated here: this module's own distributionManagement would override the parent's profile -->
         <profile>
             <id>prerelease</id>
             <distributionManagement>
