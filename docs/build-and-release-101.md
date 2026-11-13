@@ -35,10 +35,14 @@ All other branches are ignored.
 
 
 ## Release process steps & info
-All releases, including `-A` prereleases, use the modules' normal Maven release repositories:
-`alfresco-community-releases` for the parent and community modules, and
-`alfresco-enterprise-releases` for the enterprise AMP. This also applies to the `+bundled`
-AMP variants. No `prerelease` profile or `alfresco-internal-releases` deployment target is used.
+The parent and community modules publish all releases, including `-A.x` alphas, to
+`alfresco-community-releases`. The enterprise AMP publishes GA and milestone releases to
+`alfresco-enterprise-releases`, and `-A.x` alphas to `alfresco-internal-releases` through its
+module-local `prerelease` profile. The root POM has no `prerelease` profile. These destinations
+also apply to the `+bundled` AMP variants.
+
+Alpha versions use the `-A.x` format, for example `5.0.1-A.2`; development versions use
+`5.0.1-A.3-SNAPSHOT`. The workflow uses the release action's default `-A.` marker.
 
 Prerequisites:
  - the `master` / `SP/*` / `HF/*` branch is green and it contains all the changes that should be

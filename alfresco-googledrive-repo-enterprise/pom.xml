@@ -3,7 +3,7 @@
     <parent>
         <artifactId>alfresco-googledrive</artifactId>
         <groupId>org.alfresco.integrations</groupId>
-        <version>5.0.1-A3-SNAPSHOT</version>
+        <version>5.0.1-A.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
             <artifactId>alfresco-googledrive-repo-base</artifactId>
-            <version>5.0.1-A3-SNAPSHOT</version>
+            <version>5.0.1-A.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.alfresco.integrations</groupId>
@@ -122,6 +122,17 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>prerelease</id>
+            <distributionManagement>
+                <repository>
+                    <id>alfresco-releases</id>
+                    <name>Alfresco Internal Releases</name>
+                    <!-- TODO: switch to maven.artifacts.hyland.dev once its DNS record exists -->
+                    <url>https://maven.cloudsmith.io/hyland/alfresco-internal-releases/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
         <profile>
             <!-- Builds local image for development & testing only -->
             <id>local</id>

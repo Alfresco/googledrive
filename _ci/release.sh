@@ -44,7 +44,11 @@ ENTERPRISE_BUNDLED_SOURCES="${ENTERPRISE_MODULE}-${RELEASE_VERSION}+bundled-sour
 # TODO: switch to maven.artifacts.hyland.dev once its DNS record exists
 MAVEN_UPLOAD_URL="https://maven.cloudsmith.io/hyland"
 COMMUNITY_REPO="${MAVEN_UPLOAD_URL}/alfresco-community-releases/"
-ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-enterprise-releases/"
+if [[ "${RELEASE_VERSION}" == *-A.* ]]; then
+    ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-internal-releases/"
+else
+    ENTERPRISE_REPO="${MAVEN_UPLOAD_URL}/alfresco-enterprise-releases/"
+fi
 
 mvn -B deploy:deploy-file \
     -DgroupId=org.alfresco.integrations \

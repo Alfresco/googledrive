@@ -17,8 +17,8 @@ on:
         required: true
 
 env:
-  DEVELOPMENT_VERSION: "5.0.1-A3-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
-  RELEASE_VERSION: "5.0.1-A2" # The version of the release (tag)
+  DEVELOPMENT_VERSION: "5.0.1-A.3-SNAPSHOT" # The version that will be set in pom files after the release (next dev version)
+  RELEASE_VERSION: "5.0.1-A.2" # The version of the release (tag)
   QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
   QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
   DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -190,6 +190,7 @@ jobs:
           release-version: ${{ env.RELEASE_VERSION }}
           development-version: ${{ env.DEVELOPMENT_VERSION }}
           maven-args: -DskipTests -Dadditionalparam=-Xdoclint:none
+          prerelease-profile: prerelease
 
       # The release above only publishes the default AMPs; the "+bundled" variants are built and
       # deployed separately. Must run before prepare_staging_deploy.sh, which links both into S3.
